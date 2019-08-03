@@ -1,0 +1,24 @@
+{
+  "name": "santoku-editor-adapter",
+  "version": "0.0.1",
+  "description": "Adapter between Santoku tutorial editor and a code editor",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest --forceExit --coverage --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/andrewhead/santoku-editor-adapter.git"
+  },
+  "author": "Andrew Head <andrewhead@berkeley.edu>",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/andrewhead/santoku-editor-adapter/issues"
+  },
+  "homepage": "https://github.com/andrewhead/santoku-editor-adapter#readme",
+  "devDependencies": {
+    "typescript": "^3.5.3"
+  }
+}
