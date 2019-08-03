@@ -1,5 +1,5 @@
-import * as actions from "../../../src/store/lines/actions";
-import * as types from "../../../src/store/lines/types";
+import * as actions from "../../../src/lines/actions";
+import * as types from "../../../src/lines/types";
 
 describe("actions", () => {
   it("should create an action for updating text", () => {

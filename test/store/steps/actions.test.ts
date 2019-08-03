@@ -1,5 +1,5 @@
-import * as actions from "../../../src/store/steps/actions";
-import * as types from "../../../src/store/steps/types";
+import * as actions from "../../../src/steps/actions";
+import * as types from "../../../src/steps/types";
 
 describe("actions", () => {
   it("should create an action for creating a step", () => {

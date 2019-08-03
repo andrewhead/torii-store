@@ -1,5 +1,5 @@
-import { addLine, createStep } from "../../../src/store/steps/actions";
-import { allStepsReducer, stepsByIdReducer } from "../../../src/store/steps/reducers";
+import { addLine, createStep } from "../../../src/steps/actions";
+import { allStepsReducer, stepsByIdReducer } from "../../../src/steps/reducers";
 
 describe("all steps reducer", () => {
 

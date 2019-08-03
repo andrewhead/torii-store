@@ -1,11 +1,11 @@
-import { createLine, updateText } from "../../../src/store/lines/actions";
+import { createLine, updateText } from "../../../src/lines/actions";
 import {
   allLineVersionsReducer,
   lineVersionsByIdReducer,
   allLinesReducer,
   linesByIdReducer
-} from "../../../src/store/lines/reducers";
-import { AllLineVersions, AllLines } from "../../../src/store/lines/types";
+} from "../../../src/lines/reducers";
+import { AllLineVersions, AllLines } from "../../../src/lines/types";
 
 const LINE_LOCATION = { path: "path", index: 0 };
 
