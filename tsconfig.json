@@ -3,8 +3,7 @@
         "module": "commonjs",
         "declaration": true,
         "esModuleInterop": true,
-        "target": "es6",
-        "noImplicitAny": true,
+        "target": "es5",
         "moduleResolution": "node",
         "sourceMap": true,
         "outDir": "dist",
@@ -15,5 +14,8 @@
                 "src/types/*"
             ]
         }
-    }
+    },
+    "exclude": [
+      "**/test/**/*.test.ts"
+    ]
 }

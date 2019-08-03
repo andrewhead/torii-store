@@ -1,7 +1,7 @@
 {
-  "name": "santoku-editor-adapter",
+  "name": "santoku-store",
   "version": "0.0.1",
-  "description": "Adapter between Santoku tutorial editor and a code editor",
+  "description": "Store and types for the Santoku tutorial editor",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -10,18 +10,25 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/andrewhead/santoku-editor-adapter.git"
+    "url": "git+ssh://git@github.com/andrewhead/santoku-store.git"
   },
   "author": "Andrew Head <andrewhead@berkeley.edu>",
   "license": "UNLICENSED",
   "bugs": {
-    "url": "https://github.com/andrewhead/santoku-editor-adapter/issues"
+    "url": "https://github.com/andrewhead/santoku-store/issues"
   },
-  "homepage": "https://github.com/andrewhead/santoku-editor-adapter#readme",
+  "homepage": "https://github.com/andrewhead/santoku-store#readme",
   "devDependencies": {
     "@types/jest": "^24.0.16",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
     "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "@types/uuid": "^3.4.5",
+    "redux": "^4.0.4",
+    "redux-devtools-extension": "^2.13.8",
+    "redux-undo": "^1.0.0-beta9-9-7",
+    "uuid": "^3.3.2"
   }
 }
