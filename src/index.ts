@@ -1,33 +1,42 @@
-import { combineReducers, createStore } from 'redux';
-import { devToolsEnhancer } from 'redux-devtools-extension';
-import { undoableLinesReducer, undoableLineVersionsReducer } from './lines/reducers';
-import { AllLines, AllLineVersions, LinesById, LineVersionsById } from './lines/types';
-import { undoableStepsReducer } from './steps/reducers';
-import { AllSteps, StepsById } from './steps/types';
+import { AnyAction, combineReducers, createStore as reduxCreateStore, DeepPartial, Store } from "redux";
+import { devToolsEnhancer } from "redux-devtools-extension";
+import * as lineActions from "./lines/actions";
+import { undoableLinesReducer, undoableLineVersionsReducer } from "./lines/reducers";
+import * as lineTypes from "./lines/types";
+import { AllLines, AllLineVersions, Line, LinesById, LineVersionsById } from "./lines/types";
+import * as stepActions from "./steps/actions";
+import { undoableStepsReducer } from "./steps/reducers";
+import * as stepTypes from "./steps/types";
+import { AllSteps, Step, StepsById } from "./steps/types";
 
 export const rootReducer = combineReducers({
-  lineVersions: undoableLineVersionsReducer,  
+  lineVersions: undoableLineVersionsReducer,
   lines: undoableLinesReducer,
   steps: undoableStepsReducer
-})
+});
 
-export const store = createStore(rootReducer, devToolsEnhancer({}))
+export const createStore = (
+  initialState?: DeepPartial<UndoableState>
+): Store<UndoableState, AnyAction> => {
+  return reduxCreateStore(rootReducer, initialState, devToolsEnhancer({}));
+};
+export const store = createStore();
 
-export type UndoableState = ReturnType<typeof rootReducer>
+export type UndoableState = ReturnType<typeof rootReducer>;
 
-export interface PresentState {
+export interface State {
   lineVersions: {
-    allLineVersions: AllLineVersions,
-    byId: LineVersionsById
-  },
+    allLineVersions: AllLineVersions;
+    byId: LineVersionsById;
+  };
   lines: {
-    allLines: AllLines,
-    byId: LinesById
-  },
+    allLines: AllLines;
+    byId: LinesById;
+  };
   steps: {
-    allSteps: AllSteps,
-    byId: StepsById
-  }
+    allSteps: AllSteps;
+    byId: StepsById;
+  };
 }
 
 export function toPresentState(state: UndoableState) {
@@ -44,5 +53,10 @@ export function toPresentState(state: UndoableState) {
       allSteps: state.steps.allSteps.present,
       byId: state.steps.byId.present
     }
-  }
+  };
 }
+
+
+export { Line, Step };
+export { lineActions, stepActions };
+export { lineTypes, stepTypes };

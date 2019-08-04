@@ -6,7 +6,9 @@ import {
   LineVersionId,
   Location,
   UpdateTextAction,
-  UPDATE_TEXT
+  UPDATE_TEXT,
+  UpdateTextAtLocationAction,
+  UPDATE_TEXT_AT_LOCATION
 } from "./types";
 
 export function updateText(
@@ -18,6 +20,17 @@ export function updateText(
     text,
     type: UPDATE_TEXT
   };
+}
+
+export function updateTextAtLocation(
+  location: Location, text: string, version: number
+): UpdateTextAtLocationAction {
+  return {
+    location,
+    text,
+    version,
+    type: UPDATE_TEXT_AT_LOCATION
+  }
 }
 
 /**

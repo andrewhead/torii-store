@@ -13,6 +13,19 @@ describe("actions", () => {
     expect(actions.updateText(lineVersionId, text)).toEqual(expectedAction);
   });
 
+  it("should create an action for updating text at a location", () => {
+    const location = { path: "path", index: 0 };
+    const text = "Updated text";
+    const version = 0;
+    const expectedAction = {
+      location,
+      text,
+      version,
+      type: types.UPDATE_TEXT_AT_LOCATION
+    };
+    expect(actions.updateTextAtLocation(location, text, version)).toEqual(expectedAction);
+  });
+
   describe("should create an action for creating a line", () => {
     it("should not insert by default", () => {
       const location = {
@@ -27,9 +40,7 @@ describe("actions", () => {
         location,
         type: types.CREATE_LINE
       });
-      expect(action.id).toMatch(
-        /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
-      );
+      expect(action.id).toMatch(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
     });
 
     it("should insert lines", () => {
