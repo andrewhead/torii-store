@@ -1,13 +1,5 @@
 import { AnyAction } from "redux";
-
-export const UPDATE_TEXT = "UPDATE_TEXT";
-export const UPDATE_PATH = "UPDATE_PATH";
-export const REMOVE_LINE = "REMOVE_LINE";
-export const CREATE_LINE = "CREATE_LINE";
-export const ADD_LINE_VERSION = "ADD_LINE_VERSION";
-
-export const REMOVE_LINE_AT_LOCATION = "REMOVE_LINE_AT_LOCATION";
-export const UPDATE_TEXT_AT_LOCATION = "UPDATE_TEXT_AT_LOCATION_AND_VERSION";
+import * as names from "./action-names";
 
 export interface LineVersion {
   text: string;
@@ -47,26 +39,26 @@ export interface Lines {
 }
 
 export interface UpdateTextAction {
-  type: typeof UPDATE_TEXT;
+  type: typeof names.UPDATE_TEXT;
   lineVersionId: LineVersionId;
   text: string;
 }
 
 export interface UpdateTextAtLocationAction {
-  type: typeof UPDATE_TEXT_AT_LOCATION;
+  type: typeof names.UPDATE_TEXT_AT_LOCATION;
   location: Location;
   version: number;
   text: string;
 }
 
 export interface UpdatePathAction {
-  type: typeof UPDATE_PATH;
+  type: typeof names.UPDATE_PATH;
   path: string;
   newPath: string;
 }
 
 export interface CreateLineAction {
-  type: typeof CREATE_LINE;
+  type: typeof names.CREATE_LINE;
   id: LineId;
   initialVersionId?: LineVersionId;
   initialVersionText?: string;
@@ -75,12 +67,12 @@ export interface CreateLineAction {
 }
 
 export interface RemoveLineAction {
-  type: typeof REMOVE_LINE;
+  type: typeof names.REMOVE_LINE;
   id: LineId;
 }
 
 export interface RemoveLineAtLocationAction {
-  type: typeof REMOVE_LINE_AT_LOCATION;
+  type: typeof names.REMOVE_LINE_AT_LOCATION;
   location: Location;
 }
 

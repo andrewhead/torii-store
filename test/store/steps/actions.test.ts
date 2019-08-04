@@ -1,5 +1,5 @@
 import * as actions from "../../../src/steps/actions";
-import * as types from "../../../src/steps/types";
+import * as names from "../../../src/steps/action-names";
 
 describe("actions", () => {
   it("should create an action for creating a step", () => {
@@ -7,7 +7,7 @@ describe("actions", () => {
     const action = actions.createStep(index);
     expect(action).toMatchObject({
       index,
-      type: types.CREATE_STEP
+      type: names.CREATE_STEP
     });
     expect(action.id).toMatch(
       /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
@@ -20,7 +20,7 @@ describe("actions", () => {
     const expectedAction = {
       lineVersionId,
       stepId,
-      type: types.ADD_LINE_TO_STEP
+      type: names.ADD_LINE_TO_STEP
     };
     expect(actions.addLine(stepId, lineVersionId)).toEqual(expectedAction);
   });

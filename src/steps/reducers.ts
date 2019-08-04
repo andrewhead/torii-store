@@ -1,14 +1,7 @@
 import { AnyAction, combineReducers } from "redux";
 import undoable from "redux-undo";
-import {
-  AddLineToStepAction,
-  ADD_LINE_TO_STEP,
-  AllSteps,
-  CreateStepAction,
-  CREATE_STEP,
-  isStepAction,
-  StepsById
-} from "./types";
+import * as names from "./action-names";
+import { AddLineToStepAction, AllSteps, CreateStepAction, isStepAction, StepsById } from "./types";
 
 /**
  * TODO(andrewhead): This and other reducer functions takes AnyAction as the second argument and
@@ -17,13 +10,10 @@ import {
  * bug gets fixed, all of these reducers should be refactored to take a more precise type as the
  * second argument. Follow the issue here: https://github.com/omnidan/redux-undo/issues/229
  */
-export function allStepsReducer(
-  state: AllSteps = [],
-  action: AnyAction
-): AllSteps {
+export function allStepsReducer(state: AllSteps = [], action: AnyAction): AllSteps {
   if (isStepAction(action)) {
     switch (action.type) {
-      case CREATE_STEP:
+      case names.CREATE_STEP:
         return insertStepInAllLines(state, action);
       default:
         return state;
@@ -43,9 +33,9 @@ function insertStepInAllLines(state: AllSteps, action: CreateStepAction) {
 export function stepsByIdReducer(state = {}, action: AnyAction): StepsById {
   if (isStepAction(action)) {
     switch (action.type) {
-      case ADD_LINE_TO_STEP:
+      case names.ADD_LINE_TO_STEP:
         return addLine(state, action);
-      case CREATE_STEP:
+      case names.CREATE_STEP:
         return insertStepInById(state, action);
       default:
         return state;
@@ -74,9 +64,7 @@ function addLine(state: StepsById, action: AddLineToStepAction) {
     [stepId]: {
       ...step,
       linesAdded:
-        linesAdded.indexOf(lineVersionId) === -1
-          ? linesAdded.concat(lineVersionId)
-          : linesAdded
+        linesAdded.indexOf(lineVersionId) === -1 ? linesAdded.concat(lineVersionId) : linesAdded
     }
   };
 }

@@ -1,13 +1,26 @@
-import { AnyAction, combineReducers, createStore as reduxCreateStore, DeepPartial, Store } from "redux";
+import {
+  AnyAction,
+  combineReducers,
+  createStore as reduxCreateStore,
+  DeepPartial,
+  Store
+} from "redux";
 import { devToolsEnhancer } from "redux-devtools-extension";
+import * as lineActionNames from "./lines/action-names";
 import * as lineActions from "./lines/actions";
 import { undoableLinesReducer, undoableLineVersionsReducer } from "./lines/reducers";
-import * as lineTypes from "./lines/types";
-import { AllLines, AllLineVersions, Line, LinesById, LineVersionsById } from "./lines/types";
+import {
+  AllLines,
+  AllLineVersions,
+  Line,
+  LineActionTypes,
+  LinesById,
+  LineVersionsById
+} from "./lines/types";
+import * as stepActionNames from "./steps/action-names";
 import * as stepActions from "./steps/actions";
 import { undoableStepsReducer } from "./steps/reducers";
-import * as stepTypes from "./steps/types";
-import { AllSteps, Step, StepsById } from "./steps/types";
+import { AllSteps, Step, StepActionTypes, StepsById } from "./steps/types";
 
 export const rootReducer = combineReducers({
   lineVersions: undoableLineVersionsReducer,
@@ -56,7 +69,19 @@ export function toPresentState(state: UndoableState) {
   };
 }
 
-
 export { Line, Step };
-export { lineActions, stepActions };
-export { lineTypes, stepTypes };
+
+export namespace actions {
+  export namespace Type {
+    export type Line = LineActionTypes;
+    export type Step = StepActionTypes;
+  }
+
+  export namespace Name {
+    export const line = lineActionNames;
+    export const step = stepActionNames;
+  }
+
+  export const line = lineActions;
+  export const step = stepActions;
+}

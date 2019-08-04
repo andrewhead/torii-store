@@ -1,5 +1,5 @@
 import * as actions from "../../../src/lines/actions";
-import * as types from "../../../src/lines/types";
+import * as names from "../../../src/lines/action-names";
 
 describe("actions", () => {
   it("should create an action for updating text", () => {
@@ -8,7 +8,7 @@ describe("actions", () => {
     const expectedAction = {
       lineVersionId,
       text,
-      type: types.UPDATE_TEXT
+      type: names.UPDATE_TEXT
     };
     expect(actions.updateText(lineVersionId, text)).toEqual(expectedAction);
   });
@@ -21,7 +21,7 @@ describe("actions", () => {
       location,
       text,
       version,
-      type: types.UPDATE_TEXT_AT_LOCATION
+      type: names.UPDATE_TEXT_AT_LOCATION
     };
     expect(actions.updateTextAtLocation(location, text, version)).toEqual(expectedAction);
   });
@@ -38,7 +38,7 @@ describe("actions", () => {
         initialVersionText: undefined,
         insert: false,
         location,
-        type: types.CREATE_LINE
+        type: names.CREATE_LINE
       });
       expect(action.id).toMatch(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
     });

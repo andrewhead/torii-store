@@ -1,28 +1,24 @@
 import { AnyAction, combineReducers } from "redux";
 import undoable from "redux-undo";
+import * as names from "./action-names";
 import {
   AllLines,
   AllLineVersions,
   CreateLineAction,
-  CREATE_LINE,
   isLineAction,
   LinesById,
   LineVersionsById,
-  UpdateTextAction,
-  UPDATE_TEXT
+  UpdateTextAction
 } from "./types";
 
 function addLineToAllLines(state: AllLines, action: CreateLineAction) {
   return state.concat(action.id);
 }
 
-export function allLinesReducer(
-  state: AllLines = [],
-  action: AnyAction
-): AllLines {
+export function allLinesReducer(state: AllLines = [], action: AnyAction): AllLines {
   if (isLineAction(action)) {
     switch (action.type) {
-      case CREATE_LINE:
+      case names.CREATE_LINE:
         return addLineToAllLines(state, action);
       default:
         return state;
@@ -57,10 +53,7 @@ function addLineToLinesById(state: LinesById, action: CreateLineAction) {
     location: action.location,
     versions: []
   };
-  if (
-    action.initialVersionId !== undefined &&
-    action.initialVersionText !== undefined
-  ) {
+  if (action.initialVersionId !== undefined && action.initialVersionText !== undefined) {
     updatedState[action.id].versions = [action.initialVersionId];
   }
   return updatedState;
@@ -69,7 +62,7 @@ function addLineToLinesById(state: LinesById, action: CreateLineAction) {
 export function linesByIdReducer(state = {}, action: AnyAction): LinesById {
   if (isLineAction(action)) {
     switch (action.type) {
-      case CREATE_LINE:
+      case names.CREATE_LINE:
         return addLineToLinesById(state, action);
       default:
         return state;
@@ -83,14 +76,8 @@ export const undoableLinesReducer = combineReducers({
   byId: undoable<LinesById>(linesByIdReducer)
 });
 
-function addLineVersionToAllLineVersions(
-  state: AllLineVersions,
-  action: CreateLineAction
-) {
-  if (
-    action.initialVersionId !== undefined &&
-    action.initialVersionText !== undefined
-  ) {
+function addLineVersionToAllLineVersions(state: AllLineVersions, action: CreateLineAction) {
+  if (action.initialVersionId !== undefined && action.initialVersionText !== undefined) {
     return state.concat(action.initialVersionId);
   }
   return state;
@@ -102,7 +89,7 @@ export function allLineVersionsReducer(
 ): AllLineVersions {
   if (isLineAction(action)) {
     switch (action.type) {
-      case CREATE_LINE:
+      case names.CREATE_LINE:
         return addLineVersionToAllLineVersions(state, action);
       default:
         return state;
@@ -124,14 +111,8 @@ function updateText(state: LineVersionsById, action: UpdateTextAction) {
   };
 }
 
-function addLineVersionToLineVersionsById(
-  state: LineVersionsById,
-  action: CreateLineAction
-) {
-  if (
-    action.initialVersionId !== undefined &&
-    action.initialVersionText !== undefined
-  ) {
+function addLineVersionToLineVersionsById(state: LineVersionsById, action: CreateLineAction) {
+  if (action.initialVersionId !== undefined && action.initialVersionText !== undefined) {
     return {
       ...state,
       [action.initialVersionId]: {
@@ -143,15 +124,12 @@ function addLineVersionToLineVersionsById(
   return state;
 }
 
-export function lineVersionsByIdReducer(
-  state = {},
-  action: AnyAction
-): LineVersionsById {
+export function lineVersionsByIdReducer(state = {}, action: AnyAction): LineVersionsById {
   if (isLineAction(action)) {
     switch (action.type) {
-      case CREATE_LINE:
+      case names.CREATE_LINE:
         return addLineVersionToLineVersionsById(state, action);
-      case UPDATE_TEXT:
+      case names.UPDATE_TEXT:
         return updateText(state, action);
       default:
         return state;

@@ -1,9 +1,6 @@
 import { AnyAction } from "redux";
 import { LineId, LineVersionId } from "../lines/types";
-
-export const CREATE_STEP = "CREATE_STEP";
-export const ADD_LINE_TO_STEP = "ADD_LINE_TO_STEP";
-export const PATCH_LINE = "PATCH_LINE";
+import * as names from "./action-names";
 
 export interface Step {
   linesAdded: LineVersionId[];
@@ -22,19 +19,19 @@ export interface Steps {
 }
 
 export interface CreateStepAction {
-  type: typeof CREATE_STEP;
+  type: typeof names.CREATE_STEP;
   id: string;
   index: number;
 }
 
 export interface AddLineToStepAction {
-  type: typeof ADD_LINE_TO_STEP;
+  type: typeof names.ADD_LINE_TO_STEP;
   lineVersionId: LineVersionId;
   stepId: StepId;
 }
 
 export interface PatchLineAction {
-  type: typeof PATCH_LINE;
+  type: typeof names.PATCH_LINE;
   lineId: LineId;
   stepId: StepId;
 }

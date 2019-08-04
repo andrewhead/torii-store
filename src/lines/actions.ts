@@ -1,36 +1,32 @@
 import uuidv4 from "uuid/v4";
+import * as names from "./action-names";
 import {
   CreateLineAction,
-  CREATE_LINE,
-  LineVersion,
   LineVersionId,
   Location,
   UpdateTextAction,
-  UPDATE_TEXT,
-  UpdateTextAtLocationAction,
-  UPDATE_TEXT_AT_LOCATION
+  UpdateTextAtLocationAction
 } from "./types";
 
-export function updateText(
-  lineVersionId: LineVersionId,
-  text: string
-): UpdateTextAction {
+export function updateText(lineVersionId: LineVersionId, text: string): UpdateTextAction {
   return {
     lineVersionId,
     text,
-    type: UPDATE_TEXT
+    type: names.UPDATE_TEXT
   };
 }
 
 export function updateTextAtLocation(
-  location: Location, text: string, version: number
+  location: Location,
+  text: string,
+  version: number
 ): UpdateTextAtLocationAction {
   return {
     location,
     text,
     version,
-    type: UPDATE_TEXT_AT_LOCATION
-  }
+    type: names.UPDATE_TEXT_AT_LOCATION
+  };
 }
 
 /**
@@ -42,15 +38,14 @@ export function createLine(
   insert?: boolean
 ): CreateLineAction {
   const id = uuidv4();
-  const initialVersionId =
-    initialVersionText !== undefined ? uuidv4() : undefined;
+  const initialVersionId = initialVersionText !== undefined ? uuidv4() : undefined;
   return {
     id,
     initialVersionId,
     initialVersionText,
     insert: insert !== undefined ? insert : false,
     location,
-    type: CREATE_LINE
+    type: names.CREATE_LINE
   };
 }
 
