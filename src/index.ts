@@ -75,6 +75,7 @@ export namespace actions {
   export namespace Type {
     export type Line = LineActionTypes;
     export type Step = StepActionTypes;
+    export type Any = LineActionTypes | StepActionTypes;
   }
 
   export namespace Name {
