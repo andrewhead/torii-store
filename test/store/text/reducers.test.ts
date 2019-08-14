@@ -1,20 +1,9 @@
-import { Text } from "../../../src/text/types";
 import { createSnippet } from "../../../src/text/actions";
+import { ChunkId, ChunkVersionId, Location } from "../../../src/text/chunks/types";
 import { textReducer } from "../../../src/text/reducers";
-import { DeepPartial } from "redux";
-import { visibility, SnippetId } from "../../../src/text/snippets/types";
-import { ChunkVersionId, ChunkId, Location } from "../../../src/text/chunks/types";
-import uuidv4 from "uuid/v4";
-
-function createText(partialState?: DeepPartial<Text>): Text {
-  const emptyState = {
-    snippets: { all: [], byId: {} },
-    chunks: { all: [], byId: {} },
-    chunkVersions: { all: [], byId: {} },
-    visibilityRules: {}
-  };
-  return Object.assign({}, emptyState, partialState);
-}
+import { SnippetId, visibility } from "../../../src/text/snippets/types";
+import { Text } from "../../../src/text/types";
+import { createText } from "./util";
 
 function createTextWithSnippets(
   snippetId: SnippetId,
@@ -218,7 +207,8 @@ describe("text reducer", () => {
       expect(snippetContainingText(updatedState, "Line 2")).toBe(0);
       expect(snippetContainingText(updatedState, "Line 3")).toBe(1);
       const newSnippetId = action.id;
-      for (const movedChunkVersionId of updatedState.snippets.byId[newSnippetId].chunkVersionsAdded) {
+      for (const movedChunkVersionId of updatedState.snippets.byId[newSnippetId]
+        .chunkVersionsAdded) {
         expect(updatedState.visibilityRules).toMatchObject({
           ["snippet-id"]: {
             [movedChunkVersionId]: {

@@ -44,7 +44,7 @@ import {
  * bug gets fixed, all of these reducers should be refactored to take a more precise type as the
  * second argument. Follow the issue here: https://github.com/omnidan/redux-undo/issues/229
  */
-export function textReducer(state: Text, action: AnyAction) {
+export function textReducer(state: Text = initialState, action: AnyAction) {
   if (isTextAction(action)) {
     switch (action.type) {
       case names.CREATE_SNIPPET:
@@ -56,7 +56,7 @@ export function textReducer(state: Text, action: AnyAction) {
   return state;
 }
 
-const initialState = {
+export const initialState = {
   snippets: simpleStoreInitialState(),
   chunks: simpleStoreInitialState(),
   chunkVersions: simpleStoreInitialState(),
@@ -104,7 +104,7 @@ function update<K extends string, T>(
   };
 }
 
-function createSnippet(state = initialState, action: CreateSnippetAction) {
+function createSnippet(state: Text, action: CreateSnippetAction) {
   let updates = emptyTextUpdates();
   const {
     cleanedInitialChunks,
@@ -397,7 +397,7 @@ function removeLines(state: Text, chunkId: ChunkId, lines: number[]): TextUpdate
     chunkVersionsAdded.push(...Object.keys(additions.chunkVersions.add));
     updates.snippets.update[snippetId] = {
       chunkVersionsAdded: chunkVersionsAdded
-    }
+    };
   }
   updates.chunks.delete.push(chunkId);
   updates.chunkVersions.delete.push(chunkVersionId);
@@ -409,7 +409,7 @@ interface LineRemovals {
    * Number array is a list of lines to remove from the chunk to split the code. Line numbers are
    * absolute (relative to the start of the file, not the start of the chunk.)
    */
-  [chunkId: string]:  number[];
+  [chunkId: string]: number[];
 }
 
 interface ChunkLine {

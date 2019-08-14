@@ -1,83 +1,33 @@
-import {
-  AnyAction,
-  combineReducers,
-  createStore as reduxCreateStore,
-  DeepPartial,
-  Store
-} from "redux";
+import { AnyAction, combineReducers, createStore as reduxCreateStore, Store } from "redux";
 import { devToolsEnhancer } from "redux-devtools-extension";
+import undoable from "redux-undo";
+import * as textActionNames from "./text/action-names";
+import * as textActions from "./text/actions";
+import { textReducer } from "./text/reducers";
+import { Text, TextActionTypes } from "./text/types";
 
 export const rootReducer = combineReducers({
-  /* undoable: undoable() */
-})
+  text: undoable(textReducer)
+});
 
-export const createStore = (
-  initialState?: DeepPartial<State>
-): Store<State, AnyAction> => {
-  return reduxCreateStore(rootReducer, initialState, devToolsEnhancer({}));
+export const createStore = (): Store<State, AnyAction> => {
+  return reduxCreateStore(rootReducer, undefined, devToolsEnhancer({}));
 };
 export const store = createStore();
 
 export type State = ReturnType<typeof rootReducer>;
 
-/*
-export interface State {
-  lineVersions: {
-    allLineVersions: AllLineVersions;
-    byId: LineVersionsById;
-  };
-  lines: {
-    allLines: AllLines;
-    byId: LinesById;
-  };
-  steps: {
-    allSteps: AllSnippets;
-    byId: SnippetsById;
-  };
-}
-*/
-
-/*
-export function toPresentState(state: UndoableState) {
-  return {
-    lineVersions: {
-      allLineVersions: state.lineVersions.allLineVersions.present,
-      byId: state.lineVersions.byId.present
-    },
-    lines: {
-      allLines: state.lines.allLines.present,
-      byId: state.lines.byId.present
-    },
-    steps: {
-      allSteps: state.steps.allSnippets.present,
-      byId: state.steps.byId.present
-    }
-  };
-}
-*/
-
-/*
-export { Line, Snippet };
-*/
+export { Text };
 
 export namespace actions {
   export namespace Type {
-    /*
-    export type Line = LineActionTypes;
-    export type Step = SnippetActionTypes;
-    export type Any = LineActionTypes | SnippetActionTypes;
-    */
+    export type Text = TextActionTypes;
+    export type Any = TextActionTypes;
   }
 
   export namespace Name {
-    /*
-    export const line = lineActionNames;
-    export const step = stepActionNames;
-    */
+    export const text = textActionNames;
   }
 
-  /*
-  export const line = lineActions;
-  export const step = stepActions;
-  */
+  export const text = textActions;
 }
