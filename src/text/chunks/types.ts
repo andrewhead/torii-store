@@ -26,6 +26,9 @@ export interface InitialChunk {
  * are made to the chunk in later stages of the tutorial.)
  */
 export interface Location {
+  /**
+   * Line numbers start at one (first line has number '1').
+   */
   line: number;
   path: Path;
 }

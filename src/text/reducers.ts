@@ -78,9 +78,13 @@ function updateById<K, T>(state: ById<T>, updates: Updates<ById<T>, K>) {
 }
 
 function updateAllList<K extends string>(state: K[], updates: Updates<any, K>): K[] {
-  const updatedState = [...state]
-    .concat(Object.keys(updates.add) as K[])
-    .concat(Object.keys(updates.update) as K[]);
+  const updatedState = [...state];
+  const keys = Object.keys(updates.add).concat(Object.keys(updates.update)) as K[];
+  for (const key of keys) {
+    if (updatedState.indexOf(key) === -1) {
+      updatedState.push(key);
+    }
+  }
   for (const id of updates.delete) {
     const index = updatedState.indexOf(id);
     if (index !== -1) {
@@ -251,7 +255,7 @@ function removeDuplicatesFromInitialChunks(state: Text, action: CreateSnippetAct
   }
   /*
    * Remove parts of chunks that already show up in multiple versions of an existing chunk. At the
-   * moment, we have no way to split these chunks.
+   * moment, we have no way to split these chunks without user input.
    */
   for (let snippetIndex = 0; snippetIndex < state.snippets.all.length; snippetIndex++) {
     const snippet = getSnippet(state, snippetIndex);
@@ -290,6 +294,10 @@ function addChunks(initialChunks: InitialChunk[]): TextUpdates {
   return updates;
 }
 
+/**
+ * Assumes that any chunk versions in 'chunkVersion.add' have already had duplicate lines removed
+ * from them (i.e. with a method like 'removeDuplicatesFromInitialChunks').
+ */
 function removeDuplicatesFromExistingChunks(
   state: Text,
   action: CreateSnippetAction,
@@ -324,28 +332,39 @@ function removeDuplicatesFromExistingChunks(
       }
     }
   }
-  const repeatedChunkLines = _.intersectionWith(
-    existingChunkLines,
-    newChunkLines,
-    (existingLine, newLine) => {
-      return _.isEqual(existingLine.location, newLine.location);
+  const repeatedLines: RepeatedLine[] = [];
+  for (const existingLine of existingChunkLines) {
+    for (const newLine of newChunkLines) {
+      if (_.isEqual(existingLine.location, newLine.location)) {
+        repeatedLines.push({
+          first: newLine,
+          second: existingLine
+        });
+      }
     }
-  );
-  const lineRemovals = repeatedChunkLines.reduce((groups, chunkLine) => {
+  }
+  const lineRemovals: LineRemovals = repeatedLines.reduce((groups, repeatedLine) => {
+    const repetitionChunkId = repeatedLine.second.chunkId;
+    const line = repeatedLine.second.location.line;
     return {
       ...groups,
-      [chunkLine.chunkId]: (groups[chunkLine.chunkId] || []).concat(chunkLine.location.line)
+      [repetitionChunkId]: (groups[repetitionChunkId] || []).concat(line)
     };
   }, {});
   for (const chunkId of Object.keys(lineRemovals)) {
-    const updates = removeLines(state, chunkId, lineRemovals[chunkId].lines);
+    const updates = removeLines(state, chunkId, lineRemovals[chunkId]);
     chunkCleanupUpdates = mergeTextUpdates(chunkCleanupUpdates, updates);
   }
-  repeatedChunkLines.forEach(repeatedChunkLine => {
+  repeatedLines.forEach(repeatedLine => {
+    const repetitionSnippetId = repeatedLine.second.snippetId;
+    const initialChunkId = repeatedLine.first.chunkId;
+    const initialChunkVersionId = repeatedLine.first.chunkVersionId;
+    const initialChunk = updates.chunks.add[initialChunkId];
+    const lineOffset = repeatedLine.first.location.line - initialChunk.location.line;
     _.merge(chunkCleanupUpdates.visibilityRules.add, {
-      [action.id]: {
-        [repeatedChunkLine.chunkVersionId]: {
-          [repeatedChunkLine.location.line]: visibility.VISIBLE
+      [repetitionSnippetId]: {
+        [initialChunkVersionId]: {
+          [lineOffset]: visibility.VISIBLE
         }
       }
     });
@@ -371,12 +390,13 @@ function removeLines(state: Text, chunkId: ChunkId, lines: number[]): TextUpdate
   for (const snippetId of state.snippets.all) {
     const snippet = state.snippets.byId[snippetId];
     const chunkVersionIndex = snippet.chunkVersionsAdded.indexOf(chunkVersionId);
+    const chunkVersionsAdded = [...snippet.chunkVersionsAdded];
     if (chunkVersionIndex !== -1) {
-      updates.snippets.update[snippetId] = {
-        chunkVersionsAdded: [...snippet.chunkVersionsAdded]
-          .splice(chunkVersionIndex, 1)
-          .concat(Object.keys(additions.chunkVersions.add))
-      };
+      chunkVersionsAdded.splice(chunkVersionIndex, 1);
+    }
+    chunkVersionsAdded.push(...Object.keys(additions.chunkVersions.add));
+    updates.snippets.update[snippetId] = {
+      chunkVersionsAdded: chunkVersionsAdded
     }
   }
   updates.chunks.delete.push(chunkId);
@@ -384,13 +404,12 @@ function removeLines(state: Text, chunkId: ChunkId, lines: number[]): TextUpdate
   return updates;
 }
 
-interface LineRemoval {
-  chunkId: ChunkId;
+interface LineRemovals {
   /**
-   * Lines to remove from the chunk to split the code. Line numbers are absolute (relative to
-   * the start of the file, not the start of the chunk.)
+   * Number array is a list of lines to remove from the chunk to split the code. Line numbers are
+   * absolute (relative to the start of the file, not the start of the chunk.)
    */
-  lines: number[];
+  [chunkId: string]:  number[];
 }
 
 interface ChunkLine {
@@ -398,6 +417,14 @@ interface ChunkLine {
   chunkId: ChunkId;
   chunkVersionId: ChunkVersionId;
   location: Location;
+}
+
+/**
+ * A line that's included in two separate chunk versions.
+ */
+interface RepeatedLine {
+  first: ChunkLine;
+  second: ChunkLine;
 }
 
 interface ChunkLines {

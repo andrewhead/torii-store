@@ -2,7 +2,9 @@ import { Text } from "../../../src/text/types";
 import { createSnippet } from "../../../src/text/actions";
 import { textReducer } from "../../../src/text/reducers";
 import { DeepPartial } from "redux";
-import { visibility } from "../../../src/text/snippets/types";
+import { visibility, SnippetId } from "../../../src/text/snippets/types";
+import { ChunkVersionId, ChunkId, Location } from "../../../src/text/chunks/types";
+import uuidv4 from "uuid/v4";
 
 function createText(partialState?: DeepPartial<Text>): Text {
   const emptyState = {
@@ -12,6 +14,43 @@ function createText(partialState?: DeepPartial<Text>): Text {
     visibilityRules: {}
   };
   return Object.assign({}, emptyState, partialState);
+}
+
+function createTextWithSnippets(
+  snippetId: SnippetId,
+  chunkId: ChunkId,
+  chunkVersionId: ChunkVersionId,
+  location: Location,
+  text: string
+) {
+  return createText({
+    snippets: {
+      byId: {
+        [snippetId]: {
+          chunkVersionsAdded: [chunkVersionId]
+        }
+      },
+      all: [snippetId]
+    },
+    chunks: {
+      byId: {
+        [chunkId]: {
+          location: location,
+          versions: [chunkVersionId]
+        }
+      },
+      all: [chunkId]
+    },
+    chunkVersions: {
+      byId: {
+        [chunkVersionId]: {
+          chunk: chunkId,
+          text
+        }
+      },
+      all: [chunkVersionId]
+    }
+  });
 }
 
 describe("text reducer", () => {
@@ -48,7 +87,7 @@ describe("text reducer", () => {
 
     it("should create new chunks", () => {
       const text = createText();
-      const location = { path: "path", line: 0 };
+      const location = { path: "path", line: 1 };
       const action = createSnippet(0, [{ location, text: "Text" }]);
       const updatedState = textReducer(text, action);
       expect(updatedState.chunks.all.length).toEqual(1);
@@ -85,41 +124,20 @@ describe("text reducer", () => {
     });
 
     it("should hide ranges shown in earlier snippets", () => {
-      const text = createText({
-        snippets: {
-          byId: {
-            "other-snippet-id": {
-              chunkVersionsAdded: ["other-chunk-version-id"]
-            }
-          },
-          all: ["other-snippet-id"]
-        },
-        chunks: {
-          byId: {
-            "overlapping-chunk-id": {
-              location: { path: "same-path", line: 1 },
-              versions: ["other-chunk-version-id"]
-            }
-          },
-          all: ["overlapping-chunk-id"]
-        },
-        chunkVersions: {
-          byId: {
-            "other-chunk-version-id": {
-              chunk: "overlapping-chunk-id",
-              text: "Line 1\nLine 2"
-            }
-          },
-          all: ["other-chunk-version-id"]
-        }
-      });
+      const text = createTextWithSnippets(
+        "snippet-id",
+        "overlapping-chunk-id",
+        "other-chunk-version-id",
+        { path: "same-path", line: 2 },
+        "Line 1\nLine 2"
+      );
       /*
        * Snippet intersects with last snippet: only include the new parts (Line 0). Show the old
        * parts (Line 1).
        */
       const action = createSnippet(1, [
         {
-          location: { path: "same-path", line: 0 },
+          location: { path: "same-path", line: 1 },
           text: "Line 0\nLine 1"
         }
       ]);
@@ -136,7 +154,7 @@ describe("text reducer", () => {
         visibilityRules: {
           [action.id]: {
             "other-chunk-version-id": {
-              1: visibility.VISIBLE
+              2: visibility.VISIBLE
             }
           }
         }
@@ -144,44 +162,101 @@ describe("text reducer", () => {
     });
 
     it("does not add new chunks if all text was included before", () => {
-
+      const text = createTextWithSnippets(
+        "snippet-id",
+        "overlapping-chunk-id",
+        "other-chunk-version-id",
+        { path: "same-path", line: 1 },
+        "Line 1\nLine 2"
+      );
+      /*
+       * Snippet intersects completely with last snippet: Don't add a new snippet.
+       */
+      const action = createSnippet(1, [
+        {
+          location: { path: "same-path", line: 1 },
+          text: "Line 1\nLine 2"
+        }
+      ]);
+      const updatedState = textReducer(text, action);
+      expect(updatedState.chunks.all.length).toBe(1);
+      expect(updatedState.chunkVersions.all.length).toBe(1);
     });
+
+    function snippetContainingText(state: Text, text: string) {
+      for (let snippetIndex = 0; snippetIndex < state.snippets.all.length; snippetIndex++) {
+        const snippet = state.snippets.byId[state.snippets.all[snippetIndex]];
+        for (const chunkVersionId of snippet.chunkVersionsAdded) {
+          if (state.chunkVersions.byId[chunkVersionId].text === text) {
+            return snippetIndex;
+          }
+        }
+      }
+      return -1;
+    }
 
     it("splits old chunks", () => {
-
+      const text = createTextWithSnippets(
+        "snippet-id",
+        "overlapping-chunk-id",
+        "other-chunk-version-id",
+        { path: "same-path", line: 1 },
+        "Line 1\nLine2\nLine 3"
+      );
+      /**
+       * Snippet interesects the middle of the snippet that comes after it. Split the snippet that
+       * comes after, while making sure that the lines still appear in it.
+       */
+      const action = createSnippet(0, [
+        {
+          location: { path: "same-path", line: 2 },
+          text: "Line 2"
+        }
+      ]);
+      const updatedState = textReducer(text, action);
+      expect(snippetContainingText(updatedState, "Line 1")).toBe(1);
+      expect(snippetContainingText(updatedState, "Line 2")).toBe(0);
+      expect(snippetContainingText(updatedState, "Line 3")).toBe(1);
+      const newSnippetId = action.id;
+      for (const movedChunkVersionId of updatedState.snippets.byId[newSnippetId].chunkVersionsAdded) {
+        expect(updatedState.visibilityRules).toMatchObject({
+          ["snippet-id"]: {
+            [movedChunkVersionId]: {
+              0: visibility.VISIBLE
+            }
+          }
+        });
+      }
     });
 
-    /**
-     * Cases to additionally test:
-     * - not splitting a later chunk that has a v2 (ignoring that part of the chunk)
-     */
+    it("removes chunks when all its lines are added to an earlier snippet", () => {
+      const text = createTextWithSnippets(
+        "snippet-id",
+        "overlapping-chunk-id",
+        "other-chunk-version-id",
+        { path: "same-path", line: 1 },
+        "Line 1"
+      );
+      const action = createSnippet(0, [
+        {
+          location: { path: "same-path", line: 1 },
+          text: "Line 1"
+        }
+      ]);
+      const updatedState = textReducer(text, action);
+      const newSnippet = updatedState.snippets.byId[action.id];
+      const newChunkVersion = updatedState.chunkVersions.byId[newSnippet.chunkVersionsAdded[0]];
+      const newChunkId = newChunkVersion.chunk;
+      expect(updatedState.chunks.all).toEqual([newChunkId]);
+    });
+
+    /*
+    it("throws an error when splitting a snippet with 2+ versions", () => {
+
+    });
+    */
   });
 });
-
-/*
-describe("should handle CREATE_LINE", () => {
-  it("should add a line", () => {
-    const linesById = {};
-    const action = createLine(LINE_LOCATION);
-    expect(linesByIdReducer(linesById, action)).toEqual({
-      [action.id]: {
-        location: LINE_LOCATION,
-        versions: []
-      }
-    });
-  });
-
-  it("should add the line's initial version", () => {
-    const linesById = {};
-    const initialVersionText = "Initial version text";
-    const action = createLine(LINE_LOCATION, initialVersionText);
-    expect(linesByIdReducer(linesById, action)).toMatchObject({
-      [action.id]: {
-        versions: [action.initialVersionId]
-      }
-    });
-  });
-  */
 
 /*
 describe("undoable reducer", () => {
