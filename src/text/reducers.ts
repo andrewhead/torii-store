@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { AnyAction } from "redux";
 import uuidv4 from "uuid/v4";
+import { toLines } from "../text-utils";
 import * as names from "./action-names";
 import { ChunkId, ChunkVersionId, InitialChunk, Location } from "./chunks/types";
 import {
@@ -150,11 +151,6 @@ function mergeTextUpdates(...textUpdatesItems: TextUpdates[]) {
     snippets: mergeUpdates(...textUpdatesItems.map(t => t.snippets)),
     visibilityRules: mergeUpdates(...textUpdatesItems.map(t => t.visibilityRules))
   };
-}
-
-function toLines(text: string) {
-  const NEWLINE = /\n/;
-  return text.split(NEWLINE);
 }
 
 function splitIntoLines(initialChunks: InitialChunk[]): ChunkLines {
