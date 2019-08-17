@@ -1,13 +1,27 @@
 import { AnyAction } from "redux";
-import { Path, InitialChunk, Chunks, ChunkVersions, ChunksUpdates, ChunkVersionsUpdates } from "./chunks/types";
 import * as names from "./action-names";
-import { Snippets, VisibilityRules, VisibilityRulesUpdates, SnippetsUpdates } from "./snippets/types";
+import {
+  Chunks,
+  ChunksUpdates,
+  ChunkVersionId,
+  ChunkVersions,
+  ChunkVersionsUpdates,
+  InitialChunk,
+  Path
+} from "./chunks/types";
+import {
+  Snippets,
+  SnippetsUpdates,
+  VisibilityRules,
+  VisibilityRulesUpdates
+} from "./snippets/types";
 
 export interface Text {
   snippets: Snippets;
   chunks: Chunks;
   chunkVersions: ChunkVersions;
   visibilityRules: VisibilityRules;
+  selections: Selection[];
 }
 
 /**
@@ -21,11 +35,11 @@ export interface SimpleStore<K extends string, T> {
   /**
    * A lookup table of objects, keyed by ID.
    */
-  byId: ById<T>
+  byId: ById<T>;
 }
 
 export interface ById<T> {
-  [ id: string ]: T;
+  [id: string]: T;
 }
 
 /**
@@ -37,18 +51,70 @@ export interface Edit {
   newText: string;
 }
 
+/**
+ * Editor-agnostic range of characters. 'start' should always be before 'end', so users of ranges
+ * can assume start is before end.
+ */
 export interface Range {
   start: Position;
   end: Position;
 }
 
+/**
+ * Editor-agnostic text selection. Based on VSCode Selection API. It's assumed that all selections
+ * will fit neatly within the bounds of chunks.
+ */
+export interface Selection {
+  /**
+   * Starting position of the selection: where the user clicked first.
+   */
+  anchor: Position;
+  /**
+   * Ending position of the selection: where the user dragged to. Can be before or after anchor.
+   */
+  active: Position;
+  /**
+   * Path to the file in which the selection was made.
+   */
+  path: Path;
+  /**
+   * Information about where the selection was made. Can be used to determine whether the
+   * selection position is absolute or relative, and to what it's relative.
+   */
+  relativeTo: SelectionSourceType;
+}
+
+export enum SourceType {
+  REFERENCE_IMPLEMENTATION,
+  CHUNK_VERSION
+}
+
+interface SelectionSourceType {
+  source: SourceType;
+}
+
+/**
+ * Line numbers are relative to the start of the reference implementation file.
+ */
+export interface ReferenceImplementationSource {
+  source: SourceType.REFERENCE_IMPLEMENTATION;
+}
+
+/**
+ * Line numbers are relative to the start of chunk version's text.
+ */
+export interface ChunkVersionSource {
+  source: SourceType.CHUNK_VERSION;
+  chunkVersionId: ChunkVersionId;
+}
+
 export interface Position {
   /**
-   * First line's index is 0.
+   * The first line in a file or a chunk has an index of 1.
    */
   line: number;
   /**
-   * First character's index is 0.
+   * The first character in a line has an index of 0.
    */
   character: number;
 }
@@ -60,12 +126,17 @@ export interface CreateSnippetAction {
   index: number;
 }
 
+export interface SetSelectionsAction {
+  type: typeof names.SET_SELECTIONS;
+  selections: Selection[];
+}
+
 export interface EditAction {
   type: typeof names.EDIT;
   edit: Edit;
 }
 
-export type TextActionTypes = CreateSnippetAction | EditAction;
+export type TextActionTypes = CreateSnippetAction | SetSelectionsAction | EditAction;
 
 export function isTextAction(action: AnyAction): action is TextActionTypes {
   return (action as TextActionTypes).type !== undefined;
@@ -74,7 +145,7 @@ export function isTextAction(action: AnyAction): action is TextActionTypes {
 /**
  * Updates that will be applied when an action is finished being dispatched.
  * Generic types:
- * T: a (potentially nested) dictionary of keys mapping to data to be added. 
+ * T: a (potentially nested) dictionary of keys mapping to data to be added.
  * K: keys that will be used to delete data. Can be compound (e.g., an array of types). That said,
  *    two keys should evaluate to equal with a call to '_.isEqual'.
  */

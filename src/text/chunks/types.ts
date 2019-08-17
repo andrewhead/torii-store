@@ -1,4 +1,4 @@
-import { Updates, SimpleStore, ById } from "../types";
+import { ById, SimpleStore, Updates } from "../types";
 
 /**
  * Order of chunks in "all" field is meaningless, as these chunks will be from many different files.
@@ -20,7 +20,7 @@ export interface InitialChunk {
   location: Location;
   text: string;
 }
-  
+
 /**
  * Location of chunk in the reference version of the program (initial version, before edits
  * are made to the chunk in later stages of the tutorial.)
@@ -35,7 +35,7 @@ export interface Location {
 
 export type Path = string;
 
-export interface ChunkVersions extends SimpleStore<ChunkVersionId, ChunkVersion> {};
+export interface ChunkVersions extends SimpleStore<ChunkVersionId, ChunkVersion> {}
 
 export interface ChunkVersion {
   text: string;

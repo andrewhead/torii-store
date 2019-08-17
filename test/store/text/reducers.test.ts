@@ -1,52 +1,14 @@
-import { createSnippet } from "../../../src/text/actions";
-import { ChunkId, ChunkVersionId, Location } from "../../../src/text/chunks/types";
+import * as actions from "../../../src/text/actions";
 import { textReducer } from "../../../src/text/reducers";
-import { SnippetId, visibility } from "../../../src/text/snippets/types";
-import { Text } from "../../../src/text/types";
-import { createText } from "./util";
-
-function createTextWithSnippets(
-  snippetId: SnippetId,
-  chunkId: ChunkId,
-  chunkVersionId: ChunkVersionId,
-  location: Location,
-  text: string
-) {
-  return createText({
-    snippets: {
-      byId: {
-        [snippetId]: {
-          chunkVersionsAdded: [chunkVersionId]
-        }
-      },
-      all: [snippetId]
-    },
-    chunks: {
-      byId: {
-        [chunkId]: {
-          location: location,
-          versions: [chunkVersionId]
-        }
-      },
-      all: [chunkId]
-    },
-    chunkVersions: {
-      byId: {
-        [chunkVersionId]: {
-          chunk: chunkId,
-          text
-        }
-      },
-      all: [chunkVersionId]
-    }
-  });
-}
+import { visibility } from "../../../src/text/snippets/types";
+import { SourceType, Text } from "../../../src/text/types";
+import { createText, createTextWithSnippets } from "./util";
 
 describe("text reducer", () => {
   describe("should handle CREATE_SNIPPET", () => {
     it("should create an empty snippet", () => {
       const text = createText();
-      const action = createSnippet(0);
+      const action = actions.createSnippet(0);
       expect(textReducer(text, action)).toMatchObject({
         snippets: {
           all: [action.id],
@@ -68,7 +30,7 @@ describe("text reducer", () => {
           all: ["other-snippet-id"]
         }
       });
-      const action = createSnippet(0);
+      const action = actions.createSnippet(0);
       expect(textReducer(text, action)).toMatchObject({
         snippets: { all: [action.id, "other-snippet-id"] }
       });
@@ -77,7 +39,7 @@ describe("text reducer", () => {
     it("should create new chunks", () => {
       const text = createText();
       const location = { path: "path", line: 1 };
-      const action = createSnippet(0, [{ location, text: "Text" }]);
+      const action = actions.createSnippet(0, { location, text: "Text" });
       const updatedState = textReducer(text, action);
       expect(updatedState.chunks.all.length).toEqual(1);
       expect(updatedState.chunkVersions.all.length).toEqual(1);
@@ -124,12 +86,10 @@ describe("text reducer", () => {
        * Snippet intersects with last snippet: only include the new parts (Line 0). Show the old
        * parts (Line 1).
        */
-      const action = createSnippet(1, [
-        {
-          location: { path: "same-path", line: 1 },
-          text: "Line 0\nLine 1"
-        }
-      ]);
+      const action = actions.createSnippet(1, {
+        location: { path: "same-path", line: 1 },
+        text: "Line 0\nLine 1"
+      });
       const updatedState = textReducer(text, action);
       const chunkVersionId = updatedState.snippets.byId[action.id].chunkVersionsAdded[0];
       expect(updatedState).toMatchObject({
@@ -161,12 +121,10 @@ describe("text reducer", () => {
       /*
        * Snippet intersects completely with last snippet: Don't add a new snippet.
        */
-      const action = createSnippet(1, [
-        {
-          location: { path: "same-path", line: 1 },
-          text: "Line 1\nLine 2"
-        }
-      ]);
+      const action = actions.createSnippet(1, {
+        location: { path: "same-path", line: 1 },
+        text: "Line 1\nLine 2"
+      });
       const updatedState = textReducer(text, action);
       expect(updatedState.chunks.all.length).toBe(1);
       expect(updatedState.chunkVersions.all.length).toBe(1);
@@ -196,12 +154,10 @@ describe("text reducer", () => {
        * Snippet interesects the middle of the snippet that comes after it. Split the snippet that
        * comes after, while making sure that the lines still appear in it.
        */
-      const action = createSnippet(0, [
-        {
-          location: { path: "same-path", line: 2 },
-          text: "Line 2"
-        }
-      ]);
+      const action = actions.createSnippet(0, {
+        location: { path: "same-path", line: 2 },
+        text: "Line 2"
+      });
       const updatedState = textReducer(text, action);
       expect(snippetContainingText(updatedState, "Line 1")).toBe(1);
       expect(snippetContainingText(updatedState, "Line 2")).toBe(0);
@@ -227,12 +183,10 @@ describe("text reducer", () => {
         { path: "same-path", line: 1 },
         "Line 1"
       );
-      const action = createSnippet(0, [
-        {
-          location: { path: "same-path", line: 1 },
-          text: "Line 1"
-        }
-      ]);
+      const action = actions.createSnippet(0, {
+        location: { path: "same-path", line: 1 },
+        text: "Line 1"
+      });
       const updatedState = textReducer(text, action);
       const newSnippet = updatedState.snippets.byId[action.id];
       const newChunkVersion = updatedState.chunkVersions.byId[newSnippet.chunkVersionsAdded[0]];
@@ -241,20 +195,26 @@ describe("text reducer", () => {
     });
 
     /*
-    it("throws an error when splitting a snippet with 2+ versions", () => {
-
-    });
-    */
+     * TODO(andrewhead): Add to errors. textReducer should take in two slices of state: text, and
+     * errors. It returns new versions of both slices.
+     */
+    // it("throws an error when splitting a snippet with 2+ versions", () => {});
   });
-});
 
-/*
-describe("undoable reducer", () => {
+  describe("should handle SET_SELECTIONS", () => {
+    const text = createText();
+    const selection = {
+      anchor: { line: 1, character: 0 },
+      active: { line: 1, character: 2 },
+      path: "file-path",
+      relativeTo: { source: SourceType.REFERENCE_IMPLEMENTATION }
+    };
+    expect(textReducer(text, actions.setSelections(selection))).toMatchObject({
+      selections: [selection]
+    });
+  });
 
-  const initialState: UndoableState = {
-
-  }
-
+  /*
   describe("should handle EDIT", () => {
     it("should edit a chunk's text", () => {
       expect(true).toBe(false);
@@ -291,5 +251,5 @@ describe("undoable reducer", () => {
       expect(true).toBe(false);
     });
   });
+  */
 });
-*/

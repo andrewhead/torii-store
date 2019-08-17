@@ -1,5 +1,6 @@
-import * as actions from "../../../src/text/actions";
 import * as names from "../../../src/text/action-names";
+import * as actions from "../../../src/text/actions";
+import { SourceType } from "../../../src/text/types";
 
 describe("actions", () => {
   it("should create an action for creating snippets", () => {
@@ -8,8 +9,24 @@ describe("actions", () => {
       index,
       chunks: [],
       type: names.CREATE_SNIPPET
-    }
+    };
     expect(actions.createSnippet(index)).toMatchObject(expectedAction);
+  });
+
+  it("should create an action for setting selection", () => {
+    const selections = [
+      {
+        anchor: { line: 1, character: 0 },
+        active: { line: 1, character: 2 },
+        path: "file-path",
+        relativeTo: { source: SourceType.REFERENCE_IMPLEMENTATION }
+      }
+    ];
+    const expectedAction = {
+      selections,
+      type: names.SET_SELECTIONS
+    };
+    expect(actions.setSelections(...selections)).toEqual(expectedAction);
   });
 
   /*

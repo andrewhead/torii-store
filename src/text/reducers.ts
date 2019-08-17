@@ -50,6 +50,11 @@ export function textReducer(state: Text = initialState, action: AnyAction) {
     switch (action.type) {
       case names.CREATE_SNIPPET:
         return createSnippet(state, action);
+      case names.SET_SELECTIONS:
+        return {
+          ...state,
+          selections: action.selections
+        };
       default:
         return state;
     }
@@ -61,7 +66,8 @@ export const initialState = {
   snippets: simpleStoreInitialState(),
   chunks: simpleStoreInitialState(),
   chunkVersions: simpleStoreInitialState(),
-  visibilityRules: visibilityRulesInitialState
+  visibilityRules: visibilityRulesInitialState,
+  selections: []
 };
 
 function updateById<K, T>(state: ById<T>, updates: Updates<ById<T>, K>) {
