@@ -181,7 +181,7 @@ function mergeIntoInitialChunks(chunkLines: ChunkLines): InitialChunk[] {
     let lastLine: number;
     let initialChunk: InitialChunk;
     for (const line of Object.keys(chunkLines[path]).map(l => Number(l))) {
-      if (lastLine === undefined || line > lastLine - 1) {
+      if (lastLine === undefined || line > lastLine + 1) {
         if (initialChunk !== undefined) {
           initialChunks.push(initialChunk);
         }

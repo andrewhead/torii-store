@@ -52,8 +52,8 @@ export interface Edit {
 }
 
 /**
- * Editor-agnostic range of characters. 'start' should always be before 'end', so users of ranges
- * can assume start is before end.
+ * Editor-agnostic, path-independent range of characters. 'start' should always be before 'end'.
+ * Callers of range should be able to assume start always comes before end.
  */
 export interface Range {
   start: Position;
@@ -81,16 +81,14 @@ export interface Selection {
    * Information about where the selection was made. Can be used to determine whether the
    * selection position is absolute or relative, and to what it's relative.
    */
-  relativeTo: SelectionSourceType;
+  relativeTo: Source;
 }
+
+type Source = ReferenceImplementationSource | ChunkVersionSource;
 
 export enum SourceType {
   REFERENCE_IMPLEMENTATION,
   CHUNK_VERSION
-}
-
-interface SelectionSourceType {
-  source: SourceType;
 }
 
 /**

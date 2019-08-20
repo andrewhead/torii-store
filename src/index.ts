@@ -7,10 +7,17 @@ import * as textActions from "./text/actions";
 import { Chunk, ChunkId, ChunkVersion, ChunkVersionId, Path } from "./text/chunks/types";
 import { textReducer } from "./text/reducers";
 import { Snippet, SnippetId, visibility } from "./text/snippets/types";
-import { Text, TextActionTypes } from "./text/types";
+import { Position, Range, Selection, SourceType, Text, TextActionTypes } from "./text/types";
+
+/**
+ * Number of undo's stored in the history. This is a small number of steps, and could probably
+ * be increased if undo's were stored as deltas, and not snapshots. In addition, it might
+ * be increased if some actions are filtered out from creating new snapshots (e.g., selections).
+ */
+const UNDO_LIMIT = 10;
 
 export const rootReducer = combineReducers({
-  text: undoable(textReducer)
+  text: undoable(textReducer, { limit: UNDO_LIMIT })
 });
 
 export const createStore = (): Store<State, AnyAction> => {
@@ -43,5 +50,9 @@ export {
   Text,
   textUtils,
   visibility,
-  Path
+  Path,
+  Position,
+  Range,
+  Selection,
+  SourceType
 };
