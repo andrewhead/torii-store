@@ -1,13 +1,14 @@
 import { AnyAction, combineReducers, createStore as reduxCreateStore, Store } from "redux";
 import { devToolsEnhancer } from "redux-devtools-extension";
 import undoable from "redux-undo";
-import * as textUtils from "./text-utils";
 import * as textActionNames from "./text/action-names";
 import * as textActions from "./text/actions";
 import { Chunk, ChunkId, ChunkVersion, ChunkVersionId, Path } from "./text/chunks/types";
 import { textReducer } from "./text/reducers";
 import { Snippet, SnippetId, visibility } from "./text/snippets/types";
 import { Position, Range, Selection, SourceType, Text, TextActionTypes } from "./text/types";
+import * as stateUtils from "./util/state-utils";
+import * as textUtils from "./util/text-utils";
 
 /**
  * Number of undo's stored in the history. This is a small number of steps, and could probably
@@ -41,18 +42,19 @@ export namespace actions {
 }
 
 export {
-  SnippetId,
-  ChunkId,
-  ChunkVersionId,
-  Snippet,
   Chunk,
+  ChunkId,
   ChunkVersion,
-  Text,
-  textUtils,
-  visibility,
+  ChunkVersionId,
   Path,
   Position,
   Range,
   Selection,
-  SourceType
+  Snippet,
+  SnippetId,
+  SourceType,
+  stateUtils,
+  Text,
+  textUtils,
+  visibility
 };

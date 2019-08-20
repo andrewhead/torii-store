@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { AnyAction } from "redux";
 import uuidv4 from "uuid/v4";
-import { toLines } from "../text-utils";
+import { toLines } from "../util/text-utils";
 import * as names from "./action-names";
 import { ChunkId, ChunkVersionId, InitialChunk, Location } from "./chunks/types";
 import {

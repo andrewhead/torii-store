@@ -1,4 +1,4 @@
-import { Position, Range, Selection } from "./text/types";
+import { Position, Range, Selection } from "../text/types";
 
 export const NEWLINE = /\n/;
 
@@ -12,8 +12,15 @@ export function join(...lines: string[]) {
 
 /**
  * Constrain selection to intersection with range. Returns new selection; does not modify parameters.
+ * If the ranges do not intersect, return null.
  */
-export function intersect(selection: Selection, range: Range) {
+export function intersect(selection: Selection, range: Range): Selection | null {
+  if (
+    (isBefore(selection.anchor, range.start) && isBefore(selection.active, range.start)) ||
+    (isAfter(selection.anchor, range.end) && isAfter(selection.active, range.end))
+  ) {
+    return null;
+  }
   return {
     ...selection,
     anchor: first(range.end, last(selection.anchor, range.start)),
@@ -55,4 +62,12 @@ export function compare(p1: Position, p2: Position) {
     return 1;
   }
   return 0;
+}
+
+function isAfter(p1: Position, p2: Position) {
+  return compare(p1, p2) === 1;
+}
+
+function isBefore(p1: Position, p2: Position) {
+  return compare(p1, p2) === -1;
 }
