@@ -3,10 +3,25 @@ import { devToolsEnhancer } from "redux-devtools-extension";
 import undoable from "redux-undo";
 import * as textActionNames from "./text/action-names";
 import * as textActions from "./text/actions";
-import { Chunk, ChunkId, ChunkVersion, ChunkVersionId, Path } from "./text/chunks/types";
+import {
+  Chunk,
+  ChunkId,
+  ChunkVersion,
+  ChunkVersionId,
+  InitialChunk,
+  Path
+} from "./text/chunks/types";
 import { textReducer } from "./text/reducers";
 import { Snippet, SnippetId, visibility } from "./text/snippets/types";
-import { Position, Range, Selection, SourceType, Text, TextActionTypes } from "./text/types";
+import {
+  Position,
+  Range,
+  Selection,
+  SourcedRange,
+  SourceType,
+  Text,
+  TextActionTypes
+} from "./text/types";
 import * as stateUtils from "./util/state-utils";
 import * as testUtils from "./util/test-utils";
 import * as textUtils from "./util/text-utils";
@@ -47,12 +62,14 @@ export {
   ChunkId,
   ChunkVersion,
   ChunkVersionId,
+  InitialChunk,
   Path,
   Position,
   Range,
   Selection,
   Snippet,
   SnippetId,
+  SourcedRange,
   SourceType,
   stateUtils,
   Text,
@@ -60,3 +77,4 @@ export {
   textUtils,
   visibility
 };
+``;

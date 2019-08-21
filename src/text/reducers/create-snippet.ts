@@ -36,6 +36,7 @@ export function createSnippet(state: Text, action: CreateSnippetAction) {
     chunkVersionsAdded: Object.keys(updates.chunkVersions.add)
   };
   updates = mergeTextUpdates(updates, removeDuplicatesFromExistingChunks(state, action, updates));
+  updates = mergeTextUpdates(updates, fixVisibilityRules(state, updates));
   state = {
     ...state,
     chunks: update(state.chunks, updates.chunks),
@@ -184,6 +185,59 @@ function removeDuplicatesFromExistingChunks(
     });
   });
   return chunkCleanupUpdates;
+}
+
+/**
+ * Check visibility rules for deleted chunk versions, and transfer ownership to newly-added
+ * chunk versions as appropriate. Only replaces a deleted chunk version with version 0 of
+ * another chunk (not later versions of the chunk).
+ */
+function fixVisibilityRules(state: Text, updates: TextUpdates): TextUpdates {
+  let visibilityFixUpdates = emptyTextUpdates();
+  for (const chunkVersionId of updates.chunkVersions.delete) {
+    for (const snippetId of Object.keys(state.visibilityRules)) {
+      if (state.visibilityRules[snippetId][chunkVersionId] !== undefined) {
+        for (const line of Object.keys(state.visibilityRules[snippetId][chunkVersionId])) {
+          const lineNumber = Number(line);
+          const chunkVersion = state.chunkVersions.byId[chunkVersionId];
+          const chunk = state.chunks.byId[chunkVersion.chunk];
+          const absoluteLine = lineNumber + chunk.location.line;
+          const visibility = state.visibilityRules[snippetId][chunkVersionId][line];
+          updates.visibilityRules.delete.push([snippetId, chunkVersionId, lineNumber]);
+          for (const addedChunkVersionId of Object.keys(updates.chunkVersions.add)) {
+            const addedChunkVersion = updates.chunkVersions.add[addedChunkVersionId];
+            const addedChunkVersionChunkId = addedChunkVersion.chunk;
+            const addedChunkVersionChunk =
+              updates.chunks.update[addedChunkVersionChunkId] ||
+              updates.chunks.add[addedChunkVersionChunkId] ||
+              state.chunks.byId[addedChunkVersionChunkId];
+            if (addedChunkVersionChunk !== undefined) {
+              const index = addedChunkVersionChunk.versions.indexOf(addedChunkVersionId);
+              if (
+                index === 0 &&
+                _.isEqual(addedChunkVersionChunk.location.path, chunk.location.path)
+              ) {
+                const chunkStart = addedChunkVersionChunk.location.line;
+                const newChunkEnd =
+                  chunkStart + textUtils.toLines(addedChunkVersion.text).length - 1;
+                if (absoluteLine >= chunkStart && absoluteLine <= newChunkEnd) {
+                  const adjustedLine = absoluteLine - chunkStart;
+                  _.merge(visibilityFixUpdates.visibilityRules.add, {
+                    [snippetId]: {
+                      [addedChunkVersionId]: {
+                        [adjustedLine]: visibility
+                      }
+                    }
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return mergeTextUpdates(updates, visibilityFixUpdates);
 }
 
 interface LineRemovals {

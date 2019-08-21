@@ -196,6 +196,51 @@ describe("text reducer", () => {
       expect(updatedState.chunks.all).toEqual([newChunkId]);
     });
 
+    it("updates visibility rules with updated chunk version IDs", () => {
+      const text = createText({
+        snippets: {
+          byId: {
+            "snippet-0": { chunkVersionsAdded: ["chunk-version-0"] },
+            "snippet-1": { chunkVersionsAdded: [] }
+          },
+          all: ["snippet-0", "snippet-1"]
+        },
+        chunks: {
+          byId: {
+            "chunk-0": { location: { line: 1, path: "same-path" }, versions: ["chunk-version-0"] }
+          },
+          all: ["chunk-0"]
+        },
+        chunkVersions: {
+          byId: {
+            "chunk-version-0": { text: "Same line", chunk: "chunk-0" }
+          },
+          all: ["chunk-version-0"]
+        },
+        visibilityRules: {
+          "snippet-1": {
+            "chunk-version-0": {
+              0: visibility.VISIBLE
+            }
+          }
+        }
+      });
+      const action = actions.createSnippet(0, {
+        location: { path: "same-path", line: 1 },
+        text: "Same line"
+      });
+      const updatedState = textReducer(text, action);
+      expect(updatedState.chunkVersions.all.length).toBe(1);
+      const newChunkVersionId = updatedState.chunkVersions.all[0];
+      expect(updatedState.visibilityRules).toMatchObject({
+        "snippet-1": {
+          [newChunkVersionId]: {
+            0: visibility.VISIBLE
+          }
+        }
+      });
+    });
+
     /*
      * TODO(andrewhead): Add to errors. textReducer should take in two slices of state: text, and
      * errors. It returns new versions of both slices.
