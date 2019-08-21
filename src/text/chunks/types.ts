@@ -1,4 +1,4 @@
-import { ById, SimpleStore, Updates } from "../types";
+import { SimpleStore } from "../types";
 
 /**
  * Order of chunks in "all" field is meaningless, as these chunks will be from many different files.
@@ -43,7 +43,3 @@ export interface ChunkVersion {
 }
 
 export type ChunkVersionId = string;
-
-export interface ChunksUpdates extends Updates<ById<Chunk>, ChunkId> {}
-
-export interface ChunkVersionsUpdates extends Updates<ById<ChunkVersion>, ChunkVersionId> {}

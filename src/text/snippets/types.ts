@@ -1,5 +1,5 @@
 import { ChunkVersionId } from "../chunks/types";
-import { Updates, SimpleStore, ById } from "../types";
+import { SimpleStore } from "../types";
 
 export interface Snippets extends SimpleStore<SnippetId, Snippet> {}
 
@@ -8,8 +8,6 @@ export interface Snippet {
 }
 
 export type SnippetId = string;
-
-export interface SnippetsUpdates extends Updates<ById<Snippet>, SnippetId> {}
 
 /**
  * Overrides for line visibility. By default, lines from a chunk version are visible in the first
@@ -34,6 +32,3 @@ export namespace visibility {
   export const VISIBLE = "VISIBLE";
   export type Visibility = typeof HIDDEN | typeof VISIBLE;
 }
-
-export interface VisibilityRulesUpdates
-  extends Updates<VisibilityRules, [SnippetId, ChunkVersionId, number]> {}

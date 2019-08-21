@@ -1,20 +1,7 @@
 import { AnyAction } from "redux";
 import * as names from "./action-names";
-import {
-  Chunks,
-  ChunksUpdates,
-  ChunkVersionId,
-  ChunkVersions,
-  ChunkVersionsUpdates,
-  InitialChunk,
-  Path
-} from "./chunks/types";
-import {
-  Snippets,
-  SnippetsUpdates,
-  VisibilityRules,
-  VisibilityRulesUpdates
-} from "./snippets/types";
+import { Chunks, ChunkVersionId, ChunkVersions, InitialChunk, Path } from "./chunks/types";
+import { Snippets, VisibilityRules } from "./snippets/types";
 
 export interface Text {
   snippets: Snippets;
@@ -46,25 +33,36 @@ export interface ById<T> {
  * This interface is based on the "TextEdit" interface in VSCode.
  */
 export interface Edit {
-  path: Path;
-  range: Range;
+  range: SourcedRange;
   newText: string;
 }
 
 /**
- * Editor-agnostic, path-independent range of characters. 'start' should always be before 'end'.
- * Callers of range should be able to assume start always comes before end.
+ * A range with details about the source (e.g., file, chunk) the range is from.
+ */
+export interface SourcedRange extends Range, RangeSource {}
+
+/**
+ * Range of characters in a text file, independent of any one editor's API.
+ * 'start' should always be before 'end'. Users of range data types should be
+ * able to assume start always comes before end.
  */
 export interface Range {
+  /**
+   * Position of the first character in the range.
+   */
   start: Position;
+  /**
+   * Position of 1 character beyond the last character in the range.
+   */
   end: Position;
 }
 
 /**
- * Editor-agnostic text selection. Based on VSCode Selection API. It's assumed that all selections
- * will fit neatly within the bounds of chunks.
+ * Text selection, independent of any specific editor API. Based loosely on VSCode Selection API.
+ * It's assumed that all selections will fit neatly within the bounds of chunks.
  */
-export interface Selection {
+export interface Selection extends RangeSource {
   /**
    * Starting position of the selection: where the user clicked first.
    */
@@ -73,6 +71,13 @@ export interface Selection {
    * Ending position of the selection: where the user dragged to. Can be before or after anchor.
    */
   active: Position;
+}
+
+/**
+ * Taken together, this information should be able to uniquely identify either a file, or a chunk
+ * version, to which this range refers.
+ */
+interface RangeSource {
   /**
    * Path to the file in which the selection was made.
    */
@@ -138,24 +143,4 @@ export type TextActionTypes = CreateSnippetAction | SetSelectionsAction | EditAc
 
 export function isTextAction(action: AnyAction): action is TextActionTypes {
   return (action as TextActionTypes).type !== undefined;
-}
-
-/**
- * Updates that will be applied when an action is finished being dispatched.
- * Generic types:
- * T: a (potentially nested) dictionary of keys mapping to data to be added.
- * K: keys that will be used to delete data. Can be compound (e.g., an array of types). That said,
- *    two keys should evaluate to equal with a call to '_.isEqual'.
- */
-export interface Updates<T extends {}, K> {
-  add: T;
-  update: T;
-  delete: K[];
-}
-
-export interface TextUpdates {
-  snippets: SnippetsUpdates;
-  chunks: ChunksUpdates;
-  chunkVersions: ChunkVersionsUpdates;
-  visibilityRules: VisibilityRulesUpdates;
 }

@@ -8,6 +8,7 @@ import { textReducer } from "./text/reducers";
 import { Snippet, SnippetId, visibility } from "./text/snippets/types";
 import { Position, Range, Selection, SourceType, Text, TextActionTypes } from "./text/types";
 import * as stateUtils from "./util/state-utils";
+import * as testUtils from "./util/test-utils";
 import * as textUtils from "./util/text-utils";
 
 /**
@@ -55,6 +56,7 @@ export {
   SourceType,
   stateUtils,
   Text,
+  testUtils,
   textUtils,
   visibility
 };

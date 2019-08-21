@@ -1,6 +1,5 @@
 import { ById } from "../types";
-import { Snippet, SnippetId, Snippets, VisibilityRules, VisibilityRulesUpdates } from "./types";
-import _ from "lodash";
+import { Snippet, SnippetId, Snippets, VisibilityRules } from "./types";
 
 export const snippetsInitialState: Snippets = {
   all: [],
@@ -34,18 +33,4 @@ function insertSnippetInAllSnippets(state: SnippetId[], index: number, id: Snipp
     .slice(0, index)
     .concat(id)
     .concat(state.slice(index, state.length));
-}
-
-export function updateVisibilityRules(state: VisibilityRules, updates: VisibilityRulesUpdates) {
-  state = _.merge({}, state, updates.add, updates.update);
-  for (const [snippetId, chunkVersionId, line] of updates.delete) {
-    delete state[snippetId][chunkVersionId][line];
-    if (Object.keys(state[snippetId][chunkVersionId]).length === 0) {
-      delete state[snippetId][chunkVersionId];
-    }
-    if (Object.keys(state[snippetId]).length === 0) {
-      delete state[snippetId];
-    }
-  }
-  return state;
 }

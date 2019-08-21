@@ -11,6 +11,30 @@ export function join(...lines: string[]) {
 }
 
 /**
+ * Replace 'range' of characters in string 'str' with 'newText'. Returns null if range is invalid
+ * (i.e. it doesn't fall in the bounds of the string).
+ */
+export function replace(str: string, range: Range, newText: string): string | null {
+  const lines = toLines(str);
+  let characters = 0;
+  let startOffset, endOffset;
+  for (let lineNumber = 1; lineNumber <= lines.length; lineNumber++) {
+    const line = lines[lineNumber - 1];
+    if (range.start.line === lineNumber) {
+      startOffset = characters + range.start.character;
+    }
+    if (range.end.line === lineNumber) {
+      endOffset = characters + range.end.character;
+    }
+    characters += line.length + 1; // include newline
+  }
+  if (startOffset === undefined || endOffset === undefined) {
+    return null;
+  }
+  return str.slice(0, startOffset) + newText + str.slice(endOffset, str.length);
+}
+
+/**
  * Constrain selection to intersection with range. Returns new selection; does not modify parameters.
  * If the ranges do not intersect, return null.
  */

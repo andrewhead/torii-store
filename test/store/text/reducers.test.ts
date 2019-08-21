@@ -1,7 +1,9 @@
 import * as actions from "../../../src/text/actions";
 import { textReducer } from "../../../src/text/reducers";
 import { visibility } from "../../../src/text/snippets/types";
-import { SourceType, Text } from "../../../src/text/types";
+import { ReferenceImplementationSource, SourceType, Text } from "../../../src/text/types";
+import { createSnippetWithChunkVersions } from "../../../src/util/test-utils";
+import * as textUtils from "../../../src/util/text-utils";
 import { createText, createTextWithSnippets } from "./util";
 
 describe("text reducer", () => {
@@ -207,49 +209,165 @@ describe("text reducer", () => {
       anchor: { line: 1, character: 0 },
       active: { line: 1, character: 2 },
       path: "file-path",
-      relativeTo: { source: SourceType.REFERENCE_IMPLEMENTATION }
+      relativeTo: { source: SourceType.REFERENCE_IMPLEMENTATION } as ReferenceImplementationSource
     };
     expect(textReducer(text, actions.setSelections(selection))).toMatchObject({
       selections: [selection]
     });
   });
 
-  /*
   describe("should handle EDIT", () => {
     it("should edit a chunk's text", () => {
-      expect(true).toBe(false);
+      const text = createSnippetWithChunkVersions({
+        id: "chunk-version-0",
+        line: 1,
+        text: "Line 1"
+      });
+      const newText = "2";
+      const range = {
+        start: { line: 1, character: 5 },
+        end: { line: 1, character: 6 },
+        path: "file-path",
+        relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId: "chunk-version-0" }
+      };
+      expect(textReducer(text, actions.edit(range, newText))).toMatchObject({
+        chunkVersions: {
+          byId: {
+            "chunk-version-0": {
+              text: "Line 2"
+            }
+          }
+        }
+      });
     });
 
-    it("should edit the intersecting range", () => {
-      expect(true).toBe(false);
+    it("should edit chunks intersecting with the reference implementation", () => {
+      const text = createSnippetWithChunkVersions({
+        id: "chunk-version-0",
+        line: 3,
+        text: "Line 1"
+      });
+      const newText = "2";
+      const range = {
+        start: { line: 3, character: 5 },
+        end: { line: 3, character: 6 },
+        path: "file-path",
+        relativeTo: { source: SourceType.REFERENCE_IMPLEMENTATION } as ReferenceImplementationSource
+      };
+      expect(textReducer(text, actions.edit(range, newText))).toMatchObject({
+        chunkVersions: {
+          byId: {
+            "chunk-version-0": {
+              text: "Line 2"
+            }
+          }
+        }
+      });
+    });
+
+    it("should not edit chunk versions that are not chunk version 0", () => {
+      const text = createSnippetWithChunkVersions(
+        {
+          id: "chunk-version-0",
+          chunkId: "chunk-0",
+          line: 3,
+          text: "Line 1A"
+        },
+        {
+          id: "chunk-version-1",
+          chunkId: "chunk-0",
+          line: 3,
+          text: "Line 1B"
+        }
+      );
+      const newText = "2";
+      const range = {
+        start: { line: 3, character: 5 },
+        end: { line: 3, character: 6 },
+        path: "file-path",
+        relativeTo: { source: SourceType.REFERENCE_IMPLEMENTATION } as ReferenceImplementationSource
+      };
+      /**
+       * The second chunk version, even though it's at the same position, shouldn't be changed.
+       * Only the first chunk version should change when the reference implementation changes.
+       */
+      expect(textReducer(text, actions.edit(range, newText))).toMatchObject({
+        chunkVersions: {
+          byId: {
+            "chunk-version-1": {
+              text: "Line 1B"
+            }
+          }
+        }
+      });
     });
 
     describe("should merge chunks", () => {
-      // This logic will be reused when chunks are added to a snippet AND when an edit takes place.
-      // Should have tests of its own
-      // There should also be helpers for splitting chunks---when a line is removed
-      it("should merge two adjacent chunks", () => {});
-
-      it("should make a new version if only one chunk is updated", () => {
-        expect(true).toBe(false);
+      it("should merge two adjacent chunks when separator is deleted", () => {
+        // TODO(andrewhead)
       });
 
-      it("should make a new version from two updated versions", () => {
-        expect(true).toBe(false);
+      it("should not merge if there is a later version of the chunks", () => {
+        // TODO(andrewhead)
       });
     });
 
-    it("should merge chunks", () => {
-      // Will only happen if a line was removed between two chunks... this is a cleanup step.
-      // Can order all of the lines, merge any two that don't look the same.
-      // Merge needs to take place for all future versions of the code too.
-      // New chunk version IDs and chunk IDs should be created.
-      expect(true).toBe(false);
+    it("should move other chunks when the reference implementation changes", () => {
+      const text = createSnippetWithChunkVersions({
+        chunkId: "chunk-0",
+        line: 3,
+        text: "Line 1"
+      });
+      const range = {
+        start: { line: 1, character: 0 },
+        end: { line: 1, character: 0 },
+        path: "file-path",
+        relativeTo: { source: SourceType.REFERENCE_IMPLEMENTATION } as ReferenceImplementationSource
+      };
+      const newText = textUtils.join("", ""); // replacement text contains extra newline.
+      expect(textReducer(text, actions.edit(range, newText))).toMatchObject({
+        chunks: {
+          byId: {
+            "chunk-0": {
+              /**
+               * Chunk has moved forward one line because a newline has been inserted before it.
+               */
+              location: { line: 4 }
+            }
+          }
+        }
+      });
     });
 
-    it("should move other chunks", () => {
-      expect(true).toBe(false);
+    it("should move other chunks when a chunk version changes", () => {
+      const text = createSnippetWithChunkVersions(
+        {
+          id: "chunk-version-0",
+          line: 1,
+          text: "Line 1"
+        },
+        {
+          chunkId: "chunk-1",
+          line: 3,
+          text: "Line 3"
+        }
+      );
+      const range = {
+        start: { line: 1, character: 0 },
+        end: { line: 1, character: 0 },
+        path: "file-path",
+        relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId: "chunk-version-0" }
+      };
+      const newText = textUtils.join("", ""); // replacement text contains extra newline.
+      expect(textReducer(text, actions.edit(range, newText))).toMatchObject({
+        chunks: {
+          byId: {
+            "chunk-1": {
+              location: { line: 4 }
+            }
+          }
+        }
+      });
     });
   });
-  */
 });
