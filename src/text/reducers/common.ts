@@ -53,7 +53,7 @@ export function mergeIntoInitialChunks(chunkLines: ChunkLines): InitialChunk[] {
           location: { path, line: Number(line) },
           text: chunkLines[path][line]
         };
-      } else if (line === lastLine - 1) {
+      } else if (line === lastLine + 1) {
         initialChunk.text += "\n" + chunkLines[path][line];
       }
       lastLine = line;
