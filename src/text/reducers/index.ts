@@ -4,6 +4,7 @@ import { visibilityRulesInitialState } from "../snippets/helpers";
 import { isTextAction, Text } from "../types";
 import { createSnippet } from "./create-snippet";
 import { edit } from "./edit";
+import { uploadFileContents } from "./upload-file-contents";
 
 /**
  * Semantics that are not yet supported (but that should be).
@@ -31,6 +32,8 @@ import { edit } from "./edit";
 export function textReducer(state: Text = initialState, action: AnyAction) {
   if (isTextAction(action)) {
     switch (action.type) {
+      case names.UPLOAD_FILE_CONTENTS:
+        return uploadFileContents(state, action);
       case names.CREATE_SNIPPET:
         return createSnippet(state, action);
       case names.SET_SELECTIONS:

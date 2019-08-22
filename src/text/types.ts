@@ -1,6 +1,6 @@
 import { AnyAction } from "redux";
 import * as names from "./action-names";
-import { Chunks, ChunkVersionId, ChunkVersions, InitialChunk, Path } from "./chunks/types";
+import { ChunkId, Chunks, ChunkVersionId, ChunkVersions, InitialChunk, Path } from "./chunks/types";
 import { Snippets, VisibilityRules } from "./snippets/types";
 
 export interface Text {
@@ -122,6 +122,14 @@ export interface Position {
   character: number;
 }
 
+export interface UploadFileContentsAction {
+  type: typeof names.UPLOAD_FILE_CONTENTS;
+  path: Path;
+  contents: string;
+  chunkId: ChunkId;
+  chunkVersionId: ChunkVersionId;
+}
+
 export interface CreateSnippetAction {
   type: typeof names.CREATE_SNIPPET;
   chunks: InitialChunk[];
@@ -129,17 +137,21 @@ export interface CreateSnippetAction {
   index: number;
 }
 
-export interface SetSelectionsAction {
-  type: typeof names.SET_SELECTIONS;
-  selections: Selection[];
-}
-
 export interface EditAction {
   type: typeof names.EDIT;
   edit: Edit;
 }
 
-export type TextActionTypes = CreateSnippetAction | SetSelectionsAction | EditAction;
+export interface SetSelectionsAction {
+  type: typeof names.SET_SELECTIONS;
+  selections: Selection[];
+}
+
+export type TextActionTypes =
+  | UploadFileContentsAction
+  | CreateSnippetAction
+  | EditAction
+  | SetSelectionsAction;
 
 export function isTextAction(action: AnyAction): action is TextActionTypes {
   return (action as TextActionTypes).type !== undefined;

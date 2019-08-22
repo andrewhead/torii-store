@@ -147,6 +147,7 @@ function removeDuplicatesFromExistingChunks(
       }
     }
   }
+  existingChunkLines.push(...getLinesForChunksNotInSnippets(state));
   const repeatedLines: RepeatedLine[] = [];
   for (const existingLine of existingChunkLines) {
     for (const newLine of newChunkLines) {
@@ -176,15 +177,51 @@ function removeDuplicatesFromExistingChunks(
     const initialChunkVersionId = repeatedLine.first.chunkVersionId;
     const initialChunk = updates.chunks.add[initialChunkId];
     const lineOffset = repeatedLine.first.location.line - initialChunk.location.line;
-    _.merge(chunkCleanupUpdates.visibilityRules.add, {
-      [repetitionSnippetId]: {
-        [initialChunkVersionId]: {
-          [lineOffset]: visibility.VISIBLE
+    if (repetitionSnippetId !== undefined) {
+      _.merge(chunkCleanupUpdates.visibilityRules.add, {
+        [repetitionSnippetId]: {
+          [initialChunkVersionId]: {
+            [lineOffset]: visibility.VISIBLE
+          }
         }
-      }
-    });
+      });
+    }
   });
   return chunkCleanupUpdates;
+}
+
+/**
+ * Some chunks will not have been included in snippets yet. Get chunk lines from those chunks.
+ */
+function getLinesForChunksNotInSnippets(state: Text): ChunkLine[] {
+  const allChunkVersionIds = state.chunkVersions.all;
+  let unaddedChunkVersionIds = allChunkVersionIds;
+  for (const snippetId of state.snippets.all) {
+    const snippet = state.snippets.byId[snippetId];
+    for (const chunkVersionId of snippet.chunkVersionsAdded) {
+      const index = allChunkVersionIds.indexOf(chunkVersionId);
+      if (index !== -1) {
+        unaddedChunkVersionIds = unaddedChunkVersionIds
+          .slice(0, index)
+          .concat(unaddedChunkVersionIds.slice(index + 1, unaddedChunkVersionIds.length));
+      }
+    }
+  }
+
+  const chunkLines = [];
+  for (const unaddedChunkVersionId of unaddedChunkVersionIds) {
+    const { chunkId, startLine, endLine, path, version } = getChunkInfo(
+      state,
+      unaddedChunkVersionId
+    );
+    if (version === 0) {
+      for (let line = startLine; line <= endLine; line++) {
+        const location = { line, path };
+        chunkLines.push({ chunkId, chunkVersionId: unaddedChunkVersionId, location });
+      }
+    }
+  }
+  return chunkLines;
 }
 
 /**
@@ -249,7 +286,7 @@ interface LineRemovals {
 }
 
 interface ChunkLine {
-  snippetId: SnippetId;
+  snippetId?: SnippetId;
   chunkId: ChunkId;
   chunkVersionId: ChunkVersionId;
   location: Location;

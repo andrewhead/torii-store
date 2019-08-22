@@ -3,6 +3,20 @@ import * as actions from "../../../src/text/actions";
 import { ReferenceImplementationSource, Selection, SourceType } from "../../../src/text/types";
 
 describe("actions", () => {
+  it("should create an action for uploading file contents", () => {
+    const contents = "File contents";
+    const path = "file-path";
+    const expectedAction = {
+      contents,
+      path,
+      type: names.UPLOAD_FILE_CONTENTS
+    };
+    const action = actions.uploadFileContents(path, contents);
+    expect(action).toMatchObject(expectedAction);
+    expect(action.chunkId).not.toBe(undefined);
+    expect(action.chunkVersionId).not.toBe(undefined);
+  });
+
   it("should create an action for creating snippets", () => {
     const index = 0;
     const expectedAction = {
