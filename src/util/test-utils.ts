@@ -1,7 +1,28 @@
+import _ from "lodash";
+import { DeepPartial } from "redux";
+import { createStore, State } from "..";
+import { ChunkId, ChunkVersionId, Location } from "../text/chunks/types";
+import { SnippetId } from "../text/snippets/types";
 import { Text } from "../text/types";
 
 export const TEST_FILE_PATH = "file-path";
 export const TEST_SNIPPET_ID = "snippet-0";
+
+export function createState(partialState?: DeepPartial<State>): State {
+  const emptyState = createStore().getState();
+  return _.merge({}, emptyState, partialState);
+}
+
+export function createText(partialState?: DeepPartial<Text>): Text {
+  const emptyState = {
+    snippets: { all: [], byId: {} },
+    chunks: { all: [], byId: {} },
+    chunkVersions: { all: [], byId: {} },
+    visibilityRules: {},
+    selections: []
+  };
+  return _.merge({}, emptyState, partialState);
+}
 
 /**
  * Snippet is created with the value of 'TEST_FILE_PATH' as its path and with the value of
@@ -47,4 +68,41 @@ export function createSnippetWithChunkVersions(
     };
   }
   return text;
+}
+
+export function createTextWithSnippets(
+  snippetId: SnippetId,
+  chunkId: ChunkId,
+  chunkVersionId: ChunkVersionId,
+  location: Location,
+  text: string
+) {
+  return createText({
+    snippets: {
+      byId: {
+        [snippetId]: {
+          chunkVersionsAdded: [chunkVersionId]
+        }
+      },
+      all: [snippetId]
+    },
+    chunks: {
+      byId: {
+        [chunkId]: {
+          location: location,
+          versions: [chunkVersionId]
+        }
+      },
+      all: [chunkId]
+    },
+    chunkVersions: {
+      byId: {
+        [chunkVersionId]: {
+          chunk: chunkId,
+          text
+        }
+      },
+      all: [chunkVersionId]
+    }
+  });
 }

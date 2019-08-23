@@ -2,9 +2,12 @@ import * as actions from "../../../src/text/actions";
 import { textReducer } from "../../../src/text/reducers";
 import { visibility } from "../../../src/text/snippets/types";
 import { ReferenceImplementationSource, SourceType, Text } from "../../../src/text/types";
-import { createSnippetWithChunkVersions } from "../../../src/util/test-utils";
+import {
+  createSnippetWithChunkVersions,
+  createText,
+  createTextWithSnippets
+} from "../../../src/util/test-utils";
 import * as textUtils from "../../../src/util/text-utils";
-import { createText, createTextWithSnippets } from "./util";
 
 describe("text reducer", () => {
   describe("should handle UPLOAD_FILE_CONTENTS", () => {

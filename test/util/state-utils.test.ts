@@ -1,5 +1,5 @@
 import { deferrable, getReferenceImplementationText } from "../../src/util/state-utils";
-import { createText } from "../store/text/util";
+import { createText } from "../../src/util/test-utils";
 
 describe("getReferenceImplementationText", () => {
   it("gets text from chunks", () => {
