@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { ContentType } from "../../cells/types";
 import { insert } from "../../common/reducers";
 import { update } from "../../common/update";
 import { Undoable } from "../../types";
@@ -14,7 +15,6 @@ import {
 import {
   addChunks,
   getChunkInfo,
-  getSnippet,
   mergeIntoInitialChunks,
   removeLines,
   splitIntoLines
@@ -47,23 +47,27 @@ export function createSnippet(state: Undoable, action: CreateSnippetAction) {
   };
   return {
     ...state,
-    snippets: insert(state.snippets, action.id, action.index, newSnippet)
+    snippets: insert(state.snippets, action.snippetId, action.index, newSnippet)
   };
 }
 
 function removeDuplicatesFromInitialChunks(state: Undoable, action: CreateSnippetAction) {
-  const { chunks: initialChunks, id: snippetId, index: newSnippetIndex } = action;
+  const { chunks: initialChunks, snippetId, index: newCellIndex } = action;
   const initialChunkLines = splitIntoLines(initialChunks);
   const updates = emptyTextUpdates();
   /*
    * Remove parts of chunks that showed up in earliers steps, though show them in the snippet.
    */
   for (
-    let snippetIndex = Math.min(newSnippetIndex - 1, state.snippets.all.length - 1);
-    snippetIndex >= 0;
-    snippetIndex--
+    let cellIndex = Math.min(newCellIndex - 1, state.cells.all.length - 1);
+    cellIndex >= 0;
+    cellIndex--
   ) {
-    const snippet = getSnippet(state, snippetIndex);
+    const cell = state.cells.byId[state.cells.all[cellIndex]];
+    if (cell.type !== ContentType.SNIPPET) {
+      continue;
+    }
+    const snippet = state.snippets.byId[cell.contentId];
     const chunksEditedBeforeNewSnippet = [];
     for (const chunkVersionId of snippet.chunkVersionsAdded) {
       const { chunkId, path, startLine, endLine, version } = getChunkInfo(state, chunkVersionId);
@@ -91,8 +95,12 @@ function removeDuplicatesFromInitialChunks(state: Undoable, action: CreateSnippe
    * Remove parts of chunks that already show up in multiple versions of an existing chunk. At the
    * moment, we have no way to split these chunks without user input.
    */
-  for (let snippetIndex = 0; snippetIndex < state.snippets.all.length; snippetIndex++) {
-    const snippet = getSnippet(state, snippetIndex);
+  for (let cellIndex = 0; cellIndex < state.cells.all.length; cellIndex++) {
+    const cell = state.cells.byId[state.cells.all[cellIndex]];
+    if (cell.type !== ContentType.SNIPPET) {
+      continue;
+    }
+    const snippet = state.snippets.byId[cell.contentId];
     for (const chunkVersionId of snippet.chunkVersionsAdded) {
       const { path, startLine, endLine, ofVersions } = getChunkInfo(state, chunkVersionId);
       if (initialChunkLines.hasOwnProperty(path) && ofVersions > 1) {
@@ -131,13 +139,17 @@ function removeDuplicatesFromExistingChunks(
         ...chunk.location,
         line: chunk.location.line + offset
       };
-      newChunkLines.push({ location, chunkId, chunkVersionId, snippetId: action.id });
+      newChunkLines.push({ location, chunkId, chunkVersionId, snippetId: action.snippetId });
     }
   }
   const existingChunkLines: ChunkLine[] = [];
-  for (let snippetIndex = action.index; snippetIndex < state.snippets.all.length; snippetIndex++) {
-    const snippetId = state.snippets.all[snippetIndex];
-    const snippet = getSnippet(state, snippetIndex);
+  for (let cellIndex = action.index; cellIndex < state.cells.all.length; cellIndex++) {
+    const cell = state.cells.byId[state.cells.all[cellIndex]];
+    if (cell.type !== ContentType.SNIPPET) {
+      continue;
+    }
+    const snippetId = cell.contentId;
+    const snippet = state.snippets.byId[snippetId];
     for (const chunkVersionId of snippet.chunkVersionsAdded) {
       const { chunkId, path, startLine, endLine, version } = getChunkInfo(state, chunkVersionId);
       if (version === 0) {

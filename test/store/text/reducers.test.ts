@@ -1,11 +1,17 @@
+import { ContentType } from "../../../src";
 import * as actions from "../../../src/text/actions";
 import { textReducer } from "../../../src/text/reducers";
-import { ReferenceImplementationSource, SourceType, visibility } from "../../../src/text/types";
+import {
+  ReferenceImplementationSource,
+  SnippetId,
+  SourceType,
+  visibility
+} from "../../../src/text/types";
 import { Undoable } from "../../../src/types";
 import {
   createSnippetWithChunkVersions,
   createUndoable,
-  createUndoableWithSnippets
+  createUndoableWithSnippet
 } from "../../../src/util/test-utils";
 import * as textUtils from "../../../src/util/text-utils";
 
@@ -45,28 +51,11 @@ describe("text reducer", () => {
       const action = actions.createSnippet(0);
       expect(textReducer(text, action)).toMatchObject({
         snippets: {
-          all: [action.id],
+          all: [action.snippetId],
           byId: {
-            [action.id]: { chunkVersionsAdded: [] }
+            [action.snippetId]: { chunkVersionsAdded: [] }
           }
         }
-      });
-    });
-
-    it("should insert the snippet", () => {
-      const text = createUndoable({
-        snippets: {
-          byId: {
-            "other-snippet-id": {
-              chunkVersionsAdded: []
-            }
-          },
-          all: ["other-snippet-id"]
-        }
-      });
-      const action = actions.createSnippet(0);
-      expect(textReducer(text, action)).toMatchObject({
-        snippets: { all: [action.id, "other-snippet-id"] }
       });
     });
 
@@ -82,7 +71,7 @@ describe("text reducer", () => {
       expect(updatedState).toMatchObject({
         snippets: {
           byId: {
-            [action.id]: {
+            [action.snippetId]: {
               chunkVersionsAdded: [chunkVersionId]
             }
           }
@@ -109,7 +98,8 @@ describe("text reducer", () => {
     });
 
     it("should hide ranges shown in earlier snippets", () => {
-      const text = createUndoableWithSnippets(
+      const text = createUndoableWithSnippet(
+        "cell-id",
         "snippet-id",
         "overlapping-chunk-id",
         "other-chunk-version-id",
@@ -125,7 +115,7 @@ describe("text reducer", () => {
         text: "Line 0\nLine 1"
       });
       const updatedState = textReducer(text, action);
-      const chunkVersionId = updatedState.snippets.byId[action.id].chunkVersionsAdded[0];
+      const chunkVersionId = updatedState.snippets.byId[action.snippetId].chunkVersionsAdded[0];
       expect(updatedState).toMatchObject({
         chunkVersions: {
           byId: {
@@ -135,7 +125,7 @@ describe("text reducer", () => {
           }
         },
         visibilityRules: {
-          [action.id]: {
+          [action.snippetId]: {
             "other-chunk-version-id": {
               2: visibility.VISIBLE
             }
@@ -145,7 +135,8 @@ describe("text reducer", () => {
     });
 
     it("does not add new chunks if all text was included before", () => {
-      const text = createUndoableWithSnippets(
+      const text = createUndoableWithSnippet(
+        "cell-id",
         "snippet-id",
         "overlapping-chunk-id",
         "other-chunk-version-id",
@@ -166,8 +157,9 @@ describe("text reducer", () => {
 
     describe("splits other chunks", () => {
       it("from other snippets", () => {
-        const text = createUndoableWithSnippets(
-          "snippet-id",
+        const text = createUndoableWithSnippet(
+          "cell-id",
+          "first-snippet-id",
           "overlapping-chunk-id",
           "other-chunk-version-id",
           { path: "same-path", line: 1 },
@@ -182,14 +174,14 @@ describe("text reducer", () => {
           text: "Line 2"
         });
         const updatedState = textReducer(text, action);
-        expect(snippetContainingText(updatedState, "Line 1")).toBe(1);
-        expect(snippetContainingText(updatedState, "Line 2")).toBe(0);
-        expect(snippetContainingText(updatedState, "Line 3")).toBe(1);
-        const newSnippetId = action.id;
+        expect(snippetContainingText(updatedState, "Line 1")).toBe("first-snippet-id");
+        expect(snippetContainingText(updatedState, "Line 2")).toBe(action.snippetId);
+        expect(snippetContainingText(updatedState, "Line 3")).toBe("first-snippet-id");
+        const newSnippetId = action.snippetId;
         for (const movedChunkVersionId of updatedState.snippets.byId[newSnippetId]
           .chunkVersionsAdded) {
           expect(updatedState.visibilityRules).toMatchObject({
-            ["snippet-id"]: {
+            ["first-snippet-id"]: {
               [movedChunkVersionId]: {
                 0: visibility.VISIBLE
               }
@@ -221,7 +213,7 @@ describe("text reducer", () => {
           text: "Line 2"
         });
         const updatedState = textReducer(text, action);
-        expect(snippetContainingText(updatedState, "Line 2")).toBe(0);
+        expect(snippetContainingText(updatedState, "Line 2")).toBe(action.snippetId);
         expect(containsChunk(updatedState, 1, "Line 1")).toBe(true);
         expect(containsChunk(updatedState, 2, "Line 2")).toBe(true);
         expect(containsChunk(updatedState, 3, "Line 3")).toBe(true);
@@ -244,20 +236,21 @@ describe("text reducer", () => {
       return false;
     }
 
-    function snippetContainingText(state: Undoable, text: string) {
+    function snippetContainingText(state: Undoable, text: string): SnippetId | null {
       for (let snippetIndex = 0; snippetIndex < state.snippets.all.length; snippetIndex++) {
         const snippet = state.snippets.byId[state.snippets.all[snippetIndex]];
         for (const chunkVersionId of snippet.chunkVersionsAdded) {
           if (state.chunkVersions.byId[chunkVersionId].text === text) {
-            return snippetIndex;
+            return state.snippets.all[snippetIndex];
           }
         }
       }
-      return -1;
+      return null;
     }
 
     it("removes chunks when all its lines are added to an earlier snippet", () => {
-      const text = createUndoableWithSnippets(
+      const text = createUndoableWithSnippet(
+        "cell-id",
         "snippet-id",
         "overlapping-chunk-id",
         "other-chunk-version-id",
@@ -269,7 +262,7 @@ describe("text reducer", () => {
         text: "Line 1"
       });
       const updatedState = textReducer(text, action);
-      const newSnippet = updatedState.snippets.byId[action.id];
+      const newSnippet = updatedState.snippets.byId[action.snippetId];
       const newChunkVersion = updatedState.chunkVersions.byId[newSnippet.chunkVersionsAdded[0]];
       const newChunkId = newChunkVersion.chunk;
       expect(updatedState.chunks.all).toEqual([newChunkId]);
@@ -277,6 +270,19 @@ describe("text reducer", () => {
 
     it("updates visibility rules with updated chunk version IDs", () => {
       const text = createUndoable({
+        cells: {
+          byId: {
+            "cell-0": {
+              contentId: "snippet-0",
+              type: ContentType.SNIPPET
+            },
+            "cell-1": {
+              contentId: "snippet-1",
+              type: ContentType.SNIPPET
+            }
+          },
+          all: ["cell-0", "cell-1"]
+        },
         snippets: {
           byId: {
             "snippet-0": { chunkVersionsAdded: ["chunk-version-0"] },

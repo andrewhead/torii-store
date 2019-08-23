@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { DeepPartial } from "redux";
 import { createStore, State } from "..";
+import { CellId, ContentType } from "../cells/types";
 import { ChunkId, ChunkVersionId, Location, SnippetId } from "../text/types";
 import { Undoable } from "../types";
 
@@ -66,7 +67,8 @@ export function createSnippetWithChunkVersions(
   return state;
 }
 
-export function createUndoableWithSnippets(
+export function createUndoableWithSnippet(
+  cellId: CellId,
   snippetId: SnippetId,
   chunkId: ChunkId,
   chunkVersionId: ChunkVersionId,
@@ -74,6 +76,15 @@ export function createUndoableWithSnippets(
   text: string
 ) {
   return createUndoable({
+    cells: {
+      byId: {
+        [cellId]: {
+          type: ContentType.SNIPPET,
+          contentId: snippetId
+        }
+      },
+      all: [cellId]
+    },
     snippets: {
       byId: {
         [snippetId]: {

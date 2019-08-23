@@ -11,5 +11,5 @@ export interface MoveCellAction {
 export type CellActionTypes = MoveCellAction;
 
 export function isCellAction(action: AnyAction): action is CellActionTypes {
-  return (action as CellActionTypes).type !== undefined;
+  return Object.keys(names).indexOf(action.type) !== -1;
 }

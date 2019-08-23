@@ -7,8 +7,10 @@ export enum ContentType {
   SNIPPET
 }
 
+export type ContentId = SnippetId;
+
 export interface Cell {
-  contentId: SnippetId;
+  contentId: ContentId;
   type: ContentType;
 }
 

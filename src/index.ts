@@ -3,7 +3,14 @@ import { AnyAction, combineReducers, createStore as reduxCreateStore, Store } fr
 import { devToolsEnhancer } from "redux-devtools-extension";
 import undoable from "redux-undo";
 import * as cellActions from "./cells/actions";
-import { cellActionNames, CellActionTypes } from "./cells/types";
+import {
+  Cell,
+  cellActionNames,
+  CellActionTypes,
+  Cells,
+  ContentId,
+  ContentType
+} from "./cells/types";
 import * as textActions from "./text/actions";
 import { textReducer } from "./text/reducers";
 import {
@@ -64,10 +71,14 @@ export namespace actions {
 }
 
 export {
+  Cell,
+  Cells,
   Chunk,
   ChunkId,
   ChunkVersion,
   ChunkVersionId,
+  ContentId,
+  ContentType,
   InitialChunk,
   Path,
   Position,

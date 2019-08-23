@@ -32,12 +32,15 @@ export function uploadFileContents(path: Path, contents: string): UploadFileCont
 
 /**
  * Before you create a snippet, you must upload the contents of the file using 'uploadFileContents'.
+ * 'index' is the index where the cell containing the snippet will be inserted in the tutorial.
  */
 export function createSnippet(index: number, ...chunks: InitialChunk[]): CreateSnippetAction {
-  const id = uuidv4();
+  const snippetId = uuidv4();
+  const cellId = uuidv4();
   return {
+    cellId,
     chunks: chunks || [],
-    id,
+    snippetId,
     index,
     type: names.CREATE_SNIPPET
   };

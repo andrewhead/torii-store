@@ -1,4 +1,6 @@
 import { AnyAction } from "redux";
+import { CellId } from "../../cells/types/cell";
+import { SnippetId } from "../types";
 import * as names from "./action-names";
 import { ChunkId, ChunkVersionId, InitialChunk, Path } from "./chunk";
 import { Edit, Selection } from "./common";
@@ -14,7 +16,8 @@ export interface UploadFileContentsAction {
 export interface CreateSnippetAction {
   type: typeof names.CREATE_SNIPPET;
   chunks: InitialChunk[];
-  id: string;
+  snippetId: SnippetId;
+  cellId: CellId;
   index: number;
 }
 
@@ -35,5 +38,5 @@ export type TextActionTypes =
   | SetSelectionsAction;
 
 export function isTextAction(action: AnyAction): action is TextActionTypes {
-  return (action as TextActionTypes).type !== undefined;
+  return Object.keys(names).indexOf(action.type) !== -1;
 }

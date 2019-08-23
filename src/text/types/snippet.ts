@@ -2,8 +2,8 @@ import { SimpleStore } from "../../common/types";
 import { ChunkVersionId } from "./chunk";
 
 /**
- * The order of snippet IDs in 'all' is not significant. To get the order that snippets are
- * listed in the tutorial, check out 'Contents'.
+ * The order of snippet IDs in 'all' is not significant. If you care about the order of snippets,
+ * you need to look for all cells of snippet type in the 'cells' field of the state.
  */
 export interface Snippets extends SimpleStore<SnippetId, Snippet> {}
 
