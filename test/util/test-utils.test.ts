@@ -3,7 +3,7 @@ import { createState } from "../../src/util/test-utils";
 describe("createState", () => {
   it("creates an empty state", () => {
     expect(createState()).toMatchObject({
-      text: {
+      undoable: {
         present: {
           snippets: { all: [], byId: {} }
         }
@@ -13,7 +13,7 @@ describe("createState", () => {
 
   it("creates a state with a nested property", () => {
     const partialState = {
-      text: {
+      undoable: {
         present: {
           snippets: {
             all: ["snippet-0"],

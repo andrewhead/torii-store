@@ -19,9 +19,9 @@ import {
   Selection,
   SourcedRange,
   SourceType,
-  Text,
   TextActionTypes
 } from "./text/types";
+import { Undoable } from "./types";
 import * as stateUtils from "./util/state-utils";
 import * as testUtils from "./util/test-utils";
 import * as textUtils from "./util/text-utils";
@@ -34,7 +34,7 @@ import * as textUtils from "./util/text-utils";
 const UNDO_LIMIT = 10;
 
 export const rootReducer = combineReducers({
-  text: undoable(textReducer, { limit: UNDO_LIMIT })
+  undoable: undoable(textReducer, { limit: UNDO_LIMIT })
 });
 
 export const createStore = (): Store<State, AnyAction> => {
@@ -72,9 +72,8 @@ export {
   SourcedRange,
   SourceType,
   stateUtils,
-  Text,
+  Undoable as Text,
   testUtils,
   textUtils,
   visibility
 };
-``;

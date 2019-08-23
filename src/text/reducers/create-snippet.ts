@@ -1,9 +1,10 @@
 import _ from "lodash";
+import { Undoable } from "../../types";
 import * as textUtils from "../../util/text-utils";
 import { ChunkId, ChunkVersionId, Location } from "../chunks/types";
 import { insertSnippet } from "../snippets/helpers";
 import { SnippetId, visibility } from "../snippets/types";
-import { CreateSnippetAction, Text } from "../types";
+import { CreateSnippetAction } from "../types";
 import {
   addChunks,
   getChunkInfo,
@@ -20,7 +21,7 @@ import {
   updateVisibilityRules
 } from "./updates";
 
-export function createSnippet(state: Text, action: CreateSnippetAction) {
+export function createSnippet(state: Undoable, action: CreateSnippetAction) {
   let updates = emptyTextUpdates();
   const {
     cleanedInitialChunks,
@@ -50,7 +51,7 @@ export function createSnippet(state: Text, action: CreateSnippetAction) {
   };
 }
 
-function removeDuplicatesFromInitialChunks(state: Text, action: CreateSnippetAction) {
+function removeDuplicatesFromInitialChunks(state: Undoable, action: CreateSnippetAction) {
   const { chunks: initialChunks, id: snippetId, index: newSnippetIndex } = action;
   const initialChunkLines = splitIntoLines(initialChunks);
   const updates = emptyTextUpdates();
@@ -114,7 +115,7 @@ function removeDuplicatesFromInitialChunks(state: Text, action: CreateSnippetAct
  * from them (i.e. with a method like 'removeDuplicatesFromInitialChunks').
  */
 function removeDuplicatesFromExistingChunks(
-  state: Text,
+  state: Undoable,
   action: CreateSnippetAction,
   updates: TextUpdates
 ): TextUpdates {
@@ -193,7 +194,7 @@ function removeDuplicatesFromExistingChunks(
 /**
  * Some chunks will not have been included in snippets yet. Get chunk lines from those chunks.
  */
-function getLinesForChunksNotInSnippets(state: Text): ChunkLine[] {
+function getLinesForChunksNotInSnippets(state: Undoable): ChunkLine[] {
   const allChunkVersionIds = state.chunkVersions.all;
   let unaddedChunkVersionIds = allChunkVersionIds;
   for (const snippetId of state.snippets.all) {
@@ -229,7 +230,7 @@ function getLinesForChunksNotInSnippets(state: Text): ChunkLine[] {
  * chunk versions as appropriate. Only replaces a deleted chunk version with version 0 of
  * another chunk (not later versions of the chunk).
  */
-function fixVisibilityRules(state: Text, updates: TextUpdates): TextUpdates {
+function fixVisibilityRules(state: Undoable, updates: TextUpdates): TextUpdates {
   let visibilityFixUpdates = emptyTextUpdates();
   for (const chunkVersionId of updates.chunkVersions.delete) {
     for (const snippetId of Object.keys(state.visibilityRules)) {

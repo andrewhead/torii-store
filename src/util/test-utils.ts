@@ -3,7 +3,7 @@ import { DeepPartial } from "redux";
 import { createStore, State } from "..";
 import { ChunkId, ChunkVersionId, Location } from "../text/chunks/types";
 import { SnippetId } from "../text/snippets/types";
-import { Text } from "../text/types";
+import { Undoable } from "../types";
 
 export const TEST_FILE_PATH = "file-path";
 export const TEST_SNIPPET_ID = "snippet-0";
@@ -13,7 +13,7 @@ export function createState(partialState?: DeepPartial<State>): State {
   return _.merge({}, emptyState, partialState);
 }
 
-export function createText(partialState?: DeepPartial<Text>): Text {
+export function createUndoable(partialState?: DeepPartial<Undoable>): Undoable {
   const emptyState = {
     snippets: { all: [], byId: {} },
     chunks: { all: [], byId: {} },
@@ -30,7 +30,7 @@ export function createText(partialState?: DeepPartial<Text>): Text {
  */
 export function createSnippetWithChunkVersions(
   ...chunkTexts: { id?: string; chunkId?: string; line: number; text: string }[]
-): Text {
+): Undoable {
   const text = {
     snippets: {
       all: [TEST_SNIPPET_ID],
@@ -70,14 +70,14 @@ export function createSnippetWithChunkVersions(
   return text;
 }
 
-export function createTextWithSnippets(
+export function createUndoableWithSnippets(
   snippetId: SnippetId,
   chunkId: ChunkId,
   chunkVersionId: ChunkVersionId,
   location: Location,
   text: string
 ) {
-  return createText({
+  return createUndoable({
     snippets: {
       byId: {
         [snippetId]: {

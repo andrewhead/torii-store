@@ -1,15 +1,6 @@
 import { AnyAction } from "redux";
 import * as names from "./action-names";
-import { ChunkId, Chunks, ChunkVersionId, ChunkVersions, InitialChunk, Path } from "./chunks/types";
-import { Snippets, VisibilityRules } from "./snippets/types";
-
-export interface Text {
-  snippets: Snippets;
-  chunks: Chunks;
-  chunkVersions: ChunkVersions;
-  visibilityRules: VisibilityRules;
-  selections: Selection[];
-}
+import { ChunkId, ChunkVersionId, InitialChunk, Path } from "./chunks/types";
 
 /**
  * A simple relational store.

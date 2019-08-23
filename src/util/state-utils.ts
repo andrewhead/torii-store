@@ -1,9 +1,9 @@
 import _ from "lodash";
 import { Path } from "../index";
-import { Text } from "../text/types";
+import { Undoable } from "../types";
 import * as textUtils from "./text-utils";
 
-export function getActivePaths(text: Text): Path[] {
+export function getActivePaths(text: Undoable): Path[] {
   const paths = [];
   for (const chunkId of text.chunks.all) {
     const chunk = text.chunks.byId[chunkId];
@@ -14,11 +14,11 @@ export function getActivePaths(text: Text): Path[] {
   return paths;
 }
 
-export function isPathActive(path: Path, text: Text): boolean {
+export function isPathActive(path: Path, text: Undoable): boolean {
   return getActivePaths(text).indexOf(path) !== -1;
 }
 
-export function getReferenceImplementationText(text: Text, path: Path): string {
+export function getReferenceImplementationText(text: Undoable, path: Path): string {
   const chunkIds = text.chunks.all;
   const chunks = chunkIds
     .map(id => text.chunks.byId[id])

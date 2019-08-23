@@ -1,8 +1,8 @@
 import _ from "lodash";
 import uuidv4 from "uuid/v4";
+import { Undoable } from "../../types";
 import * as textUtils from "../../util/text-utils";
 import { ChunkId, ChunkVersionId, InitialChunk } from "../chunks/types";
-import { Text } from "../types";
 import { emptyTextUpdates, mergeTextUpdates, TextUpdates } from "./updates";
 
 export function addChunks(initialChunks: InitialChunk[]): TextUpdates {
@@ -68,7 +68,7 @@ export function mergeIntoInitialChunks(chunkLines: ChunkLines): InitialChunk[] {
 /**
  * Assumes that this is only ever called on chunks with only one version.
  */
-export function removeLines(state: Text, chunkId: ChunkId, lines: number[]): TextUpdates {
+export function removeLines(state: Undoable, chunkId: ChunkId, lines: number[]): TextUpdates {
   let updates = emptyTextUpdates();
   const chunk = state.chunks.byId[chunkId];
   const chunkVersionId = chunk.versions[0];
@@ -95,11 +95,11 @@ export function removeLines(state: Text, chunkId: ChunkId, lines: number[]): Tex
   return updates;
 }
 
-export function getSnippet(state: Text, index: number) {
+export function getSnippet(state: Undoable, index: number) {
   return state.snippets.byId[state.snippets.all[index]];
 }
 
-export function getChunkInfo(state: Text, chunkVersionId: ChunkVersionId) {
+export function getChunkInfo(state: Undoable, chunkVersionId: ChunkVersionId) {
   const chunkVersion = state.chunkVersions.byId[chunkVersionId];
   const chunk = state.chunks.byId[chunkVersion.chunk];
   return {

@@ -1,10 +1,10 @@
 import { deferrable, getReferenceImplementationText } from "../../src/util/state-utils";
-import { createText } from "../../src/util/test-utils";
+import { createUndoable } from "../../src/util/test-utils";
 
 describe("getReferenceImplementationText", () => {
   it("gets text from chunks", () => {
     const path = "file-path";
-    const text = createText({
+    const text = createUndoable({
       snippets: {
         all: ["snippet-0"],
         byId: {

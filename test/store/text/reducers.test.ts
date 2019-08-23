@@ -1,11 +1,12 @@
 import * as actions from "../../../src/text/actions";
 import { textReducer } from "../../../src/text/reducers";
 import { visibility } from "../../../src/text/snippets/types";
-import { ReferenceImplementationSource, SourceType, Text } from "../../../src/text/types";
+import { ReferenceImplementationSource, SourceType } from "../../../src/text/types";
+import { Undoable } from "../../../src/types";
 import {
   createSnippetWithChunkVersions,
-  createText,
-  createTextWithSnippets
+  createUndoable,
+  createUndoableWithSnippets
 } from "../../../src/util/test-utils";
 import * as textUtils from "../../../src/util/text-utils";
 
@@ -13,7 +14,7 @@ describe("text reducer", () => {
   describe("should handle UPLOAD_FILE_CONTENTS", () => {
     it("should create a chunk with the file contents", () => {
       const path = "file-path";
-      const text = createText();
+      const text = createUndoable();
       const action = actions.uploadFileContents(path, "File contents");
       expect(textReducer(text, action)).toMatchObject({
         chunks: {
@@ -41,7 +42,7 @@ describe("text reducer", () => {
 
   describe("should handle CREATE_SNIPPET", () => {
     it("should create an empty snippet", () => {
-      const text = createText();
+      const text = createUndoable();
       const action = actions.createSnippet(0);
       expect(textReducer(text, action)).toMatchObject({
         snippets: {
@@ -54,7 +55,7 @@ describe("text reducer", () => {
     });
 
     it("should insert the snippet", () => {
-      const text = createText({
+      const text = createUndoable({
         snippets: {
           byId: {
             "other-snippet-id": {
@@ -71,7 +72,7 @@ describe("text reducer", () => {
     });
 
     describe("should create new chunks", () => {
-      const text = createText();
+      const text = createUndoable();
       const location = { path: "path", line: 1 };
       const action = actions.createSnippet(0, { location, text: "Text" });
       const updatedState = textReducer(text, action);
@@ -109,7 +110,7 @@ describe("text reducer", () => {
     });
 
     it("should hide ranges shown in earlier snippets", () => {
-      const text = createTextWithSnippets(
+      const text = createUndoableWithSnippets(
         "snippet-id",
         "overlapping-chunk-id",
         "other-chunk-version-id",
@@ -145,7 +146,7 @@ describe("text reducer", () => {
     });
 
     it("does not add new chunks if all text was included before", () => {
-      const text = createTextWithSnippets(
+      const text = createUndoableWithSnippets(
         "snippet-id",
         "overlapping-chunk-id",
         "other-chunk-version-id",
@@ -166,7 +167,7 @@ describe("text reducer", () => {
 
     describe("splits other chunks", () => {
       it("from other snippets", () => {
-        const text = createTextWithSnippets(
+        const text = createUndoableWithSnippets(
           "snippet-id",
           "overlapping-chunk-id",
           "other-chunk-version-id",
@@ -199,7 +200,7 @@ describe("text reducer", () => {
       });
 
       it("from the reference implementation", () => {
-        const text = createText({
+        const text = createUndoable({
           chunks: {
             all: ["chunk-0"],
             byId: {
@@ -233,7 +234,7 @@ describe("text reducer", () => {
       });
     });
 
-    function containsChunk(state: Text, line: number, firstVersionText: string) {
+    function containsChunk(state: Undoable, line: number, firstVersionText: string) {
       for (const chunkId of state.chunks.all) {
         const chunk = state.chunks.byId[chunkId];
         const firstChunkVersion = state.chunkVersions.byId[chunk.versions[0]];
@@ -244,7 +245,7 @@ describe("text reducer", () => {
       return false;
     }
 
-    function snippetContainingText(state: Text, text: string) {
+    function snippetContainingText(state: Undoable, text: string) {
       for (let snippetIndex = 0; snippetIndex < state.snippets.all.length; snippetIndex++) {
         const snippet = state.snippets.byId[state.snippets.all[snippetIndex]];
         for (const chunkVersionId of snippet.chunkVersionsAdded) {
@@ -257,7 +258,7 @@ describe("text reducer", () => {
     }
 
     it("removes chunks when all its lines are added to an earlier snippet", () => {
-      const text = createTextWithSnippets(
+      const text = createUndoableWithSnippets(
         "snippet-id",
         "overlapping-chunk-id",
         "other-chunk-version-id",
@@ -276,7 +277,7 @@ describe("text reducer", () => {
     });
 
     it("updates visibility rules with updated chunk version IDs", () => {
-      const text = createText({
+      const text = createUndoable({
         snippets: {
           byId: {
             "snippet-0": { chunkVersionsAdded: ["chunk-version-0"] },
@@ -328,7 +329,7 @@ describe("text reducer", () => {
   });
 
   describe("should handle SET_SELECTIONS", () => {
-    const text = createText();
+    const text = createUndoable();
     const selection = {
       anchor: { line: 1, character: 0 },
       active: { line: 1, character: 2 },
