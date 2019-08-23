@@ -3,6 +3,7 @@ import { AnyAction, combineReducers, createStore as reduxCreateStore, Store } fr
 import { devToolsEnhancer } from "redux-devtools-extension";
 import undoable from "redux-undo";
 import * as cellActions from "./cells/actions";
+import { cellsReducer } from "./cells/reducers";
 import {
   Cell,
   cellActionNames,
@@ -44,7 +45,7 @@ import * as textUtils from "./util/text-utils";
 const UNDO_LIMIT = 10;
 
 export const rootReducer = combineReducers({
-  undoable: undoable(reduceReducers(textReducer, textReducer), { limit: UNDO_LIMIT })
+  undoable: undoable(reduceReducers(textReducer, cellsReducer), { limit: UNDO_LIMIT })
 });
 
 export const createStore = (): Store<State, AnyAction> => {
