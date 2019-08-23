@@ -2,6 +2,8 @@ import reduceReducers from "reduce-reducers";
 import { AnyAction, combineReducers, createStore as reduxCreateStore, Store } from "redux";
 import { devToolsEnhancer } from "redux-devtools-extension";
 import undoable from "redux-undo";
+import * as cellActions from "./cells/actions";
+import { cellActionNames, CellActionTypes } from "./cells/types";
 import * as textActions from "./text/actions";
 import { textReducer } from "./text/reducers";
 import {
@@ -48,14 +50,17 @@ export type State = ReturnType<typeof rootReducer>;
 export namespace actions {
   export namespace Type {
     export type Text = TextActionTypes;
+    export type Cells = CellActionTypes;
     export type Any = TextActionTypes;
   }
 
   export namespace Name {
     export const text = textActionNames;
+    export const cells = cellActionNames;
   }
 
   export const text = textActions;
+  export const cells = cellActions;
 }
 
 export {
