@@ -86,11 +86,9 @@ export function removeLines(state: Text, chunkId: ChunkId, lines: number[]): Tex
     const chunkVersionsAdded = [...snippet.chunkVersionsAdded];
     if (chunkVersionIndex !== -1) {
       chunkVersionsAdded.splice(chunkVersionIndex, 1);
+      chunkVersionsAdded.push(...Object.keys(additions.chunkVersions.add));
+      updates.snippets.update[snippetId] = { chunkVersionsAdded };
     }
-    chunkVersionsAdded.push(...Object.keys(additions.chunkVersions.add));
-    updates.snippets.update[snippetId] = {
-      chunkVersionsAdded: chunkVersionsAdded
-    };
   }
   updates.chunks.delete.push(chunkId);
   updates.chunkVersions.delete.push(chunkVersionId);

@@ -3,6 +3,21 @@ import { Path } from "../index";
 import { Text } from "../text/types";
 import * as textUtils from "./text-utils";
 
+export function getActivePaths(text: Text): Path[] {
+  const paths = [];
+  for (const chunkId of text.chunks.all) {
+    const chunk = text.chunks.byId[chunkId];
+    if (paths.indexOf(chunk.location.path) === -1) {
+      paths.push(chunk.location.path);
+    }
+  }
+  return paths;
+}
+
+export function isPathActive(path: Path, text: Text): boolean {
+  return getActivePaths(text).indexOf(path) !== -1;
+}
+
 export function getReferenceImplementationText(text: Text, path: Path): string {
   const chunkIds = text.chunks.all;
   const chunks = chunkIds
