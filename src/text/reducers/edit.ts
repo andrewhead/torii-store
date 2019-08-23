@@ -1,10 +1,11 @@
 import _ from "lodash";
+import { Undoable } from "../../types";
 import * as textUtils from "../../util/text-utils";
 import { ChunkId, ChunkVersionId } from "../chunks/types";
-import { EditAction, Range, SourcedRange, SourceType, Text } from "../types";
+import { EditAction, Range, SourcedRange, SourceType } from "../types";
 import { getChunkInfo } from "./common";
 
-export function edit(state: Text, action: EditAction) {
+export function edit(state: Undoable, action: EditAction) {
   const { range, newText } = action.edit;
   let updatedState = state;
   let referenceImplementationLine;
@@ -29,7 +30,7 @@ export function edit(state: Text, action: EditAction) {
 }
 
 function updateChunkVersionsFromReferenceImplementationEdit(
-  state: Text,
+  state: Undoable,
   range: Range,
   newText: string
 ) {
@@ -50,7 +51,7 @@ function updateChunkVersionsFromReferenceImplementationEdit(
  * 'range' is relative to the start of the chunk version's text.
  */
 function updateChunkVersionText(
-  state: Text,
+  state: Undoable,
   chunkVersionId: ChunkVersionId,
   range: Range,
   newText: string
@@ -69,11 +70,11 @@ function updateChunkVersionText(
 }
 
 function updateChunkOffsets(
-  state: Text,
+  state: Undoable,
   referenceImplementationLine: number,
   range: SourcedRange,
   newText: string
-): Text {
+): Undoable {
   const linesBefore = range.end.line - range.start.line + 1;
   const linesAfter = textUtils.toLines(newText).length;
   const linesChanged = linesAfter - linesBefore;
@@ -91,7 +92,7 @@ function updateChunkOffsets(
   return state;
 }
 
-function moveChunk(state: Text, chunkId: ChunkId, delta: number) {
+function moveChunk(state: Undoable, chunkId: ChunkId, delta: number) {
   const line = state.chunks.byId[chunkId].location.line;
   return _.merge({}, state, {
     chunks: {

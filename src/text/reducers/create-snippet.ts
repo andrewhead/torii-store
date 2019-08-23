@@ -1,10 +1,16 @@
 import _ from "lodash";
+import { insert } from "../../common/reducers";
+import { update } from "../../common/update";
 import { Undoable } from "../../types";
 import * as textUtils from "../../util/text-utils";
-import { ChunkId, ChunkVersionId, Location } from "../chunks/types";
-import { insertSnippet } from "../snippets/helpers";
-import { SnippetId, visibility } from "../snippets/types";
-import { CreateSnippetAction } from "../types";
+import {
+  ChunkId,
+  ChunkVersionId,
+  CreateSnippetAction,
+  Location,
+  SnippetId,
+  visibility
+} from "../types";
 import {
   addChunks,
   getChunkInfo,
@@ -13,13 +19,7 @@ import {
   removeLines,
   splitIntoLines
 } from "./common";
-import {
-  emptyTextUpdates,
-  mergeTextUpdates,
-  TextUpdates,
-  update,
-  updateVisibilityRules
-} from "./updates";
+import { emptyTextUpdates, mergeTextUpdates, TextUpdates, updateVisibilityRules } from "./update";
 
 export function createSnippet(state: Undoable, action: CreateSnippetAction) {
   let updates = emptyTextUpdates();
@@ -47,7 +47,7 @@ export function createSnippet(state: Undoable, action: CreateSnippetAction) {
   };
   return {
     ...state,
-    snippets: insertSnippet(state.snippets, action.id, action.index, newSnippet)
+    snippets: insert(state.snippets, action.id, action.index, newSnippet)
   };
 }
 

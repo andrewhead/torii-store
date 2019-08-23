@@ -29,6 +29,7 @@
   "dependencies": {
     "@types/uuid": "^3.4.5",
     "lodash": "^4.17.15",
+    "reduce-reducers": "^1.0.4",
     "redux": "^4.0.4",
     "redux-devtools-extension": "^2.13.8",
     "redux-undo": "^1.0.0-beta9-9-7",

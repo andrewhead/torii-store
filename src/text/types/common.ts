@@ -1,24 +1,4 @@
-import { AnyAction } from "redux";
-import * as names from "./action-names";
-import { ChunkId, ChunkVersionId, InitialChunk, Path } from "./chunks/types";
-
-/**
- * A simple relational store.
- */
-export interface SimpleStore<K extends string, T> {
-  /**
-   * A list of (string-based) IDs for all objects in the store.
-   */
-  all: K[];
-  /**
-   * A lookup table of objects, keyed by ID.
-   */
-  byId: ById<T>;
-}
-
-export interface ById<T> {
-  [id: string]: T;
-}
+import { ChunkVersionId, Path } from "./chunk";
 
 /**
  * This interface is based on the "TextEdit" interface in VSCode.
@@ -111,39 +91,4 @@ export interface Position {
    * The first character in a line has an index of 0.
    */
   character: number;
-}
-
-export interface UploadFileContentsAction {
-  type: typeof names.UPLOAD_FILE_CONTENTS;
-  path: Path;
-  contents: string;
-  chunkId: ChunkId;
-  chunkVersionId: ChunkVersionId;
-}
-
-export interface CreateSnippetAction {
-  type: typeof names.CREATE_SNIPPET;
-  chunks: InitialChunk[];
-  id: string;
-  index: number;
-}
-
-export interface EditAction {
-  type: typeof names.EDIT;
-  edit: Edit;
-}
-
-export interface SetSelectionsAction {
-  type: typeof names.SET_SELECTIONS;
-  selections: Selection[];
-}
-
-export type TextActionTypes =
-  | UploadFileContentsAction
-  | CreateSnippetAction
-  | EditAction
-  | SetSelectionsAction;
-
-export function isTextAction(action: AnyAction): action is TextActionTypes {
-  return (action as TextActionTypes).type !== undefined;
 }

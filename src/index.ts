@@ -1,25 +1,26 @@
+import reduceReducers from "reduce-reducers";
 import { AnyAction, combineReducers, createStore as reduxCreateStore, Store } from "redux";
 import { devToolsEnhancer } from "redux-devtools-extension";
 import undoable from "redux-undo";
-import * as textActionNames from "./text/action-names";
 import * as textActions from "./text/actions";
+import { textReducer } from "./text/reducers";
 import {
   Chunk,
   ChunkId,
   ChunkVersion,
   ChunkVersionId,
   InitialChunk,
-  Path
-} from "./text/chunks/types";
-import { textReducer } from "./text/reducers";
-import { Snippet, SnippetId, visibility } from "./text/snippets/types";
-import {
+  Path,
   Position,
   Range,
   Selection,
+  Snippet,
+  SnippetId,
   SourcedRange,
   SourceType,
-  TextActionTypes
+  textActionNames,
+  TextActionTypes,
+  visibility
 } from "./text/types";
 import { Undoable } from "./types";
 import * as stateUtils from "./util/state-utils";
@@ -34,7 +35,7 @@ import * as textUtils from "./util/text-utils";
 const UNDO_LIMIT = 10;
 
 export const rootReducer = combineReducers({
-  undoable: undoable(textReducer, { limit: UNDO_LIMIT })
+  undoable: undoable(reduceReducers(textReducer, textReducer), { limit: UNDO_LIMIT })
 });
 
 export const createStore = (): Store<State, AnyAction> => {
@@ -72,7 +73,7 @@ export {
   SourcedRange,
   SourceType,
   stateUtils,
-  Undoable as Text,
+  Undoable,
   testUtils,
   textUtils,
   visibility

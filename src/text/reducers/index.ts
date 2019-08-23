@@ -1,7 +1,6 @@
 import { AnyAction } from "redux";
-import * as names from "../action-names";
-import { visibilityRulesInitialState } from "../snippets/helpers";
-import { isTextAction, Text } from "../types";
+import { Undoable } from "../../types";
+import { isTextAction, textActionNames as actionNames } from "../types";
 import { createSnippet } from "./create-snippet";
 import { edit } from "./edit";
 import { uploadFileContents } from "./upload-file-contents";
@@ -29,19 +28,19 @@ import { uploadFileContents } from "./upload-file-contents";
  * bug gets fixed, all of these reducers should be refactored to take a more precise type as the
  * second argument. Follow the issue here: https://github.com/omnidan/redux-undo/issues/229
  */
-export function textReducer(state: Text = initialState, action: AnyAction) {
+export function textReducer(state: Undoable = initialState, action: AnyAction) {
   if (isTextAction(action)) {
     switch (action.type) {
-      case names.UPLOAD_FILE_CONTENTS:
+      case actionNames.UPLOAD_FILE_CONTENTS:
         return uploadFileContents(state, action);
-      case names.CREATE_SNIPPET:
+      case actionNames.CREATE_SNIPPET:
         return createSnippet(state, action);
-      case names.SET_SELECTIONS:
+      case actionNames.SET_SELECTIONS:
         return {
           ...state,
           selections: action.selections
         };
-      case names.EDIT:
+      case actionNames.EDIT:
         return edit(state, action);
       default:
         return state;
@@ -54,7 +53,7 @@ export const initialState = {
   snippets: simpleStoreInitialState(),
   chunks: simpleStoreInitialState(),
   chunkVersions: simpleStoreInitialState(),
-  visibilityRules: visibilityRulesInitialState,
+  visibilityRules: {},
   selections: []
 };
 

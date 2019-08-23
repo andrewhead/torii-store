@@ -2,8 +2,8 @@ import _ from "lodash";
 import uuidv4 from "uuid/v4";
 import { Undoable } from "../../types";
 import * as textUtils from "../../util/text-utils";
-import { ChunkId, ChunkVersionId, InitialChunk } from "../chunks/types";
-import { emptyTextUpdates, mergeTextUpdates, TextUpdates } from "./updates";
+import { ChunkId, ChunkVersionId, InitialChunk } from "../types";
+import { emptyTextUpdates, mergeTextUpdates, TextUpdates } from "./update";
 
 export function addChunks(initialChunks: InitialChunk[]): TextUpdates {
   const updates = emptyTextUpdates();

@@ -1,6 +1,10 @@
-import { ChunkVersionId } from "../chunks/types";
-import { SimpleStore } from "../types";
+import { SimpleStore } from "../../common/types";
+import { ChunkVersionId } from "./chunk";
 
+/**
+ * The order of snippet IDs in 'all' is not significant. To get the order that snippets are
+ * listed in the tutorial, check out 'Contents'.
+ */
 export interface Snippets extends SimpleStore<SnippetId, Snippet> {}
 
 export interface Snippet {

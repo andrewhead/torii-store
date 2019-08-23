@@ -1,4 +1,4 @@
-import { SimpleStore } from "../types";
+import { SimpleStore } from "../../common/types";
 
 /**
  * Order of chunks in "all" field is meaningless, as these chunks will be from many different files.

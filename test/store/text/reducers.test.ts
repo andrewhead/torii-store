@@ -1,7 +1,6 @@
 import * as actions from "../../../src/text/actions";
 import { textReducer } from "../../../src/text/reducers";
-import { visibility } from "../../../src/text/snippets/types";
-import { ReferenceImplementationSource, SourceType } from "../../../src/text/types";
+import { ReferenceImplementationSource, SourceType, visibility } from "../../../src/text/types";
 import { Undoable } from "../../../src/types";
 import {
   createSnippetWithChunkVersions,

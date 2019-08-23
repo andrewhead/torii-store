@@ -1,7 +1,8 @@
 import _ from "lodash";
-import { Text, UploadFileContentsAction } from "../types";
+import { Undoable } from "../../types";
+import { UploadFileContentsAction } from "../types";
 
-export function uploadFileContents(state: Text, action: UploadFileContentsAction): Text {
+export function uploadFileContents(state: Undoable, action: UploadFileContentsAction): Undoable {
   const chunks = _.merge({}, state.chunks, {
     all: state.chunks.all.concat(action.chunkId),
     byId: {

@@ -1,12 +1,13 @@
 import uuidv4 from "uuid/v4";
-import * as names from "./action-names";
-import { InitialChunk, Path } from "./chunks/types";
 import {
   CreateSnippetAction,
   EditAction,
+  InitialChunk,
+  Path,
   Selection,
   SetSelectionsAction,
   SourcedRange,
+  textActionNames as names,
   UploadFileContentsAction
 } from "./types";
 
