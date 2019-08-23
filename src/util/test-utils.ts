@@ -1,8 +1,7 @@
 import _ from "lodash";
 import { DeepPartial } from "redux";
 import { createStore, State } from "..";
-import { ChunkId, ChunkVersionId, Location } from "../text/chunks/types";
-import { SnippetId } from "../text/snippets/types";
+import { ChunkId, ChunkVersionId, Location, SnippetId } from "../text/types";
 import { Undoable } from "../types";
 
 export const TEST_FILE_PATH = "file-path";
@@ -15,6 +14,7 @@ export function createState(partialState?: DeepPartial<State>): State {
 
 export function createUndoable(partialState?: DeepPartial<Undoable>): Undoable {
   const emptyState = {
+    cells: { all: [], byId: {} },
     snippets: { all: [], byId: {} },
     chunks: { all: [], byId: {} },
     chunkVersions: { all: [], byId: {} },
@@ -31,7 +31,7 @@ export function createUndoable(partialState?: DeepPartial<Undoable>): Undoable {
 export function createSnippetWithChunkVersions(
   ...chunkTexts: { id?: string; chunkId?: string; line: number; text: string }[]
 ): Undoable {
-  const text = {
+  const state = createUndoable({
     snippets: {
       all: [TEST_SNIPPET_ID],
       byId: {
@@ -39,35 +39,31 @@ export function createSnippetWithChunkVersions(
           chunkVersionsAdded: []
         }
       }
-    },
-    chunks: { all: [], byId: {} },
-    chunkVersions: { all: [], byId: {} },
-    visibilityRules: {},
-    selections: []
-  };
+    }
+  });
   /*
    * Assume all chunks came from contigous locations in th eoriginal file.
    */
   for (let i = 0; i < chunkTexts.length; i++) {
     const chunkVersionId = chunkTexts[i].id || "chunk-version-" + i;
     const chunkId = chunkTexts[i].chunkId || "chunk-" + i;
-    text.snippets.byId[TEST_SNIPPET_ID].chunkVersionsAdded.push(chunkVersionId);
-    if (text.chunks.all.indexOf(chunkId) === -1) {
-      text.chunks.all.push(chunkId);
-      text.chunks.byId[chunkId] = {
+    state.snippets.byId[TEST_SNIPPET_ID].chunkVersionsAdded.push(chunkVersionId);
+    if (state.chunks.all.indexOf(chunkId) === -1) {
+      state.chunks.all.push(chunkId);
+      state.chunks.byId[chunkId] = {
         location: { line: chunkTexts[i].line, path: TEST_FILE_PATH },
         versions: [chunkVersionId]
       };
     } else {
-      text.chunks.byId[chunkId].versions.push(chunkVersionId);
+      state.chunks.byId[chunkId].versions.push(chunkVersionId);
     }
-    text.chunkVersions.all.push(chunkVersionId);
-    text.chunkVersions.byId[chunkVersionId] = {
+    state.chunkVersions.all.push(chunkVersionId);
+    state.chunkVersions.byId[chunkVersionId] = {
       chunk: chunkId,
       text: chunkTexts[i].text
     };
   }
-  return text;
+  return state;
 }
 
 export function createUndoableWithSnippets(

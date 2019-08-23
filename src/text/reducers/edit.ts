@@ -1,8 +1,7 @@
 import _ from "lodash";
 import { Undoable } from "../../types";
 import * as textUtils from "../../util/text-utils";
-import { ChunkId, ChunkVersionId } from "../chunks/types";
-import { EditAction, Range, SourcedRange, SourceType } from "../types";
+import { ChunkId, ChunkVersionId, EditAction, Range, SourcedRange, SourceType } from "../types";
 import { getChunkInfo } from "./common";
 
 export function edit(state: Undoable, action: EditAction) {
