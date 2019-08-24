@@ -8,6 +8,7 @@ import {
   Cell,
   cellActionNames,
   CellActionTypes,
+  CellId,
   Cells,
   ContentId,
   ContentType
@@ -73,6 +74,7 @@ export namespace actions {
 
 export {
   Cell,
+  CellId,
   Cells,
   Chunk,
   ChunkId,
