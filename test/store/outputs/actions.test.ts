@@ -5,12 +5,15 @@ describe("actions", () => {
   it("should create an action for starting an execution", () => {
     const snippetId = "snippet-id";
     const commandId = "command-id";
+    const type = "console";
     const expectedAction = {
       snippetId,
       commandId,
+      outputType: type,
       type: names.START_EXECUTION
     };
-    expect(actions.startExecution(snippetId, commandId)).toEqual(expectedAction);
+    const action = actions.startExecution(snippetId, commandId, type);
+    expect(action).toMatchObject(expectedAction);
   });
 
   it("should create an action for updating an execution", () => {
@@ -38,18 +41,14 @@ describe("actions", () => {
       stdoutRanges: [{ start: 0, end: 7 }],
       stderrRanges: [{ start: 7, end: 13 }]
     };
-    const outputType = "console";
     const value = "result";
     const expectedAction = {
       snippetId,
       commandId,
       log,
-      outputType,
       value,
       type: names.FINISH_EXECUTION
     };
-    expect(actions.finishExecution(snippetId, commandId, log, outputType, value)).toEqual(
-      expectedAction
-    );
+    expect(actions.finishExecution(snippetId, commandId, log, value)).toEqual(expectedAction);
   });
 });

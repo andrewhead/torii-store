@@ -1,14 +1,14 @@
 import { AnyAction } from "redux";
 import { SnippetId } from "../../text/types";
 import * as names from "./action-names";
-import { CommandId, ConsoleLog, OutputType } from "./output";
+import { CommandId, ConsoleLog, OutputType } from "./outputs";
 
 export interface StartExecutionAction {
   type: typeof names.START_EXECUTION;
   snippetId: SnippetId;
   commandId: CommandId;
+  outputType: OutputType;
 }
-
 export interface UpdateExecutionAction {
   type: typeof names.UPDATE_EXECUTION;
   snippetId: SnippetId;
@@ -21,7 +21,6 @@ export interface FinishExecutionAction {
   snippetId: SnippetId;
   commandId: CommandId;
   log: ConsoleLog;
-  outputType: OutputType;
   value: string;
 }
 
@@ -30,6 +29,6 @@ export type OutputActionTypes =
   | UpdateExecutionAction
   | FinishExecutionAction;
 
-export function isCellAction(action: AnyAction): action is OutputActionTypes {
+export function isOutputAction(action: AnyAction): action is OutputActionTypes {
   return Object.keys(names).indexOf(action.type) !== -1;
 }

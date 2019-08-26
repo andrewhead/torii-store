@@ -27,6 +27,13 @@ function insertInAll<K>(state: K[], index: number, id: K): K[] {
     .concat(state.slice(index, state.length));
 }
 
+export function addIdIfMissing<K>(state: K[], id: K): K[] {
+  if (state.indexOf(id) === -1) {
+    return state.concat(id);
+  }
+  return state;
+}
+
 /**
  * Move ID to a new position in ID list. Does nothing if 'id' is not in state.
  */

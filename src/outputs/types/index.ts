@@ -1,4 +1,4 @@
 import * as outputActionNames from "./action-names";
 export * from "./actions";
-export * from "./output";
+export * from "./outputs";
 export { outputActionNames };

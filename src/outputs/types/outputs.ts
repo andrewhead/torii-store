@@ -1,12 +1,14 @@
 import { SimpleStore } from "../../common/types";
 import { SnippetId } from "../../text/types";
 
-export interface Outputs extends SimpleStore<SnippetId, SnippetOutputs> {}
+export interface Outputs extends SimpleStore<SnippetId, SnippetOutputs[]> {}
 
 /**
- * List of outputs produced for a snippet.
+ * Dictionary mapping from a command ID to the output produced by it.
  */
-export type SnippetOutputs = Output[];
+export interface SnippetOutputs {
+  [commandId: string]: Output;
+}
 
 /**
  * An output produced by running a command on the code for a snippet.
@@ -17,18 +19,28 @@ export interface Output {
    */
   commandId: CommandId;
   /**
+   * State of running the command (i.e. is it running, or has it finished running?)
+   * When RUNNING, 'log' and 'value' will be undefined. When FINISHED, all fields will be defined.
+   */
+  state: CommandState;
+  /**
    * Type of output, indicates how the output should be rendered. See 'OutputType'
    */
   type: OutputType;
   /**
    * Console output and errors produced while the emitter was running.
    */
-  log: ConsoleLog;
+  log?: ConsoleLog;
   /**
    * The output.
    */
-  value: string;
+  value?: string;
 }
+
+export type CommandState = typeof RUNNING | typeof FINISHED;
+
+const RUNNING = "running";
+const FINISHED = "finished";
 
 export type OutputType = typeof CONSOLE | typeof HTML;
 
@@ -62,5 +74,7 @@ interface CharacterRange {
    */
   end: number;
 }
+
+export type OutputId = string;
 
 export type CommandId = string;

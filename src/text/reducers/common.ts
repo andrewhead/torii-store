@@ -9,6 +9,11 @@ export function addChunks(initialChunks: InitialChunk[]): TextUpdates {
   const updates = emptyTextUpdates();
   for (const chunkData of initialChunks) {
     const { text, location } = chunkData;
+    /*
+     * TODO(andrewhead): these chunk names should be determined deterministically (e.g., by
+     * appending a character to the end of them). Using random number generators to influence
+     * values in the store goes against Redux's guidelines.
+     */
     const chunkId = uuidv4();
     const chunkVersionId = uuidv4();
     updates.chunks.add[chunkId] = {
