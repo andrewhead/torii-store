@@ -1,7 +1,10 @@
+import diff from "deep-diff";
 import _ from "lodash";
-import { Path } from "../index";
+import { ContentType, State } from "../index";
+import { Path, SnippetId } from "../text/types";
 import { Undoable } from "../types";
 import * as textUtils from "./text-utils";
+import { Deferrable, isAddDiff, isArrayDiff, isEditDiff, PathElementPattern } from "./types";
 
 export function getActivePaths(text: Undoable): Path[] {
   const paths = [];
@@ -31,6 +34,91 @@ export function getReferenceImplementationText(text: Undoable, path: Path): stri
       .map(chunkVersionId => text.chunkVersions.byId[chunkVersionId])
       .map(chunkVersion => chunkVersion.text)
   );
+}
+
+/**
+ * Returns a list of IDs of snippets for which the snapshot of the code up to that snippet has
+ * changed. 'before' is the state before change, and 'after' is the state after change.
+ */
+export function getChangedSnapshots(before: State, after: State): SnippetId[] {
+  let changedSnippets: SnippetId[] = [];
+  const differences = diff(before, after);
+  if (differences === undefined) {
+    return changedSnippets;
+  }
+  for (const d of differences) {
+    /*
+     * A snippet has been added.
+     */
+    if (isArrayDiff(d) && pathMatches(d.path, ["snippets", "all"]) && isAddDiff(d.item)) {
+      changedSnippets = _.union(changedSnippets, [d.item.rhs]);
+    }
+    /*
+     * Chunks have been added to or removed from a snippet.
+     */
+    if (
+      isArrayDiff(d) &&
+      pathMatches(d.path, ["snippets", "byId", undefined, "chunkVersionsAdded"])
+    ) {
+      const snippetId = d.path[d.path.length - 2] as SnippetId;
+      changedSnippets = _.union(changedSnippets, [snippetId]);
+    }
+    /*
+     * A chunk within a snippet has been edited.
+     */
+    if (isEditDiff(d) && pathMatches(d.path, ["chunkVersions", "byId", undefined, undefined])) {
+      const changedChunkVersionId = d.path[d.path.length - 2];
+      if (typeof changedChunkVersionId === "string") {
+        for (const snippetId of after.undoable.present.snippets.all) {
+          const snippet = after.undoable.present.snippets.byId[snippetId];
+          if (snippet.chunkVersionsAdded.indexOf(changedChunkVersionId) !== -1) {
+            changedSnippets = _.union(changedSnippets, [snippetId]);
+          }
+        }
+      }
+    }
+  }
+  let afterFirstChangedSnippet = false;
+  for (const cellId of after.undoable.present.cells.all) {
+    const cell = after.undoable.present.cells.byId[cellId];
+    if (cell.type === ContentType.SNIPPET) {
+      const snippetId = cell.contentId;
+      if (changedSnippets.indexOf(snippetId) !== -1) {
+        afterFirstChangedSnippet = true;
+      }
+      if (afterFirstChangedSnippet) {
+        changedSnippets = _.union(changedSnippets, [snippetId]);
+      }
+    }
+  }
+  return changedSnippets;
+}
+
+/**
+ * Determine if a path matches a suffix. The suffix is expressed as a list of patterns to be
+ * compared against each of the elements in the path. These patterns can be 'undefined'
+ * (meaning to always match that element), a literal number or string to match, or a regular
+ * expression that will be compared against the path element if the path element is a string.
+ */
+function pathMatches(path: DiffPath, suffixPattern: PathElementPattern[]) {
+  const pathEnd = _.takeRight(path, suffixPattern.length);
+  for (let i = 0; i < suffixPattern.length; i++) {
+    const pathElement = pathEnd[i];
+    const pattern = suffixPattern[i];
+    if (pattern === undefined) {
+      continue;
+    }
+    if (typeof pattern === "string" || typeof pattern === "number") {
+      if (pathElement !== pattern) {
+        return false;
+      }
+    } else if (pattern instanceof RegExp && typeof pathElement === "string") {
+      if (!pathElement.match(pattern)) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 /**
@@ -64,18 +152,4 @@ export function deferrable(callback: (...args: any) => void): Deferrable {
   };
   wrapped.defer = defer;
   return wrapped;
-}
-
-interface Deferrable {
-  /**
-   * The callback. Should not return anything, as the results of calling the function would be
-   * undefined if the function is deferred.
-   */
-  (...args: any): void;
-  /**
-   * Call 'defer' on the callback to defer it being called by 'wait' number of milliseconds. If
-   * called while waiting, it resets the wait period to the time passed in. When the wait
-   * has finished, the callback will be called once with the most recent version of the state.
-   */
-  defer: (wait: number) => void;
 }
