@@ -31,7 +31,7 @@ export function addChunks(initialChunks: InitialChunk[]): TextUpdates {
 export function splitIntoLines(initialChunks: InitialChunk[]): ChunkLines {
   const chunkLines: ChunkLines = {};
   for (const initialChunk of initialChunks) {
-    const lines = textUtils.toLines(initialChunk.text);
+    const lines = textUtils.split(initialChunk.text);
     const { path, line: lineNumber } = initialChunk.location;
     for (let lineOffset = 0; lineOffset < lines.length; lineOffset++) {
       _.merge(chunkLines, {
@@ -113,7 +113,7 @@ export function getChunkInfo(state: Undoable, chunkVersionId: ChunkVersionId) {
     ofVersions: chunk.versions.length,
     path: chunk.location.path,
     startLine: chunk.location.line,
-    endLine: chunk.location.line + textUtils.toLines(chunkVersion.text).length - 1,
+    endLine: chunk.location.line + textUtils.split(chunkVersion.text).length - 1,
     text: chunkVersion.text
   };
 }

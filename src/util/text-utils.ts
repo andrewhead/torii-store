@@ -1,8 +1,9 @@
-import { Position, Range, Selection } from "../text/types";
+import { State } from "../index";
+import { Position, Range, Selection, SnippetId } from "../text/types";
 
 export const NEWLINE = /\n/;
 
-export function toLines(text: string) {
+export function split(text: string) {
   return text.split(NEWLINE);
 }
 
@@ -11,11 +12,18 @@ export function join(...lines: string[]) {
 }
 
 /**
+ * Get file contents of the program as of the snippet indicated by 'snippetId'.
+ */
+export function getFileContents(state: State, snippetId: SnippetId) {
+  return;
+}
+
+/**
  * Replace 'range' of characters in string 'str' with 'newText'. Returns null if range is invalid
  * (i.e. it doesn't fall in the bounds of the string).
  */
 export function replace(str: string, range: Range, newText: string): string | null {
-  const lines = toLines(str);
+  const lines = split(str);
   let characters = 0;
   let startOffset, endOffset;
   for (let lineNumber = 1; lineNumber <= lines.length; lineNumber++) {

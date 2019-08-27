@@ -1,4 +1,4 @@
-import { move } from "../../../src/common/reducers";
+import { move } from "../../src/common/reducers";
 
 describe("move", () => {
   const all = ["id0", "id1", "id2"];

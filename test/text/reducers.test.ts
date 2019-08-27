@@ -1,15 +1,15 @@
-import { ContentType } from "../../../src";
-import * as actions from "../../../src/text/actions";
-import { textReducer } from "../../../src/text/reducers";
+import { ContentType } from "../../src";
+import * as actions from "../../src/text/actions";
+import { textReducer } from "../../src/text/reducers";
 import {
   ReferenceImplementationSource,
   SnippetId,
   SourceType,
   visibility
-} from "../../../src/text/types";
-import { Undoable } from "../../../src/types";
-import { createChunks, createUndoable } from "../../../src/util/test-utils";
-import * as textUtils from "../../../src/util/text-utils";
+} from "../../src/text/types";
+import { Undoable } from "../../src/types";
+import { createChunks, createUndoable } from "../../src/util/test-utils";
+import * as textUtils from "../../src/util/text-utils";
 
 describe("text reducer", () => {
   describe("should handle UPLOAD_FILE_CONTENTS", () => {

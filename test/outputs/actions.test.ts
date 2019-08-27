@@ -1,5 +1,5 @@
-import * as actions from "../../../src/outputs/actions";
-import { outputActionNames as names } from "../../../src/outputs/types";
+import * as actions from "../../src/outputs/actions";
+import { outputActionNames as names } from "../../src/outputs/types";
 
 describe("actions", () => {
   it("should create an action for starting an execution", () => {

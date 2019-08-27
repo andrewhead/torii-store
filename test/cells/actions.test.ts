@@ -1,5 +1,5 @@
-import * as actions from "../../../src/cells/actions";
-import { cellActionNames as names } from "../../../src/cells/types";
+import * as actions from "../../src/cells/actions";
+import { cellActionNames as names } from "../../src/cells/types";
 
 describe("actions", () => {
   it("should create an action for moving a cell", () => {

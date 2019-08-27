@@ -75,7 +75,7 @@ function updateChunkOffsets(
   newText: string
 ): Undoable {
   const linesBefore = range.end.line - range.start.line + 1;
-  const linesAfter = textUtils.toLines(newText).length;
+  const linesAfter = textUtils.split(newText).length;
   const linesChanged = linesAfter - linesBefore;
   if (linesChanged !== 0) {
     for (const chunkId of state.chunks.all) {

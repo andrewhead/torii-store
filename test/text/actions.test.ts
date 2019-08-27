@@ -1,10 +1,10 @@
-import * as actions from "../../../src/text/actions";
+import * as actions from "../../src/text/actions";
 import {
   ReferenceImplementationSource,
   Selection,
   SourceType,
   textActionNames as names
-} from "../../../src/text/types";
+} from "../../src/text/types";
 
 describe("actions", () => {
   it("should create an action for uploading file contents", () => {

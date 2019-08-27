@@ -133,7 +133,7 @@ function removeDuplicatesFromExistingChunks(
     let chunkVersion = updates.chunkVersions.add[chunkVersionId];
     let chunkId = chunkVersion.chunk;
     let chunk = updates.chunks.add[chunkVersion.chunk];
-    const lines = textUtils.toLines(chunkVersion.text);
+    const lines = textUtils.split(chunkVersion.text);
     for (let offset = 0; offset < lines.length; offset++) {
       const location = {
         ...chunk.location,
@@ -268,8 +268,7 @@ function fixVisibilityRules(state: Undoable, updates: TextUpdates): TextUpdates 
                 _.isEqual(addedChunkVersionChunk.location.path, chunk.location.path)
               ) {
                 const chunkStart = addedChunkVersionChunk.location.line;
-                const newChunkEnd =
-                  chunkStart + textUtils.toLines(addedChunkVersion.text).length - 1;
+                const newChunkEnd = chunkStart + textUtils.split(addedChunkVersion.text).length - 1;
                 if (absoluteLine >= chunkStart && absoluteLine <= newChunkEnd) {
                   const adjustedLine = absoluteLine - chunkStart;
                   _.merge(visibilityFixUpdates.visibilityRules.add, {

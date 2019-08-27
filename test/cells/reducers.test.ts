@@ -1,7 +1,7 @@
-import { cellsReducer } from "../../../src/cells/reducers";
-import { ContentType } from "../../../src/cells/types";
-import * as textActions from "../../../src/text/actions";
-import { createUndoable } from "../../../src/util/test-utils";
+import { cellsReducer } from "../../src/cells/reducers";
+import { ContentType } from "../../src/cells/types";
+import * as textActions from "../../src/text/actions";
+import { createUndoable } from "../../src/util/test-utils";
 
 describe("cellsReducers", () => {
   describe("should handle CREATE_SNIPPET", () => {
