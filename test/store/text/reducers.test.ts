@@ -8,11 +8,7 @@ import {
   visibility
 } from "../../../src/text/types";
 import { Undoable } from "../../../src/types";
-import {
-  createSnippetWithChunkVersions,
-  createUndoable,
-  createUndoableWithSnippet
-} from "../../../src/util/test-utils";
+import { createChunks, createUndoable } from "../../../src/util/test-utils";
 import * as textUtils from "../../../src/util/text-utils";
 
 describe("text reducer", () => {
@@ -47,7 +43,7 @@ describe("text reducer", () => {
 
   describe("should handle CREATE_SNIPPET", () => {
     it("should create an empty snippet", () => {
-      const text = createUndoable();
+      const text = createChunks();
       const action = actions.createSnippet(0);
       expect(textReducer(text, action)).toMatchObject({
         snippets: {
@@ -60,7 +56,7 @@ describe("text reducer", () => {
     });
 
     describe("should create new chunks", () => {
-      const text = createUndoable();
+      const text = createChunks();
       const location = { path: "path", line: 1 };
       const action = actions.createSnippet(0, { location, text: "Text" });
       const updatedState = textReducer(text, action);
@@ -98,14 +94,14 @@ describe("text reducer", () => {
     });
 
     it("should hide ranges shown in earlier snippets", () => {
-      const text = createUndoableWithSnippet(
-        "cell-id",
-        "snippet-id",
-        "overlapping-chunk-id",
-        "other-chunk-version-id",
-        { path: "same-path", line: 2 },
-        "Line 1\nLine 2"
-      );
+      const text = createChunks({
+        snippetId: "snippet-id",
+        chunkId: "overlapping-chunk-id",
+        chunkVersionId: "other-chunk-version-id",
+        path: "same-path",
+        line: 2,
+        text: "Line 1\nLine 2"
+      });
       /*
        * Snippet intersects with last snippet: only include the new parts (Line 0). Show the old
        * parts (Line 1).
@@ -135,14 +131,14 @@ describe("text reducer", () => {
     });
 
     it("does not add new chunks if all text was included before", () => {
-      const text = createUndoableWithSnippet(
-        "cell-id",
-        "snippet-id",
-        "overlapping-chunk-id",
-        "other-chunk-version-id",
-        { path: "same-path", line: 1 },
-        "Line 1\nLine 2"
-      );
+      const text = createChunks({
+        snippetId: "snippet-id",
+        chunkId: "overlapping-chunk-id",
+        chunkVersionId: "other-chunk-version-id",
+        path: "same-path",
+        line: 1,
+        text: "Line 1\nLine 2"
+      });
       /*
        * Snippet intersects completely with last snippet: Don't add a new snippet.
        */
@@ -157,14 +153,14 @@ describe("text reducer", () => {
 
     describe("splits other chunks", () => {
       it("from other snippets", () => {
-        const text = createUndoableWithSnippet(
-          "cell-id",
-          "first-snippet-id",
-          "overlapping-chunk-id",
-          "other-chunk-version-id",
-          { path: "same-path", line: 1 },
-          "Line 1\nLine2\nLine 3"
-        );
+        const text = createChunks({
+          snippetId: "first-snippet-id",
+          chunkId: "overlapping-chunk-id",
+          chunkVersionId: "other-chunk-version-id",
+          path: "same-path",
+          line: 1,
+          text: "Line 1\nLine2\nLine 3"
+        });
         /**
          * Snippet interesects the middle of the snippet that comes after it. Split the snippet that
          * comes after, while making sure that the lines still appear in it.
@@ -191,22 +187,13 @@ describe("text reducer", () => {
       });
 
       it("from the reference implementation", () => {
-        const text = createUndoable({
-          chunks: {
-            all: ["chunk-0"],
-            byId: {
-              "chunk-0": { location: { line: 1, path: "same-path" }, versions: ["chunk-version-0"] }
-            }
-          },
-          chunkVersions: {
-            all: ["chunk-version-0"],
-            byId: {
-              "chunk-version-0": {
-                chunk: "chunk-0",
-                text: "Line 1\nLine 2\nLine 3"
-              }
-            }
-          }
+        const text = createChunks({
+          snippetId: null,
+          chunkId: "chunk-0",
+          chunkVersionId: "chunk-version-0",
+          path: "same-path",
+          line: 1,
+          text: "Line 1\nLine 2\nLine 3"
         });
         const action = actions.createSnippet(0, {
           location: { path: "same-path", line: 2 },
@@ -249,14 +236,14 @@ describe("text reducer", () => {
     }
 
     it("removes chunks when all its lines are added to an earlier snippet", () => {
-      const text = createUndoableWithSnippet(
-        "cell-id",
-        "snippet-id",
-        "overlapping-chunk-id",
-        "other-chunk-version-id",
-        { path: "same-path", line: 1 },
-        "Line 1"
-      );
+      const text = createChunks({
+        snippetId: "snippet-id",
+        chunkId: "overlapping-chunk-id",
+        chunkVersionId: "other-chunk-version-id",
+        path: "same-path",
+        line: 1,
+        text: "Line 1"
+      });
       const action = actions.createSnippet(0, {
         location: { path: "same-path", line: 1 },
         text: "Line 1"
@@ -334,7 +321,7 @@ describe("text reducer", () => {
   });
 
   describe("should handle SET_SELECTIONS", () => {
-    const text = createUndoable();
+    const text = createChunks();
     const selection = {
       anchor: { line: 1, character: 0 },
       active: { line: 1, character: 2 },
@@ -348,8 +335,8 @@ describe("text reducer", () => {
 
   describe("should handle EDIT", () => {
     it("should edit a chunk's text", () => {
-      const text = createSnippetWithChunkVersions({
-        id: "chunk-version-0",
+      const text = createChunks({
+        chunkVersionId: "chunk-version-0",
         line: 1,
         text: "Line 1"
       });
@@ -372,8 +359,8 @@ describe("text reducer", () => {
     });
 
     it("should edit chunks intersecting with the reference implementation", () => {
-      const text = createSnippetWithChunkVersions({
-        id: "chunk-version-0",
+      const text = createChunks({
+        chunkVersionId: "chunk-version-0",
         line: 3,
         text: "Line 1"
       });
@@ -396,15 +383,15 @@ describe("text reducer", () => {
     });
 
     it("should not edit chunk versions that are not chunk version 0", () => {
-      const text = createSnippetWithChunkVersions(
+      const text = createChunks(
         {
-          id: "chunk-version-0",
+          chunkVersionId: "chunk-version-0",
           chunkId: "chunk-0",
           line: 3,
           text: "Line 1A"
         },
         {
-          id: "chunk-version-1",
+          chunkVersionId: "chunk-version-1",
           chunkId: "chunk-0",
           line: 3,
           text: "Line 1B"
@@ -443,7 +430,7 @@ describe("text reducer", () => {
     });
 
     it("should move other chunks when the reference implementation changes", () => {
-      const text = createSnippetWithChunkVersions({
+      const text = createChunks({
         chunkId: "chunk-0",
         line: 3,
         text: "Line 1"
@@ -470,9 +457,9 @@ describe("text reducer", () => {
     });
 
     it("should move other chunks when a chunk version changes", () => {
-      const text = createSnippetWithChunkVersions(
+      const text = createChunks(
         {
-          id: "chunk-version-0",
+          chunkVersionId: "chunk-version-0",
           line: 1,
           text: "Line 1"
         },

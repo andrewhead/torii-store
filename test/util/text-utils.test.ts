@@ -7,3 +7,11 @@ describe("replace", () => {
     expect(replace(initial, range, "Ln")).toEqual("Line 1\n" + "Ln 2");
   });
 });
+
+describe("getFileContentsAt", () => {
+  it("gets multiple files", () => {});
+
+  it("adds text in order", () => {});
+
+  it("chooses the most recent version", () => {});
+});
