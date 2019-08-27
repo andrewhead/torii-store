@@ -1,5 +1,4 @@
-import { State } from "../index";
-import { Position, Range, Selection, SnippetId } from "../text/types";
+import { Position, Range, Selection } from "../text/types";
 
 export const NEWLINE = /\n/;
 
@@ -7,15 +6,11 @@ export function split(text: string) {
   return text.split(NEWLINE);
 }
 
-export function join(...lines: string[]) {
-  return lines.join("\n");
-}
-
 /**
- * Get file contents of the program as of the snippet indicated by 'snippetId'.
+ * Filters out 'undefined' values.
  */
-export function getFileContents(state: State, snippetId: SnippetId) {
-  return;
+export function join(...lines: (string | undefined)[]) {
+  return lines.filter(l => l !== undefined).join("\n");
 }
 
 /**

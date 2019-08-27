@@ -1,5 +1,6 @@
-import { getReferenceImplementationText } from "../../src/selectors/text";
-import { createChunks } from "../../src/util/test-utils";
+import { textUtils } from "../../src";
+import { getFileContents, getReferenceImplementationText } from "../../src/selectors/text";
+import { createChunks, createStateWithChunks } from "../../src/util/test-utils";
 
 describe("getReferenceImplementationText", () => {
   it("gets text from chunks", () => {
@@ -30,9 +31,100 @@ describe("getReferenceImplementationText", () => {
 });
 
 describe("getFileContents", () => {
-  it("gets contents of all files", () => {});
+  it("gets contents", () => {
+    const state = createStateWithChunks({
+      snippetId: "snippet-0",
+      path: "file-path",
+      line: 1,
+      text: "Line 1"
+    });
+    expect(getFileContents(state, "snippet-0")).toEqual({
+      "file-path": "Line 1"
+    });
+  });
 
-  it("adds text in cell order", () => {});
+  it("gets contents of all files", () => {
+    const state = createStateWithChunks(
+      {
+        snippetId: "snippet-0",
+        path: "file-1",
+        line: 1,
+        text: "File 1, Line 1"
+      },
+      {
+        snippetId: "snippet-0",
+        path: "file-2",
+        line: 1,
+        text: "File 2, Line 1"
+      }
+    );
+    expect(getFileContents(state, "snippet-0")).toEqual({
+      "file-1": "File 1, Line 1",
+      "file-2": "File 2, Line 1"
+    });
+  });
 
-  it("picks the most recent version", () => {});
+  it("adds text from multiple snippets", () => {
+    const state = createStateWithChunks(
+      {
+        snippetId: "snippet-0",
+        path: "file-path",
+        line: 2,
+        text: "Line 2"
+      },
+      {
+        snippetId: "snippet-1",
+        path: "file-path",
+        line: 1,
+        text: "Line 1"
+      }
+    );
+    expect(getFileContents(state, "snippet-1")).toEqual({
+      "file-path": textUtils.join("Line 1", "Line 2")
+    });
+  });
+
+  it("picks the most recent version", () => {
+    const state = createStateWithChunks(
+      {
+        snippetId: "snippet-0",
+        chunkId: "chunk-0",
+        chunkVersionId: "chunk-version-0",
+        line: 1,
+        path: "file-path",
+        text: "Version 0 text"
+      },
+      {
+        snippetId: "snippet-1",
+        chunkId: "chunk-0",
+        chunkVersionId: "chunk-version-1",
+        line: 1,
+        path: "file-path",
+        text: "Version 1 text"
+      }
+    );
+    expect(getFileContents(state, "snippet-1")).toEqual({
+      "file-path": "Version 1 text"
+    });
+  });
+
+  it("stops at 'until'", () => {
+    const state = createStateWithChunks(
+      {
+        snippetId: "snippet-0",
+        line: 1,
+        path: "file-path",
+        text: "Line 1"
+      },
+      {
+        snippetId: "snippet-1",
+        line: 2,
+        path: "file-path",
+        text: "Line 2 (DON'T INCLUDE)"
+      }
+    );
+    expect(getFileContents(state, "snippet-0")).toEqual({
+      "file-path": "Line 1"
+    });
+  });
 });

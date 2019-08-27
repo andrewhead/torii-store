@@ -15,3 +15,12 @@ export function isEditDiff(diff: Diff): diff is EditDiff {
 export function isArrayDiff(diff: Diff): diff is ArrayDiff {
   return diff.kind === "A";
 }
+
+/**
+ * Contents of all files in a snapshot of a program. The key in this dictionary is a path to the
+ * file from the refernce implementation, and the value is the contents of that file in this
+ * snapshot of the program.
+ */
+export interface FileContents {
+  [filePath: string]: string;
+}
