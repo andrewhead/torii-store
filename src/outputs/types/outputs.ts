@@ -37,15 +37,19 @@ export interface Output {
   value?: string;
 }
 
+const CONSOLE = "console";
+const HTML = "html";
+
+export type OutputType = typeof CONSOLE | typeof HTML;
+/**
+ * For dynamic checks whether an output type is valid.
+ */
+export const OutputTypes = [CONSOLE, HTML];
+
 export type CommandState = typeof RUNNING | typeof FINISHED;
 
 const RUNNING = "running";
 const FINISHED = "finished";
-
-export type OutputType = typeof CONSOLE | typeof HTML;
-
-const CONSOLE = "console";
-const HTML = "html";
 
 /**
  * A log of all console output produced by an execution. Output and error streams should be

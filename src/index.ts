@@ -13,6 +13,9 @@ import {
   ContentId,
   ContentType
 } from "./cells/types";
+import { CommandState, ConsoleLog, OutputType, OutputTypes } from "./outputs/types";
+import * as selectors from "./selectors";
+import { FileContents } from "./selectors/types";
 import * as textActions from "./text/actions";
 import { textReducer } from "./text/reducers";
 import {
@@ -80,13 +83,19 @@ export {
   ChunkId,
   ChunkVersion,
   ChunkVersionId,
+  CommandState,
+  ConsoleLog,
   ContentId,
   ContentType,
+  FileContents,
   InitialChunk,
+  OutputType,
+  OutputTypes,
   Path,
   Position,
   Range,
   Selection,
+  selectors,
   Snippet,
   SnippetId,
   SourcedRange,
