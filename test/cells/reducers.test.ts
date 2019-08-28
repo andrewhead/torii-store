@@ -1,9 +1,43 @@
+import * as cellActions from "../../src/cells/actions";
 import { cellsReducer } from "../../src/cells/reducers";
 import { ContentType } from "../../src/cells/types";
+import { OutputId } from "../../src/outputs/types";
 import * as textActions from "../../src/text/actions";
 import { createUndoable } from "../../src/util/test-utils";
 
 describe("cellsReducers", () => {
+  describe("should handle INSERT_OUTPUT", () => {
+    it("should insert an output", () => {
+      const text = createUndoable({
+        cells: {
+          all: ["cell-0"],
+          byId: {
+            "cell-0": {
+              type: ContentType.SNIPPET,
+              contentId: "mock-snippet-id"
+            }
+          }
+        }
+      });
+      const outputId: OutputId = {
+        snippetId: "snippet-id",
+        commandId: "command-id"
+      };
+      const action = cellActions.insertOutput(outputId, 0);
+      expect(cellsReducer(text, action)).toMatchObject({
+        cells: {
+          all: [action.cellId, "cell-0"],
+          byId: {
+            [action.cellId]: {
+              type: ContentType.OUTPUT,
+              contentId: outputId
+            }
+          }
+        }
+      });
+    });
+  });
+
   describe("should handle CREATE_SNIPPET", () => {
     it("should create a cell for the snippet", () => {
       const text = createUndoable();
