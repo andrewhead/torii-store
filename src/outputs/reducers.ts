@@ -35,7 +35,7 @@ function startExecution(state: Outputs, action: StartExecutionAction) {
   const output: Output = {
     commandId: action.commandId,
     type: action.outputType,
-    state: "running"
+    state: "started"
   };
   return {
     ...state,

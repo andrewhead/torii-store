@@ -46,8 +46,9 @@ export type OutputType = typeof CONSOLE | typeof HTML;
  */
 export const OutputTypes = [CONSOLE, HTML];
 
-export type CommandState = typeof RUNNING | typeof FINISHED;
+export type CommandState = typeof STARTED | typeof RUNNING | typeof FINISHED;
 
+const STARTED = "started";
 const RUNNING = "running";
 const FINISHED = "finished";
 

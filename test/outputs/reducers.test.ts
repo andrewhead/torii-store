@@ -17,7 +17,7 @@ describe("outputsReducer", () => {
             "command-id": {
               commandId: "command-id",
               type: "console",
-              state: "running"
+              state: "started"
             }
           }
         }
@@ -46,7 +46,7 @@ describe("outputsReducer", () => {
             "command-id": {
               commandId: "command-id",
               type: "console",
-              state: "running"
+              state: "started"
             }
           }
         }

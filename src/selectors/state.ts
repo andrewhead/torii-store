@@ -25,8 +25,12 @@ export function isPathActive(path: Path, text: Undoable): boolean {
  * Returns a list of IDs of snippets for which the snapshot of the code up to that snippet has
  * changed. 'before' is the state before change, and 'after' is the state after change.
  */
-export function getChangedSnapshots(before: State | undefined, after: State): SnippetId[] {
+export function getChangedSnapshots(
+  before: State | undefined,
+  after: State | undefined
+): SnippetId[] {
   before = before || stateUtils.createState();
+  after = after || stateUtils.createState();
   let changedSnippets: SnippetId[] = [];
   const differences = diff(before, after);
   if (differences === undefined) {
