@@ -40,7 +40,11 @@ export function getChangedSnapshots(
     /*
      * A snippet has been added.
      */
-    if (isArrayDiff(d) && pathMatches(d.path, ["snippets", "all"]) && isAddDiff(d.item)) {
+    if (
+      isArrayDiff(d) &&
+      pathMatches(d.path, ["present", "snippets", "all"]) &&
+      isAddDiff(d.item)
+    ) {
       changedSnippets = _.union(changedSnippets, [d.item.rhs]);
     }
     /*
@@ -48,7 +52,7 @@ export function getChangedSnapshots(
      */
     if (
       isArrayDiff(d) &&
-      pathMatches(d.path, ["snippets", "byId", undefined, "chunkVersionsAdded"])
+      pathMatches(d.path, ["present", "snippets", "byId", undefined, "chunkVersionsAdded"])
     ) {
       const snippetId = d.path[d.path.length - 2] as SnippetId;
       changedSnippets = _.union(changedSnippets, [snippetId]);
@@ -56,7 +60,10 @@ export function getChangedSnapshots(
     /*
      * A chunk within a snippet has been edited.
      */
-    if (isEditDiff(d) && pathMatches(d.path, ["chunkVersions", "byId", undefined, undefined])) {
+    if (
+      isEditDiff(d) &&
+      pathMatches(d.path, ["present", "chunkVersions", "byId", undefined, undefined])
+    ) {
       const changedChunkVersionId = d.path[d.path.length - 2];
       if (typeof changedChunkVersionId === "string") {
         for (const snippetId of after.undoable.present.snippets.all) {

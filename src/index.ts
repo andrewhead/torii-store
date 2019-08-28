@@ -13,7 +13,15 @@ import {
   ContentId,
   ContentType
 } from "./cells/types";
-import { CommandState, ConsoleLog, OutputType, OutputTypes } from "./outputs/types";
+import * as outputActions from "./outputs/actions";
+import {
+  CommandState,
+  ConsoleLog,
+  outputActionNames,
+  OutputActionTypes,
+  OutputType,
+  OutputTypes
+} from "./outputs/types";
 import * as selectors from "./selectors";
 import { FileContents } from "./selectors/types";
 import * as textActions from "./text/actions";
@@ -61,18 +69,21 @@ export type State = ReturnType<typeof rootReducer>;
 
 export namespace actions {
   export namespace Type {
-    export type Text = TextActionTypes;
     export type Cells = CellActionTypes;
-    export type Any = TextActionTypes;
+    export type Text = TextActionTypes;
+    export type Outputs = OutputActionTypes;
+    export type Any = CellActionTypes | TextActionTypes | OutputActionTypes;
   }
 
   export namespace Name {
-    export const text = textActionNames;
     export const cells = cellActionNames;
+    export const text = textActionNames;
+    export const outputs = outputActionNames;
   }
 
-  export const text = textActions;
   export const cells = cellActions;
+  export const text = textActions;
+  export const outputs = outputActions;
 }
 
 export {
