@@ -1,7 +1,7 @@
 import { SimpleStore } from "../../common/types";
 import { SnippetId } from "../../text/types";
 
-export interface Outputs extends SimpleStore<SnippetId, SnippetOutputs[]> {}
+export interface Outputs extends SimpleStore<SnippetId, SnippetOutputs> {}
 
 /**
  * Dictionary mapping from a command ID to the output produced by it.

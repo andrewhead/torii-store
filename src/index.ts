@@ -14,9 +14,12 @@ import {
   ContentType
 } from "./cells/types";
 import * as outputActions from "./outputs/actions";
+import { outputsReducer } from "./outputs/reducers";
 import {
+  CommandId,
   CommandState,
   ConsoleLog,
+  Output,
   outputActionNames,
   OutputActionTypes,
   OutputType,
@@ -57,6 +60,7 @@ import * as textUtils from "./util/text-utils";
 const UNDO_LIMIT = 10;
 
 export const rootReducer = combineReducers({
+  outputs: outputsReducer,
   undoable: undoable(reduceReducers(textReducer, cellsReducer), { limit: UNDO_LIMIT })
 });
 
@@ -94,12 +98,14 @@ export {
   ChunkId,
   ChunkVersion,
   ChunkVersionId,
+  CommandId,
   CommandState,
   ConsoleLog,
   ContentId,
   ContentType,
   FileContents,
   InitialChunk,
+  Output,
   OutputType,
   OutputTypes,
   Path,

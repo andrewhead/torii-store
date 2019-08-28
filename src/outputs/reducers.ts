@@ -15,7 +15,9 @@ import {
 } from "./types";
 import { FINISH_EXECUTION, START_EXECUTION, UPDATE_EXECUTION } from "./types/action-names";
 
-export function outputsReducer(state = simpleStoreInitialState(), action: AnyAction): Outputs {
+const initialState = simpleStoreInitialState() as Outputs;
+
+export function outputsReducer(state = initialState, action: AnyAction): Outputs {
   if (isOutputAction(action)) {
     switch (action.type) {
       case START_EXECUTION:
@@ -77,11 +79,11 @@ function getOutput(state: Outputs, snippetId: SnippetId, commandId: CommandId): 
 }
 
 function setOutputInById(
-  state: ById<SnippetOutputs[]>,
+  state: ById<SnippetOutputs>,
   snippetId: SnippetId,
   commandId: CommandId,
   output: Output
-): ById<SnippetOutputs[]> {
+): ById<SnippetOutputs> {
   return {
     ...state,
     [snippetId]: {
