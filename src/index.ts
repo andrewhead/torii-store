@@ -4,15 +4,7 @@ import { devToolsEnhancer } from "redux-devtools-extension";
 import undoable from "redux-undo";
 import * as cellActions from "./cells/actions";
 import { cellsReducer } from "./cells/reducers";
-import {
-  Cell,
-  cellActionNames,
-  CellActionTypes,
-  CellId,
-  Cells,
-  ContentId,
-  ContentType
-} from "./cells/types";
+import { Cell, cellActionNames, CellActionTypes, CellId, Cells, ContentType } from "./cells/types";
 import * as outputActions from "./outputs/actions";
 import { outputsReducer } from "./outputs/reducers";
 import {
@@ -22,6 +14,7 @@ import {
   Output,
   outputActionNames,
   OutputActionTypes,
+  OutputId,
   OutputType,
   OutputTypes
 } from "./outputs/types";
@@ -101,11 +94,11 @@ export {
   CommandId,
   CommandState,
   ConsoleLog,
-  ContentId,
   ContentType,
   FileContents,
   InitialChunk,
   Output,
+  OutputId,
   OutputType,
   OutputTypes,
   Path,

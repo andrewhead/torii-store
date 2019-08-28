@@ -1,17 +1,33 @@
 import { SimpleStore } from "../../common/types";
+import { OutputId } from "../../outputs/types";
 import { SnippetId } from "../../text/types";
 
 export interface Cells extends SimpleStore<CellId, Cell> {}
 
-export enum ContentType {
-  SNIPPET
+export type Cell = SnippetCell | OutputCell;
+
+export interface SnippetCell extends BaseCell {
+  type: ContentType.SNIPPET;
+  contentId: SnippetId;
 }
 
-export type ContentId = SnippetId;
+export interface OutputCell extends BaseCell {
+  type: ContentType.OUTPUT;
+  contentId: OutputId;
+}
 
-export interface Cell {
-  contentId: ContentId;
+interface BaseCell {
   type: ContentType;
+  /**
+   * Should be either a string for a simple ID, or a dictionary for a compound ID, where each key
+   * in the dictionary is a descriptive name of the part of the ID and each value is the ID.
+   */
+  contentId: any;
+}
+
+export enum ContentType {
+  SNIPPET,
+  OUTPUT
 }
 
 /**

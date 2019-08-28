@@ -80,6 +80,12 @@ interface CharacterRange {
   end: number;
 }
 
-export type OutputId = string;
+/**
+ * The unique identifier for an output is a snippet and the command that produced it.
+ */
+export interface OutputId {
+  snippetId: SnippetId;
+  commandId: CommandId;
+}
 
 export type CommandId = string;
