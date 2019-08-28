@@ -3,35 +3,34 @@
  * could be useful for type-checking in this package.
  */
 declare module "deep-diff" {
-  function diff(lhs: any, rhs: any): undefined | Diff[];
-  export = diff;
-}
+  export function diff(lhs: any, rhs: any): undefined | Diff[];
 
-declare interface Diff {
-  kind: string;
-  path: DiffPath;
-}
+  export interface Diff {
+    kind: string;
+    path: DiffPath;
+  }
 
-declare interface DeleteDiff extends Diff {
-  kind: "D";
-  lhs: any;
-}
+  export interface DeleteDiff extends Diff {
+    kind: "D";
+    lhs: any;
+  }
 
-declare interface AddDiff extends Diff {
-  kind: "N";
-  rhs: any;
-}
+  export interface AddDiff extends Diff {
+    kind: "N";
+    rhs: any;
+  }
 
-declare interface EditDiff extends Diff {
-  kind: "E";
-  lhs: any;
-  rhs: any;
-}
+  export interface EditDiff extends Diff {
+    kind: "E";
+    lhs: any;
+    rhs: any;
+  }
 
-declare interface ArrayDiff extends Diff {
-  kind: "A";
-  index: number;
-  item: DeleteDiff | AddDiff | EditDiff;
+  export interface ArrayDiff extends Diff {
+    kind: "A";
+    index: number;
+    item: DeleteDiff | AddDiff | EditDiff;
+  }
 }
 
 declare type DiffPath = (string | number)[];

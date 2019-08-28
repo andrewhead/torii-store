@@ -1,8 +1,9 @@
-import diff from "deep-diff";
+import { diff } from "deep-diff";
 import _ from "lodash";
 import { ContentType, State } from "../index";
 import { Path, SnippetId } from "../text/types";
 import { Undoable } from "../types";
+import * as stateUtils from "../util/state-utils";
 import { isAddDiff, isArrayDiff, isEditDiff, PathElementPattern } from "./types";
 
 export function getActivePaths(text: Undoable): Path[] {
@@ -24,7 +25,8 @@ export function isPathActive(path: Path, text: Undoable): boolean {
  * Returns a list of IDs of snippets for which the snapshot of the code up to that snippet has
  * changed. 'before' is the state before change, and 'after' is the state after change.
  */
-export function getChangedSnapshots(before: State, after: State): SnippetId[] {
+export function getChangedSnapshots(before: State | undefined, after: State): SnippetId[] {
+  before = before || stateUtils.createState();
   let changedSnippets: SnippetId[] = [];
   const differences = diff(before, after);
   if (differences === undefined) {

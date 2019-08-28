@@ -1,3 +1,5 @@
+import { AddDiff, ArrayDiff, DeleteDiff, Diff, EditDiff } from "deep-diff";
+
 export type PathElementPattern = string | number | RegExp | undefined;
 
 export function isAddDiff(diff: Diff): diff is AddDiff {

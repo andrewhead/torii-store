@@ -1,19 +1,15 @@
 import _ from "lodash";
 import { DeepPartial } from "redux";
 import uuidv4 from "uuid/v4";
-import { createStore, State } from "..";
+import { State } from "..";
 import { ContentType } from "../cells/types";
 import { simpleStoreInitialState } from "../common/reducers";
 import { ChunkId, ChunkVersionId, Path, SnippetId } from "../text/types";
 import { Undoable } from "../types";
+import { createState } from "./state-utils";
 
 export const TEST_FILE_PATH = "file-path";
 export const TEST_SNIPPET_ID = "snippet-0";
-
-export function createState(partialState?: DeepPartial<State>): State {
-  const emptyState = createStore().getState();
-  return _.merge({}, emptyState, partialState);
-}
 
 export function createStateWithChunks(...chunkVersions: ChunkVersionSpec[]): State {
   return createState({

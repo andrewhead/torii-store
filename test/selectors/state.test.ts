@@ -1,11 +1,17 @@
 import { getChangedSnapshots } from "../../src/selectors/state";
-import { createState, createStateWithChunks } from "../../src/util/test-utils";
+import { createState } from "../../src/util/state-utils";
+import { createStateWithChunks } from "../../src/util/test-utils";
 
 describe("getChangedSnapshots", () => {
   it("gets a new snippet", () => {
     const before = createState();
     const after = createStateWithChunks({ snippetId: "snippet-id", line: 1, text: "Line 1" });
     expect(getChangedSnapshots(before, after)).toEqual(["snippet-id"]);
+  });
+
+  it("gets a new snippet when before is undefined", () => {
+    const after = createStateWithChunks({ snippetId: "snippet-id", line: 1, text: "Line 1" });
+    expect(getChangedSnapshots(undefined, after)).toEqual(["snippet-id"]);
   });
 
   it("doesn't get an unchanged snippet", () => {

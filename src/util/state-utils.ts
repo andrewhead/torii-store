@@ -1,3 +1,12 @@
+import _ from "lodash";
+import { DeepPartial } from "redux";
+import { createStore, State } from "..";
+
+export function createState(partialState?: DeepPartial<State>): State {
+  const emptyState = createStore().getState();
+  return _.merge({}, emptyState, partialState);
+}
+
 /**
  * Create an callback whose processing can be deferred. See 'Deferrable' interface for more details.
  */
