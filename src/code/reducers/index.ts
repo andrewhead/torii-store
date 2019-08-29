@@ -1,6 +1,6 @@
 import { AnyAction } from "redux";
 import { initialUndoableState, Undoable } from "../../types";
-import { isTextAction, textActionNames as actionNames } from "../types";
+import { codeActionNames as actionNames, isCodeAction } from "../types";
 import { createSnippet } from "./create-snippet";
 import { edit } from "./edit";
 import { uploadFileContents } from "./upload-file-contents";
@@ -28,8 +28,8 @@ import { uploadFileContents } from "./upload-file-contents";
  * bug gets fixed, all of these reducers should be refactored to take a more precise type as the
  * second argument. Follow the issue here: https://github.com/omnidan/redux-undo/issues/229
  */
-export function textReducer(state: Undoable = initialUndoableState, action: AnyAction) {
-  if (isTextAction(action)) {
+export function codeReducer(state: Undoable = initialUndoableState, action: AnyAction) {
+  if (isCodeAction(action)) {
     switch (action.type) {
       case actionNames.UPLOAD_FILE_CONTENTS:
         return uploadFileContents(state, action);

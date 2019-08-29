@@ -1,15 +1,15 @@
 import { diff } from "deep-diff";
 import _ from "lodash";
+import { Path, SnippetId } from "../code/types";
 import { ContentType, State } from "../index";
-import { Path, SnippetId } from "../text/types";
 import { Undoable } from "../types";
 import * as stateUtils from "../util/state-utils";
 import { isAddDiff, isArrayDiff, isEditDiff, PathElementPattern } from "./types";
 
-export function getActivePaths(text: Undoable): Path[] {
+export function getActivePaths(state: Undoable): Path[] {
   const paths = [];
-  for (const chunkId of text.chunks.all) {
-    const chunk = text.chunks.byId[chunkId];
+  for (const chunkId of state.chunks.all) {
+    const chunk = state.chunks.byId[chunkId];
     if (paths.indexOf(chunk.location.path) === -1) {
       paths.push(chunk.location.path);
     }
@@ -17,8 +17,8 @@ export function getActivePaths(text: Undoable): Path[] {
   return paths;
 }
 
-export function isPathActive(path: Path, text: Undoable): boolean {
-  return getActivePaths(text).indexOf(path) !== -1;
+export function isPathActive(path: Path, state: Undoable): boolean {
+  return getActivePaths(state).indexOf(path) !== -1;
 }
 
 /**

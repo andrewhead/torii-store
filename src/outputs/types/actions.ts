@@ -1,5 +1,5 @@
 import { AnyAction } from "redux";
-import { SnippetId } from "../../text/types";
+import { SnippetId } from "../../code/types";
 import * as names from "./action-names";
 import { CommandId, ConsoleLog, OutputType } from "./outputs";
 

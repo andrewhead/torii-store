@@ -1,11 +1,11 @@
 import { textUtils } from "../../src";
-import { getFileContents, getReferenceImplementationText } from "../../src/selectors/text";
+import { getFileContents, getReferenceImplementationText } from "../../src/selectors/code";
 import { createChunks, createStateWithChunks } from "../../src/util/test-utils";
 
 describe("getReferenceImplementationText", () => {
   it("gets text from chunks", () => {
     const path = "file-path";
-    const text = createChunks(
+    const code = createChunks(
       {
         snippetId: "snippet-0",
         chunkId: "chunk-1",
@@ -26,7 +26,7 @@ describe("getReferenceImplementationText", () => {
         text: "Line 1\nLine 2"
       }
     );
-    expect(getReferenceImplementationText(text, path)).toEqual("Line 1\nLine 2\nLine 3\nLine 4");
+    expect(getReferenceImplementationText(code, path)).toEqual("Line 1\nLine 2\nLine 3\nLine 4");
   });
 });
 

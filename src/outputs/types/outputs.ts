@@ -1,5 +1,5 @@
+import { SnippetId } from "../../code/types";
 import { SimpleStore } from "../../common/types";
-import { SnippetId } from "../../text/types";
 
 export interface Outputs extends SimpleStore<SnippetId, SnippetOutputs> {}
 

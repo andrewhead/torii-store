@@ -1,6 +1,6 @@
 import { Cells } from "./cells/types";
+import { Chunks, ChunkVersions, Selection, Snippets, VisibilityRules } from "./code/types";
 import { simpleStoreInitialState } from "./common/reducers";
-import { Chunks, ChunkVersions, Selection, Snippets, VisibilityRules } from "./text/types";
 
 /**
  * The undoable partition of the store.

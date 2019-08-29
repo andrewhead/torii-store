@@ -1,14 +1,14 @@
 import * as cellActions from "../../src/cells/actions";
 import { cellsReducer } from "../../src/cells/reducers";
 import { ContentType } from "../../src/cells/types";
+import * as codeActions from "../../src/code/actions";
 import { OutputId } from "../../src/outputs/types";
-import * as textActions from "../../src/text/actions";
 import { createUndoable } from "../../src/util/test-utils";
 
 describe("cellsReducers", () => {
   describe("should handle INSERT_OUTPUT", () => {
     it("should insert an output", () => {
-      const text = createUndoable({
+      const code = createUndoable({
         cells: {
           all: ["cell-0"],
           byId: {
@@ -24,7 +24,7 @@ describe("cellsReducers", () => {
         commandId: "command-id"
       };
       const action = cellActions.insertOutput(outputId, 0);
-      expect(cellsReducer(text, action)).toMatchObject({
+      expect(cellsReducer(code, action)).toMatchObject({
         cells: {
           all: [action.cellId, "cell-0"],
           byId: {
@@ -40,9 +40,9 @@ describe("cellsReducers", () => {
 
   describe("should handle CREATE_SNIPPET", () => {
     it("should create a cell for the snippet", () => {
-      const text = createUndoable();
-      const action = textActions.createSnippet(0);
-      expect(cellsReducer(text, action)).toMatchObject({
+      const code = createUndoable();
+      const action = codeActions.createSnippet(0);
+      expect(cellsReducer(code, action)).toMatchObject({
         cells: {
           all: [action.cellId],
           byId: {
@@ -67,7 +67,7 @@ describe("cellsReducers", () => {
           all: ["other-cell-id"]
         }
       });
-      const action = textActions.createSnippet(0);
+      const action = codeActions.createSnippet(0);
       expect(cellsReducer(undoable, action)).toMatchObject({
         cells: { all: [action.cellId, "other-cell-id"] }
       });

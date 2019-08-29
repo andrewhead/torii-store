@@ -1,7 +1,7 @@
 import { AnyAction } from "redux";
+import { SnippetId } from "../code/types";
 import { addIdIfMissing, simpleStoreInitialState } from "../common/reducers";
 import { ById } from "../common/types";
-import { SnippetId } from "../text/types";
 import {
   CommandId,
   CommandState,

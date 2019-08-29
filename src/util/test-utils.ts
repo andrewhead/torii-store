@@ -3,8 +3,8 @@ import { DeepPartial } from "redux";
 import uuidv4 from "uuid/v4";
 import { State } from "..";
 import { ContentType } from "../cells/types";
+import { ChunkId, ChunkVersionId, Path, SnippetId } from "../code/types";
 import { simpleStoreInitialState } from "../common/reducers";
-import { ChunkId, ChunkVersionId, Path, SnippetId } from "../text/types";
 import { Undoable } from "../types";
 import { createState } from "./state-utils";
 
@@ -20,7 +20,7 @@ export function createStateWithChunks(...chunkVersions: ChunkVersionSpec[]): Sta
 }
 
 /**
- * This is now the preferred method for creating test text data (instead of 'createUndoableWithSnippet').
+ * This is now the preferred method for creating test code data (instead of 'createUndoableWithSnippet').
  * Cells are created for the snippets in the order that they are referred to in the chunk version
  * specs. If the snippet ID for a chunk version is undefined, it will be 'TEST_SNIPPET_ID'; if the path
  * isn't set for a chunk version, it will be 'TEST_FILE_PATH'.

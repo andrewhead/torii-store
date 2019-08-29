@@ -1,4 +1,4 @@
-import { Position, Range, Selection } from "../text/types";
+import { Position, Range, Selection } from "../code/types";
 
 export const NEWLINE = /\n/;
 

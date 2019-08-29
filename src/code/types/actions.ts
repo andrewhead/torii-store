@@ -31,12 +31,12 @@ export interface SetSelectionsAction {
   selections: Selection[];
 }
 
-export type TextActionTypes =
+export type CodeActionTypes =
   | UploadFileContentsAction
   | CreateSnippetAction
   | EditAction
   | SetSelectionsAction;
 
-export function isTextAction(action: AnyAction): action is TextActionTypes {
+export function isCodeAction(action: AnyAction): action is CodeActionTypes {
   return Object.keys(names).indexOf(action.type) !== -1;
 }

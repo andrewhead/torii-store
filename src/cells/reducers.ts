@@ -1,6 +1,6 @@
 import { AnyAction } from "redux";
+import { codeActionNames, isCodeAction } from "../code/types";
 import { insert, move } from "../common/reducers";
-import { isTextAction, textActionNames } from "../text/types";
 import { initialUndoableState } from "../types";
 import { cellActionNames, Cells, ContentType, isCellAction } from "./types";
 
@@ -24,9 +24,9 @@ function cellsReducerForCellsSlice(state: Cells, action: AnyAction) {
       default:
         return state;
     }
-  } else if (isTextAction(action)) {
+  } else if (isCodeAction(action)) {
     switch (action.type) {
-      case textActionNames.CREATE_SNIPPET:
+      case codeActionNames.CREATE_SNIPPET:
         return insert(state, action.cellId, action.index, {
           type: ContentType.SNIPPET,
           contentId: action.snippetId

@@ -19,16 +19,16 @@ import {
   removeLines,
   splitIntoLines
 } from "./common";
-import { emptyTextUpdates, mergeTextUpdates, TextUpdates, updateVisibilityRules } from "./update";
+import { CodeUpdates, emptyCodeUpdates, mergeCodeUpdates, updateVisibilityRules } from "./update";
 
 export function createSnippet(state: Undoable, action: CreateSnippetAction) {
-  let updates = emptyTextUpdates();
+  let updates = emptyCodeUpdates();
   const {
     cleanedInitialChunks,
     updates: removeDuplicatesUpdates
   } = removeDuplicatesFromInitialChunks(state, action);
-  updates = mergeTextUpdates(updates, removeDuplicatesUpdates);
-  updates = mergeTextUpdates(updates, addChunks(cleanedInitialChunks));
+  updates = mergeCodeUpdates(updates, removeDuplicatesUpdates);
+  updates = mergeCodeUpdates(updates, addChunks(cleanedInitialChunks));
   /*
    * Separate new snippet from the rest of the updates: we have to add it at a specific position,
    * which the boilerplate update code doesn't handle.
@@ -36,8 +36,8 @@ export function createSnippet(state: Undoable, action: CreateSnippetAction) {
   const newSnippet = {
     chunkVersionsAdded: Object.keys(updates.chunkVersions.add)
   };
-  updates = mergeTextUpdates(updates, removeDuplicatesFromExistingChunks(state, action, updates));
-  updates = mergeTextUpdates(updates, fixVisibilityRules(state, updates));
+  updates = mergeCodeUpdates(updates, removeDuplicatesFromExistingChunks(state, action, updates));
+  updates = mergeCodeUpdates(updates, fixVisibilityRules(state, updates));
   state = {
     ...state,
     chunks: update(state.chunks, updates.chunks),
@@ -54,7 +54,7 @@ export function createSnippet(state: Undoable, action: CreateSnippetAction) {
 function removeDuplicatesFromInitialChunks(state: Undoable, action: CreateSnippetAction) {
   const { chunks: initialChunks, snippetId, index: newCellIndex } = action;
   const initialChunkLines = splitIntoLines(initialChunks);
-  const updates = emptyTextUpdates();
+  const updates = emptyCodeUpdates();
   /*
    * Remove parts of chunks that showed up in earliers steps, though show them in the snippet.
    */
@@ -125,9 +125,9 @@ function removeDuplicatesFromInitialChunks(state: Undoable, action: CreateSnippe
 function removeDuplicatesFromExistingChunks(
   state: Undoable,
   action: CreateSnippetAction,
-  updates: TextUpdates
-): TextUpdates {
-  let chunkCleanupUpdates = emptyTextUpdates();
+  updates: CodeUpdates
+): CodeUpdates {
+  let chunkCleanupUpdates = emptyCodeUpdates();
   const newChunkLines: ChunkLine[] = [];
   for (let chunkVersionId of Object.keys(updates.chunkVersions.add)) {
     let chunkVersion = updates.chunkVersions.add[chunkVersionId];
@@ -182,7 +182,7 @@ function removeDuplicatesFromExistingChunks(
   }, {});
   for (const chunkId of Object.keys(lineRemovals)) {
     const updates = removeLines(state, chunkId, lineRemovals[chunkId]);
-    chunkCleanupUpdates = mergeTextUpdates(chunkCleanupUpdates, updates);
+    chunkCleanupUpdates = mergeCodeUpdates(chunkCleanupUpdates, updates);
   }
   repeatedLines.forEach(repeatedLine => {
     const repetitionSnippetId = repeatedLine.second.snippetId;
@@ -242,8 +242,8 @@ function getLinesForChunksNotInSnippets(state: Undoable): ChunkLine[] {
  * chunk versions as appropriate. Only replaces a deleted chunk version with version 0 of
  * another chunk (not later versions of the chunk).
  */
-function fixVisibilityRules(state: Undoable, updates: TextUpdates): TextUpdates {
-  let visibilityFixUpdates = emptyTextUpdates();
+function fixVisibilityRules(state: Undoable, updates: CodeUpdates): CodeUpdates {
+  let visibilityFixUpdates = emptyCodeUpdates();
   for (const chunkVersionId of updates.chunkVersions.delete) {
     for (const snippetId of Object.keys(state.visibilityRules)) {
       if (state.visibilityRules[snippetId][chunkVersionId] !== undefined) {
@@ -286,7 +286,7 @@ function fixVisibilityRules(state: Undoable, updates: TextUpdates): TextUpdates 
       }
     }
   }
-  return mergeTextUpdates(updates, visibilityFixUpdates);
+  return mergeCodeUpdates(updates, visibilityFixUpdates);
 }
 
 interface LineRemovals {

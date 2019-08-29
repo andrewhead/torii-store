@@ -1,21 +1,21 @@
 import _ from "lodash";
 import { ContentType, State } from "..";
-import { ChunkVersionId, Path, SnippetId } from "../text/types";
+import { ChunkVersionId, Path, SnippetId } from "../code/types";
 import { Undoable } from "../types";
 import * as textUtils from "../util/text-utils";
 import { FileContents } from "./types";
 
-export function getReferenceImplementationText(text: Undoable, path: Path): string {
-  const chunkIds = text.chunks.all;
+export function getReferenceImplementationText(code: Undoable, path: Path): string {
+  const chunkIds = code.chunks.all;
   const chunks = chunkIds
-    .map(id => text.chunks.byId[id])
+    .map(id => code.chunks.byId[id])
     .filter(chunk => _.isEqual(chunk.location.path, path))
     .filter(chunk => chunk.versions.length >= 1);
   chunks.sort((chunk1, chunk2) => chunk1.location.line - chunk2.location.line);
   return textUtils.join(
     ...chunks
       .map(chunk => chunk.versions[0])
-      .map(chunkVersionId => text.chunkVersions.byId[chunkVersionId])
+      .map(chunkVersionId => code.chunkVersions.byId[chunkVersionId])
       .map(chunkVersion => chunkVersion.text)
   );
 }

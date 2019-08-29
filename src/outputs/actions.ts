@@ -1,4 +1,4 @@
-import { SnippetId } from "../text/types";
+import { SnippetId } from "../code/types";
 import {
   CommandId,
   ConsoleLog,

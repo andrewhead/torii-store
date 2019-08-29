@@ -1,23 +1,23 @@
 import { ContentType } from "../../src";
-import * as actions from "../../src/text/actions";
-import { textReducer } from "../../src/text/reducers";
+import * as actions from "../../src/code/actions";
+import { codeReducer } from "../../src/code/reducers";
 import {
   ReferenceImplementationSource,
   SnippetId,
   SourceType,
   visibility
-} from "../../src/text/types";
+} from "../../src/code/types";
 import { Undoable } from "../../src/types";
 import { createChunks, createUndoable } from "../../src/util/test-utils";
 import * as textUtils from "../../src/util/text-utils";
 
-describe("text reducer", () => {
+describe("code reducer", () => {
   describe("should handle UPLOAD_FILE_CONTENTS", () => {
     it("should create a chunk with the file contents", () => {
       const path = "file-path";
-      const text = createUndoable();
+      const code = createUndoable();
       const action = actions.uploadFileContents(path, "File contents");
-      expect(textReducer(text, action)).toMatchObject({
+      expect(codeReducer(code, action)).toMatchObject({
         chunks: {
           all: [action.chunkId],
           byId: {
@@ -37,15 +37,15 @@ describe("text reducer", () => {
           }
         }
       });
-      expect(text.snippets.all.length).toBe(0);
+      expect(code.snippets.all.length).toBe(0);
     });
   });
 
   describe("should handle CREATE_SNIPPET", () => {
     it("should create an empty snippet", () => {
-      const text = createChunks();
+      const code = createChunks();
       const action = actions.createSnippet(0);
-      expect(textReducer(text, action)).toMatchObject({
+      expect(codeReducer(code, action)).toMatchObject({
         snippets: {
           all: [action.snippetId],
           byId: {
@@ -56,10 +56,10 @@ describe("text reducer", () => {
     });
 
     describe("should create new chunks", () => {
-      const text = createChunks();
+      const code = createChunks();
       const location = { path: "path", line: 1 };
       const action = actions.createSnippet(0, { location, text: "Text" });
-      const updatedState = textReducer(text, action);
+      const updatedState = codeReducer(code, action);
       expect(updatedState.chunks.all.length).toEqual(1);
       expect(updatedState.chunkVersions.all.length).toEqual(1);
       const chunkId = updatedState.chunks.all[0];
@@ -94,7 +94,7 @@ describe("text reducer", () => {
     });
 
     it("should hide ranges shown in earlier snippets", () => {
-      const text = createChunks({
+      const code = createChunks({
         snippetId: "snippet-id",
         chunkId: "overlapping-chunk-id",
         chunkVersionId: "other-chunk-version-id",
@@ -110,7 +110,7 @@ describe("text reducer", () => {
         location: { path: "same-path", line: 1 },
         text: "Line 0\nLine 1"
       });
-      const updatedState = textReducer(text, action);
+      const updatedState = codeReducer(code, action);
       const chunkVersionId = updatedState.snippets.byId[action.snippetId].chunkVersionsAdded[0];
       expect(updatedState).toMatchObject({
         chunkVersions: {
@@ -131,7 +131,7 @@ describe("text reducer", () => {
     });
 
     it("does not add new chunks if all text was included before", () => {
-      const text = createChunks({
+      const code = createChunks({
         snippetId: "snippet-id",
         chunkId: "overlapping-chunk-id",
         chunkVersionId: "other-chunk-version-id",
@@ -146,14 +146,14 @@ describe("text reducer", () => {
         location: { path: "same-path", line: 1 },
         text: "Line 1\nLine 2"
       });
-      const updatedState = textReducer(text, action);
+      const updatedState = codeReducer(code, action);
       expect(updatedState.chunks.all.length).toBe(1);
       expect(updatedState.chunkVersions.all.length).toBe(1);
     });
 
     describe("splits other chunks", () => {
       it("from other snippets", () => {
-        const text = createChunks({
+        const code = createChunks({
           snippetId: "first-snippet-id",
           chunkId: "overlapping-chunk-id",
           chunkVersionId: "other-chunk-version-id",
@@ -169,7 +169,7 @@ describe("text reducer", () => {
           location: { path: "same-path", line: 2 },
           text: "Line 2"
         });
-        const updatedState = textReducer(text, action);
+        const updatedState = codeReducer(code, action);
         expect(snippetContainingText(updatedState, "Line 1")).toBe("first-snippet-id");
         expect(snippetContainingText(updatedState, "Line 2")).toBe(action.snippetId);
         expect(snippetContainingText(updatedState, "Line 3")).toBe("first-snippet-id");
@@ -187,7 +187,7 @@ describe("text reducer", () => {
       });
 
       it("from the reference implementation", () => {
-        const text = createChunks({
+        const code = createChunks({
           snippetId: null,
           chunkId: "chunk-0",
           chunkVersionId: "chunk-version-0",
@@ -199,7 +199,7 @@ describe("text reducer", () => {
           location: { path: "same-path", line: 2 },
           text: "Line 2"
         });
-        const updatedState = textReducer(text, action);
+        const updatedState = codeReducer(code, action);
         expect(snippetContainingText(updatedState, "Line 2")).toBe(action.snippetId);
         expect(containsChunk(updatedState, 1, "Line 1")).toBe(true);
         expect(containsChunk(updatedState, 2, "Line 2")).toBe(true);
@@ -236,7 +236,7 @@ describe("text reducer", () => {
     }
 
     it("removes chunks when all its lines are added to an earlier snippet", () => {
-      const text = createChunks({
+      const code = createChunks({
         snippetId: "snippet-id",
         chunkId: "overlapping-chunk-id",
         chunkVersionId: "other-chunk-version-id",
@@ -248,7 +248,7 @@ describe("text reducer", () => {
         location: { path: "same-path", line: 1 },
         text: "Line 1"
       });
-      const updatedState = textReducer(text, action);
+      const updatedState = codeReducer(code, action);
       const newSnippet = updatedState.snippets.byId[action.snippetId];
       const newChunkVersion = updatedState.chunkVersions.byId[newSnippet.chunkVersionsAdded[0]];
       const newChunkId = newChunkVersion.chunk;
@@ -256,7 +256,7 @@ describe("text reducer", () => {
     });
 
     it("updates visibility rules with updated chunk version IDs", () => {
-      const text = createUndoable({
+      const code = createUndoable({
         cells: {
           byId: {
             "cell-0": {
@@ -301,7 +301,7 @@ describe("text reducer", () => {
         location: { path: "same-path", line: 1 },
         text: "Same line"
       });
-      const updatedState = textReducer(text, action);
+      const updatedState = codeReducer(code, action);
       expect(updatedState.chunkVersions.all.length).toBe(1);
       const newChunkVersionId = updatedState.chunkVersions.all[0];
       expect(updatedState.visibilityRules).toMatchObject({
@@ -321,21 +321,21 @@ describe("text reducer", () => {
   });
 
   describe("should handle SET_SELECTIONS", () => {
-    const text = createChunks();
+    const code = createChunks();
     const selection = {
       anchor: { line: 1, character: 0 },
       active: { line: 1, character: 2 },
       path: "file-path",
       relativeTo: { source: SourceType.REFERENCE_IMPLEMENTATION } as ReferenceImplementationSource
     };
-    expect(textReducer(text, actions.setSelections(selection))).toMatchObject({
+    expect(codeReducer(code, actions.setSelections(selection))).toMatchObject({
       selections: [selection]
     });
   });
 
   describe("should handle EDIT", () => {
     it("should edit a chunk's text", () => {
-      const text = createChunks({
+      const code = createChunks({
         chunkVersionId: "chunk-version-0",
         line: 1,
         text: "Line 1"
@@ -347,7 +347,7 @@ describe("text reducer", () => {
         path: "file-path",
         relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId: "chunk-version-0" }
       };
-      expect(textReducer(text, actions.edit(range, newText))).toMatchObject({
+      expect(codeReducer(code, actions.edit(range, newText))).toMatchObject({
         chunkVersions: {
           byId: {
             "chunk-version-0": {
@@ -359,7 +359,7 @@ describe("text reducer", () => {
     });
 
     it("should edit chunks intersecting with the reference implementation", () => {
-      const text = createChunks({
+      const code = createChunks({
         chunkVersionId: "chunk-version-0",
         line: 3,
         text: "Line 1"
@@ -371,7 +371,7 @@ describe("text reducer", () => {
         path: "file-path",
         relativeTo: { source: SourceType.REFERENCE_IMPLEMENTATION } as ReferenceImplementationSource
       };
-      expect(textReducer(text, actions.edit(range, newText))).toMatchObject({
+      expect(codeReducer(code, actions.edit(range, newText))).toMatchObject({
         chunkVersions: {
           byId: {
             "chunk-version-0": {
@@ -383,7 +383,7 @@ describe("text reducer", () => {
     });
 
     it("should not edit chunk versions that are not chunk version 0", () => {
-      const text = createChunks(
+      const code = createChunks(
         {
           chunkVersionId: "chunk-version-0",
           chunkId: "chunk-0",
@@ -408,7 +408,7 @@ describe("text reducer", () => {
        * The second chunk version, even though it's at the same position, shouldn't be changed.
        * Only the first chunk version should change when the reference implementation changes.
        */
-      expect(textReducer(text, actions.edit(range, newText))).toMatchObject({
+      expect(codeReducer(code, actions.edit(range, newText))).toMatchObject({
         chunkVersions: {
           byId: {
             "chunk-version-1": {
@@ -430,7 +430,7 @@ describe("text reducer", () => {
     });
 
     it("should move other chunks when the reference implementation changes", () => {
-      const text = createChunks({
+      const code = createChunks({
         chunkId: "chunk-0",
         line: 3,
         text: "Line 1"
@@ -442,7 +442,7 @@ describe("text reducer", () => {
         relativeTo: { source: SourceType.REFERENCE_IMPLEMENTATION } as ReferenceImplementationSource
       };
       const newText = textUtils.join("", ""); // replacement text contains extra newline.
-      expect(textReducer(text, actions.edit(range, newText))).toMatchObject({
+      expect(codeReducer(code, actions.edit(range, newText))).toMatchObject({
         chunks: {
           byId: {
             "chunk-0": {
@@ -457,7 +457,7 @@ describe("text reducer", () => {
     });
 
     it("should move other chunks when a chunk version changes", () => {
-      const text = createChunks(
+      const code = createChunks(
         {
           chunkVersionId: "chunk-version-0",
           line: 1,
@@ -476,7 +476,7 @@ describe("text reducer", () => {
         relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId: "chunk-version-0" }
       };
       const newText = textUtils.join("", ""); // replacement text contains extra newline.
-      expect(textReducer(text, actions.edit(range, newText))).toMatchObject({
+      expect(codeReducer(code, actions.edit(range, newText))).toMatchObject({
         chunks: {
           byId: {
             "chunk-1": {

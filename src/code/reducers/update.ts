@@ -11,12 +11,12 @@ import {
   VisibilityRules
 } from "../types";
 
-export function mergeTextUpdates(...textUpdatesItems: TextUpdates[]) {
+export function mergeCodeUpdates(...codeUpdatesItems: CodeUpdates[]) {
   return {
-    chunks: mergeUpdates(...textUpdatesItems.map(t => t.chunks)),
-    chunkVersions: mergeUpdates(...textUpdatesItems.map(t => t.chunkVersions)),
-    snippets: mergeUpdates(...textUpdatesItems.map(t => t.snippets)),
-    visibilityRules: mergeUpdates(...textUpdatesItems.map(t => t.visibilityRules))
+    chunks: mergeUpdates(...codeUpdatesItems.map(t => t.chunks)),
+    chunkVersions: mergeUpdates(...codeUpdatesItems.map(t => t.chunkVersions)),
+    snippets: mergeUpdates(...codeUpdatesItems.map(t => t.snippets)),
+    visibilityRules: mergeUpdates(...codeUpdatesItems.map(t => t.visibilityRules))
   };
 }
 
@@ -34,7 +34,7 @@ export function updateVisibilityRules(state: VisibilityRules, updates: Visibilit
   return state;
 }
 
-export function emptyTextUpdates(): TextUpdates {
+export function emptyCodeUpdates(): CodeUpdates {
   return {
     chunks: emptyUpdates(),
     chunkVersions: emptyUpdates(),
@@ -43,7 +43,7 @@ export function emptyTextUpdates(): TextUpdates {
   };
 }
 
-export interface TextUpdates {
+export interface CodeUpdates {
   snippets: SnippetsUpdates;
   chunks: ChunksUpdates;
   chunkVersions: ChunkVersionsUpdates;

@@ -3,10 +3,10 @@ import uuidv4 from "uuid/v4";
 import { Undoable } from "../../types";
 import * as textUtils from "../../util/text-utils";
 import { ChunkId, ChunkVersionId, InitialChunk } from "../types";
-import { emptyTextUpdates, mergeTextUpdates, TextUpdates } from "./update";
+import { CodeUpdates, emptyCodeUpdates, mergeCodeUpdates } from "./update";
 
-export function addChunks(initialChunks: InitialChunk[]): TextUpdates {
-  const updates = emptyTextUpdates();
+export function addChunks(initialChunks: InitialChunk[]): CodeUpdates {
+  const updates = emptyCodeUpdates();
   for (const chunkData of initialChunks) {
     const { text, location } = chunkData;
     /*
@@ -73,8 +73,8 @@ export function mergeIntoInitialChunks(chunkLines: ChunkLines): InitialChunk[] {
 /**
  * Assumes that this is only ever called on chunks with only one version.
  */
-export function removeLines(state: Undoable, chunkId: ChunkId, lines: number[]): TextUpdates {
-  let updates = emptyTextUpdates();
+export function removeLines(state: Undoable, chunkId: ChunkId, lines: number[]): CodeUpdates {
+  let updates = emptyCodeUpdates();
   const chunk = state.chunks.byId[chunkId];
   const chunkVersionId = chunk.versions[0];
   const chunkVersion = state.chunkVersions.byId[chunkVersionId];
@@ -84,7 +84,7 @@ export function removeLines(state: Undoable, chunkId: ChunkId, lines: number[]):
   }
   const initialChunks = mergeIntoInitialChunks(chunkLines);
   const additions = addChunks(initialChunks);
-  updates = mergeTextUpdates(updates, additions);
+  updates = mergeCodeUpdates(updates, additions);
   for (const snippetId of state.snippets.all) {
     const snippet = state.snippets.byId[snippetId];
     const chunkVersionIndex = snippet.chunkVersionsAdded.indexOf(chunkVersionId);

@@ -1,5 +1,6 @@
 import uuidv4 from "uuid/v4";
 import {
+  codeActionNames as names,
   CreateSnippetAction,
   EditAction,
   InitialChunk,
@@ -7,7 +8,6 @@ import {
   Selection,
   SetSelectionsAction,
   SourcedRange,
-  textActionNames as names,
   UploadFileContentsAction
 } from "./types";
 

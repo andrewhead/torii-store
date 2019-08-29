@@ -1,6 +1,6 @@
+import { SnippetId } from "../../code/types";
 import { SimpleStore } from "../../common/types";
 import { OutputId } from "../../outputs/types";
-import { SnippetId } from "../../text/types";
 
 export interface Cells extends SimpleStore<CellId, Cell> {}
 

@@ -5,6 +5,26 @@ import undoable from "redux-undo";
 import * as cellActions from "./cells/actions";
 import { cellsReducer } from "./cells/reducers";
 import { Cell, cellActionNames, CellActionTypes, CellId, Cells, ContentType } from "./cells/types";
+import * as codeActions from "./code/actions";
+import { codeReducer } from "./code/reducers";
+import {
+  Chunk,
+  ChunkId,
+  ChunkVersion,
+  ChunkVersionId,
+  codeActionNames,
+  CodeActionTypes,
+  InitialChunk,
+  Path,
+  Position,
+  Range,
+  Selection,
+  Snippet,
+  SnippetId,
+  SourcedRange,
+  SourceType,
+  visibility
+} from "./code/types";
 import * as outputActions from "./outputs/actions";
 import { outputsReducer } from "./outputs/reducers";
 import {
@@ -20,26 +40,6 @@ import {
 } from "./outputs/types";
 import * as selectors from "./selectors";
 import { FileContents } from "./selectors/types";
-import * as textActions from "./text/actions";
-import { textReducer } from "./text/reducers";
-import {
-  Chunk,
-  ChunkId,
-  ChunkVersion,
-  ChunkVersionId,
-  InitialChunk,
-  Path,
-  Position,
-  Range,
-  Selection,
-  Snippet,
-  SnippetId,
-  SourcedRange,
-  SourceType,
-  textActionNames,
-  TextActionTypes,
-  visibility
-} from "./text/types";
 import { Undoable } from "./types";
 import * as stateUtils from "./util/state-utils";
 import * as testUtils from "./util/test-utils";
@@ -54,7 +54,7 @@ const UNDO_LIMIT = 10;
 
 export const rootReducer = combineReducers({
   outputs: outputsReducer,
-  undoable: undoable(reduceReducers(textReducer, cellsReducer), { limit: UNDO_LIMIT })
+  undoable: undoable(reduceReducers(codeReducer, cellsReducer), { limit: UNDO_LIMIT })
 });
 
 export const createStore = (): Store<State, AnyAction> => {
@@ -67,19 +67,19 @@ export type State = ReturnType<typeof rootReducer>;
 export namespace actions {
   export namespace Type {
     export type Cells = CellActionTypes;
-    export type Text = TextActionTypes;
+    export type Code = CodeActionTypes;
     export type Outputs = OutputActionTypes;
-    export type Any = CellActionTypes | TextActionTypes | OutputActionTypes;
+    export type Any = CellActionTypes | CodeActionTypes | OutputActionTypes;
   }
 
   export namespace Name {
     export const cells = cellActionNames;
-    export const text = textActionNames;
+    export const code = codeActionNames;
     export const outputs = outputActionNames;
   }
 
   export const cells = cellActions;
-  export const text = textActions;
+  export const code = codeActions;
   export const outputs = outputActions;
 }
 
