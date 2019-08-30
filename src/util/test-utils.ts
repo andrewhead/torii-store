@@ -4,8 +4,7 @@ import uuidv4 from "uuid/v4";
 import { State } from "..";
 import { ContentType } from "../cells/types";
 import { ChunkId, ChunkVersionId, Path, SnippetId } from "../code/types";
-import { simpleStoreInitialState } from "../common/reducers";
-import { Undoable } from "../types";
+import { initialUndoableState, Undoable } from "../types";
 import { createState } from "./state-utils";
 
 export const TEST_FILE_PATH = "file-path";
@@ -73,13 +72,5 @@ interface ChunkVersionSpec {
  * very verbose data structures in test code. Try first to use 'createChunks'.
  */
 export function createUndoable(partialState?: DeepPartial<Undoable>): Undoable {
-  const emptyState = {
-    cells: simpleStoreInitialState(),
-    snippets: simpleStoreInitialState(),
-    chunks: simpleStoreInitialState(),
-    chunkVersions: simpleStoreInitialState(),
-    visibilityRules: {},
-    selections: []
-  };
-  return _.merge({}, emptyState, partialState);
+  return _.merge({}, initialUndoableState, partialState);
 }

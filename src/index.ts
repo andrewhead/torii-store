@@ -41,6 +41,8 @@ import {
 import * as selectors from "./selectors";
 import { FileContents } from "./selectors/types";
 import { Undoable } from "./types";
+import * as uiUndoableActions from "./ui-undoable/actions";
+import { uiUndoableActionNames, UiUndoableActionTypes } from "./ui-undoable/types";
 import * as stateUtils from "./util/state-utils";
 import * as testUtils from "./util/test-utils";
 import * as textUtils from "./util/text-utils";
@@ -69,6 +71,7 @@ export namespace actions {
     export type Cells = CellActionTypes;
     export type Code = CodeActionTypes;
     export type Outputs = OutputActionTypes;
+    export type Ui = UiUndoableActionTypes;
     export type Any = CellActionTypes | CodeActionTypes | OutputActionTypes;
   }
 
@@ -76,11 +79,13 @@ export namespace actions {
     export const cells = cellActionNames;
     export const code = codeActionNames;
     export const outputs = outputActionNames;
+    export const ui = uiUndoableActionNames;
   }
 
   export const cells = cellActions;
   export const code = codeActions;
   export const outputs = outputActions;
+  export const ui = uiUndoableActions;
 }
 
 export {
