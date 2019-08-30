@@ -42,6 +42,7 @@ import * as selectors from "./selectors";
 import { FileContents } from "./selectors/types";
 import { Undoable } from "./types";
 import * as uiUndoableActions from "./ui-undoable/actions";
+import { uiUndoableReducer } from "./ui-undoable/reducers";
 import { uiUndoableActionNames, UiUndoableActionTypes } from "./ui-undoable/types";
 import * as stateUtils from "./util/state-utils";
 import * as testUtils from "./util/test-utils";
@@ -56,7 +57,9 @@ const UNDO_LIMIT = 10;
 
 export const rootReducer = combineReducers({
   outputs: outputsReducer,
-  undoable: undoable(reduceReducers(codeReducer, cellsReducer), { limit: UNDO_LIMIT })
+  undoable: undoable(reduceReducers(uiUndoableReducer, codeReducer, cellsReducer), {
+    limit: UNDO_LIMIT
+  })
 });
 
 export const createStore = (): Store<State, AnyAction> => {
