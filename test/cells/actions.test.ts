@@ -9,7 +9,7 @@ describe("actions", () => {
       commandId: "command-id"
     };
     const index = 1;
-    const action = actions.insertOutput(outputId, index);
+    const action = actions.insertOutput(index, outputId);
     expect(action).toMatchObject({ outputId, index });
     expect(action.cellId).not.toBe(undefined);
   });

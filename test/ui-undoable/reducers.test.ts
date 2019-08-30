@@ -27,10 +27,10 @@ describe("uiUndoableReducer", () => {
   describe("should handle INSERT_OUTPUT", () => {
     it("should select the inserted cell", () => {
       const state = createUndoable();
-      const action = cellActions.insertOutput(
-        { snippetId: "snippet-id", commandId: "command-id" },
-        undefined
-      );
+      const action = cellActions.insertOutput(undefined, {
+        snippetId: "snippet-id",
+        commandId: "command-id"
+      });
       expect(uiUndoableReducer(state, action)).toMatchObject({
         selectedCell: action.cellId
       });

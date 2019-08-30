@@ -23,7 +23,7 @@ describe("cellsReducers", () => {
         snippetId: "snippet-id",
         commandId: "command-id"
       };
-      const action = cellActions.insertOutput(outputId, 0);
+      const action = cellActions.insertOutput(0, outputId);
       expect(cellsReducer(code, action)).toMatchObject({
         cells: {
           all: [action.cellId, "cell-0"],

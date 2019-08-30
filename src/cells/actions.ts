@@ -2,7 +2,7 @@ import uuidv4 from "uuid/v4";
 import { OutputId } from "../outputs/types";
 import { cellActionNames as names, CellId, InsertOutputAction, MoveCellAction } from "./types";
 
-export function insertOutput(outputId: OutputId, index: number): InsertOutputAction {
+export function insertOutput(index: number, outputId: OutputId): InsertOutputAction {
   return {
     outputId,
     index,
