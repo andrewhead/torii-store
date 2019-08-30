@@ -1,3 +1,5 @@
+import { State } from "..";
+
 /**
  * A simple relational store.
  */
@@ -28,3 +30,10 @@ export interface Updates<T extends {}, K> {
   update: T;
   delete: K[];
 }
+
+/**
+ * The location to insert a cell can be specified either as a cell index, or as the state. If
+ * it's provided as the state, the insert location will be right after the selected cell if
+ * one is selected, or at the beginning of the document if not.
+ */
+export type CellInsertLocation = number | State;

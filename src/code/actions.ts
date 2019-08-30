@@ -1,4 +1,7 @@
 import uuidv4 from "uuid/v4";
+import { State } from "..";
+import { insertIndex } from "../common/actions";
+import { CellInsertLocation } from "../common/types";
 import {
   codeActionNames as names,
   EditAction,
@@ -34,14 +37,19 @@ export function uploadFileContents(path: Path, contents: string): UploadFileCont
  * Before you create a snippet, you must upload the contents of the file using 'uploadFileContents'.
  * 'index' is the index where the cell containing the snippet will be inserted in the tutorial.
  */
-export function insertSnippet(index: number, ...chunks: InitialChunk[]): InsertSnippetAction {
+export function insertSnippet(state: State, ...chunks: InitialChunk[]): InsertSnippetAction;
+export function insertSnippet(index: number, ...chunks: InitialChunk[]): InsertSnippetAction;
+export function insertSnippet(
+  location: CellInsertLocation,
+  ...chunks: InitialChunk[]
+): InsertSnippetAction {
   const snippetId = uuidv4();
   const cellId = uuidv4();
   return {
     cellId,
     chunks: chunks || [],
     snippetId,
-    index,
+    index: insertIndex(location),
     type: names.INSERT_SNIPPET
   };
 }

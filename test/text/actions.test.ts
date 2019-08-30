@@ -1,3 +1,4 @@
+import { ContentType } from "../../src/cells/types";
 import * as actions from "../../src/code/actions";
 import {
   codeActionNames as names,
@@ -5,6 +6,7 @@ import {
   Selection,
   SourceType
 } from "../../src/code/types";
+import { createStateWithUndoable } from "../../src/util/test-utils";
 
 describe("actions", () => {
   it("should create an action for uploading file contents", () => {
@@ -21,14 +23,28 @@ describe("actions", () => {
     expect(action.chunkVersionId).not.toBe(undefined);
   });
 
-  it("should create an action for creating snippets", () => {
-    const index = 0;
-    const expectedAction = {
-      index,
-      chunks: [],
-      type: names.INSERT_SNIPPET
-    };
-    expect(actions.insertSnippet(index)).toMatchObject(expectedAction);
+  describe("should create an action for creating snippets", () => {
+    it("at an index", () => {
+      const index = 0;
+      const expectedAction = {
+        index,
+        chunks: [],
+        type: names.INSERT_SNIPPET
+      };
+      expect(actions.insertSnippet(index)).toMatchObject(expectedAction);
+    });
+
+    it("after the selected cell", () => {
+      const state = createStateWithUndoable({
+        selectedCell: "cell-0",
+        cells: {
+          all: ["cell-0"],
+          byId: { "cell-0": { contentId: "snippet-id", type: ContentType.SNIPPET } }
+        }
+      });
+      const action = actions.insertSnippet(state);
+      expect(action).toMatchObject({ index: 1 });
+    });
   });
 
   it("should create an action for setting selection", () => {
