@@ -16,6 +16,11 @@ function cellsReducerForCellsSlice(state: Cells, action: AnyAction) {
     switch (action.type) {
       case cellActionNames.MOVE_CELL:
         return move(state, action.id, action.to);
+      case cellActionNames.INSERT_TEXT:
+        return insert(state, action.cellId, action.index, {
+          type: ContentType.TEXT,
+          contentId: action.textId
+        });
       case cellActionNames.INSERT_OUTPUT:
         return insert(state, action.cellId, action.index, {
           type: ContentType.OUTPUT,

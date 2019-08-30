@@ -33,6 +33,13 @@ describe("actions", () => {
     });
   });
 
+  it("should create an action for inserting text", () => {
+    const action = actions.insertText(0);
+    expect(action.index).toBe(0);
+    expect(action.cellId).not.toBe(undefined);
+    expect(action.textId).not.toBe(undefined);
+  });
+
   it("should create an action for moving a cell", () => {
     const id = "cell-id";
     const to = 2;

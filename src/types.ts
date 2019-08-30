@@ -1,6 +1,7 @@
 import { CellId, Cells } from "./cells/types";
 import { Chunks, ChunkVersions, Selection, Snippets, VisibilityRules } from "./code/types";
 import { simpleStoreInitialState } from "./common/reducers";
+import { Texts } from "./texts/types";
 
 /**
  * The undoable partition of the store.
@@ -13,6 +14,7 @@ export interface Undoable {
   chunkVersions: ChunkVersions;
   visibilityRules: VisibilityRules;
   selections: Selection[];
+  texts: Texts;
 }
 
 export const initialUndoableState: Undoable = {
@@ -22,5 +24,6 @@ export const initialUndoableState: Undoable = {
   chunks: simpleStoreInitialState(),
   chunkVersions: simpleStoreInitialState(),
   visibilityRules: {},
-  selections: []
+  selections: [],
+  texts: simpleStoreInitialState()
 };

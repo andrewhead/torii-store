@@ -21,6 +21,8 @@ export function uiUndoableReducer(state = initialUndoableState, action: AnyActio
     }
   } else if (isCellAction(action)) {
     switch (action.type) {
+      case cellActionNames.INSERT_TEXT:
+        return selectCell(state, action.cellId);
       case cellActionNames.INSERT_OUTPUT:
         return selectCell(state, action.cellId);
       default:

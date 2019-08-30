@@ -17,7 +17,17 @@ describe("uiUndoableReducer", () => {
   describe("should handle INSERT_SNIPPET", () => {
     it("should select the created cell", () => {
       const state = createUndoable();
-      const action = codeActions.insertSnippet(undefined);
+      const action = codeActions.insertSnippet(0);
+      expect(uiUndoableReducer(state, action)).toMatchObject({
+        selectedCell: action.cellId
+      });
+    });
+  });
+
+  describe("should handle INSERT_TEXT", () => {
+    it("should select the created cell", () => {
+      const state = createUndoable();
+      const action = cellActions.insertText(0);
       expect(uiUndoableReducer(state, action)).toMatchObject({
         selectedCell: action.cellId
       });

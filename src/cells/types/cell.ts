@@ -1,14 +1,20 @@
 import { SnippetId } from "../../code/types";
 import { SimpleStore } from "../../common/types";
 import { OutputId } from "../../outputs/types";
+import { TextId } from "../../texts/types";
 
 export interface Cells extends SimpleStore<CellId, Cell> {}
 
-export type Cell = SnippetCell | OutputCell;
+export type Cell = SnippetCell | TextCell | OutputCell;
 
 export interface SnippetCell extends BaseCell {
   type: ContentType.SNIPPET;
   contentId: SnippetId;
+}
+
+export interface TextCell extends BaseCell {
+  type: ContentType.TEXT;
+  contentId: TextId;
 }
 
 export interface OutputCell extends BaseCell {
@@ -27,6 +33,7 @@ interface BaseCell {
 
 export enum ContentType {
   SNIPPET,
+  TEXT,
   OUTPUT
 }
 

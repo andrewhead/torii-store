@@ -47,7 +47,7 @@ export function insertSnippet(state: Undoable, action: InsertSnippetAction) {
   };
   return {
     ...state,
-    snippets: insert(state.snippets, action.snippetId, action.index, newSnippet)
+    snippets: insert(state.snippets, action.snippetId, 0, newSnippet)
   };
 }
 

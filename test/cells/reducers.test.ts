@@ -1,43 +1,11 @@
 import * as cellActions from "../../src/cells/actions";
 import { cellsReducer } from "../../src/cells/reducers";
-import { ContentType } from "../../src/cells/types";
+import { CellId, ContentType } from "../../src/cells/types";
 import * as codeActions from "../../src/code/actions";
 import { OutputId } from "../../src/outputs/types";
 import { createUndoable } from "../../src/util/test-utils";
 
 describe("cellsReducers", () => {
-  describe("should handle INSERT_OUTPUT", () => {
-    it("should insert an output", () => {
-      const code = createUndoable({
-        cells: {
-          all: ["cell-0"],
-          byId: {
-            "cell-0": {
-              type: ContentType.SNIPPET,
-              contentId: "mock-snippet-id"
-            }
-          }
-        }
-      });
-      const outputId: OutputId = {
-        snippetId: "snippet-id",
-        commandId: "command-id"
-      };
-      const action = cellActions.insertOutput(0, outputId);
-      expect(cellsReducer(code, action)).toMatchObject({
-        cells: {
-          all: [action.cellId, "cell-0"],
-          byId: {
-            [action.cellId]: {
-              type: ContentType.OUTPUT,
-              contentId: outputId
-            }
-          }
-        }
-      });
-    });
-  });
-
   describe("should handle INSERT_SNIPPET", () => {
     it("should create a cell for the snippet", () => {
       const code = createUndoable();
@@ -73,4 +41,56 @@ describe("cellsReducers", () => {
       });
     });
   });
+
+  describe("should handle INSERT_TEXT", () => {
+    it("should insert a text", () => {
+      const state = createUndoableWithCells("cell-0");
+      const action = cellActions.insertText(0);
+      expect(cellsReducer(state, action)).toMatchObject({
+        cells: {
+          all: [action.cellId, "cell-0"],
+          byId: {
+            [action.cellId]: {
+              contentId: action.textId
+            }
+          }
+        }
+      });
+    });
+  });
+
+  describe("should handle INSERT_OUTPUT", () => {
+    it("should insert an output", () => {
+      const state = createUndoableWithCells("cell-0");
+      const outputId: OutputId = {
+        snippetId: "snippet-id",
+        commandId: "command-id"
+      };
+      const action = cellActions.insertOutput(0, outputId);
+      expect(cellsReducer(state, action)).toMatchObject({
+        cells: {
+          all: [action.cellId, "cell-0"],
+          byId: {
+            [action.cellId]: {
+              type: ContentType.OUTPUT,
+              contentId: outputId
+            }
+          }
+        }
+      });
+    });
+  });
 });
+
+function createUndoableWithCells(...cellIds: CellId[]) {
+  const undoable = createUndoable();
+  for (let i = 0; i < cellIds.length; i++) {
+    const cellId = cellIds[i];
+    undoable.cells.all.push(cellId);
+    undoable.cells.byId[cellId] = {
+      type: ContentType.SNIPPET,
+      contentId: "mock-content-id-" + i
+    };
+  }
+  return undoable;
+}
