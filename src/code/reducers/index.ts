@@ -1,7 +1,7 @@
 import { AnyAction } from "redux";
 import { initialUndoableState, Undoable } from "../../types";
 import { codeActionNames as actionNames, isCodeAction } from "../types";
-import { createSnippet } from "./create-snippet";
+import { insertSnippet } from "./create-snippet";
 import { edit } from "./edit";
 import { uploadFileContents } from "./upload-file-contents";
 
@@ -33,8 +33,8 @@ export function codeReducer(state: Undoable = initialUndoableState, action: AnyA
     switch (action.type) {
       case actionNames.UPLOAD_FILE_CONTENTS:
         return uploadFileContents(state, action);
-      case actionNames.CREATE_SNIPPET:
-        return createSnippet(state, action);
+      case actionNames.INSERT_SNIPPET:
+        return insertSnippet(state, action);
       case actionNames.SET_SELECTIONS:
         return {
           ...state,

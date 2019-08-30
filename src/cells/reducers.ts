@@ -26,7 +26,7 @@ function cellsReducerForCellsSlice(state: Cells, action: AnyAction) {
     }
   } else if (isCodeAction(action)) {
     switch (action.type) {
-      case codeActionNames.CREATE_SNIPPET:
+      case codeActionNames.INSERT_SNIPPET:
         return insert(state, action.cellId, action.index, {
           type: ContentType.SNIPPET,
           contentId: action.snippetId

@@ -13,8 +13,8 @@ export interface UploadFileContentsAction {
   chunkVersionId: ChunkVersionId;
 }
 
-export interface CreateSnippetAction {
-  type: typeof names.CREATE_SNIPPET;
+export interface InsertSnippetAction {
+  type: typeof names.INSERT_SNIPPET;
   chunks: InitialChunk[];
   snippetId: SnippetId;
   cellId: CellId;
@@ -33,7 +33,7 @@ export interface SetSelectionsAction {
 
 export type CodeActionTypes =
   | UploadFileContentsAction
-  | CreateSnippetAction
+  | InsertSnippetAction
   | EditAction
   | SetSelectionsAction;
 

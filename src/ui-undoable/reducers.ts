@@ -14,7 +14,7 @@ export function uiUndoableReducer(state = initialUndoableState, action: AnyActio
     }
   } else if (isCodeAction(action)) {
     switch (action.type) {
-      case codeActionNames.CREATE_SNIPPET:
+      case codeActionNames.INSERT_SNIPPET:
         return selectCell(state, action.cellId);
       default:
         return state;

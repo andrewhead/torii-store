@@ -38,10 +38,10 @@ describe("cellsReducers", () => {
     });
   });
 
-  describe("should handle CREATE_SNIPPET", () => {
+  describe("should handle INSERT_SNIPPET", () => {
     it("should create a cell for the snippet", () => {
       const code = createUndoable();
-      const action = codeActions.createSnippet(0);
+      const action = codeActions.insertSnippet(0);
       expect(cellsReducer(code, action)).toMatchObject({
         cells: {
           all: [action.cellId],
@@ -67,7 +67,7 @@ describe("cellsReducers", () => {
           all: ["other-cell-id"]
         }
       });
-      const action = codeActions.createSnippet(0);
+      const action = codeActions.insertSnippet(0);
       expect(cellsReducer(undoable, action)).toMatchObject({
         cells: { all: [action.cellId, "other-cell-id"] }
       });

@@ -26,9 +26,9 @@ describe("actions", () => {
     const expectedAction = {
       index,
       chunks: [],
-      type: names.CREATE_SNIPPET
+      type: names.INSERT_SNIPPET
     };
-    expect(actions.createSnippet(index)).toMatchObject(expectedAction);
+    expect(actions.insertSnippet(index)).toMatchObject(expectedAction);
   });
 
   it("should create an action for setting selection", () => {

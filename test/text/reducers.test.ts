@@ -41,10 +41,10 @@ describe("code reducer", () => {
     });
   });
 
-  describe("should handle CREATE_SNIPPET", () => {
+  describe("should handle INSERT_SNIPPET", () => {
     it("should create an empty snippet", () => {
       const code = createChunks();
-      const action = actions.createSnippet(0);
+      const action = actions.insertSnippet(0);
       expect(codeReducer(code, action)).toMatchObject({
         snippets: {
           all: [action.snippetId],
@@ -58,7 +58,7 @@ describe("code reducer", () => {
     describe("should create new chunks", () => {
       const code = createChunks();
       const location = { path: "path", line: 1 };
-      const action = actions.createSnippet(0, { location, text: "Text" });
+      const action = actions.insertSnippet(0, { location, text: "Text" });
       const updatedState = codeReducer(code, action);
       expect(updatedState.chunks.all.length).toEqual(1);
       expect(updatedState.chunkVersions.all.length).toEqual(1);
@@ -106,7 +106,7 @@ describe("code reducer", () => {
        * Snippet intersects with last snippet: only include the new parts (Line 0). Show the old
        * parts (Line 1).
        */
-      const action = actions.createSnippet(1, {
+      const action = actions.insertSnippet(1, {
         location: { path: "same-path", line: 1 },
         text: "Line 0\nLine 1"
       });
@@ -142,7 +142,7 @@ describe("code reducer", () => {
       /*
        * Snippet intersects completely with last snippet: Don't add a new snippet.
        */
-      const action = actions.createSnippet(1, {
+      const action = actions.insertSnippet(1, {
         location: { path: "same-path", line: 1 },
         text: "Line 1\nLine 2"
       });
@@ -165,7 +165,7 @@ describe("code reducer", () => {
          * Snippet interesects the middle of the snippet that comes after it. Split the snippet that
          * comes after, while making sure that the lines still appear in it.
          */
-        const action = actions.createSnippet(0, {
+        const action = actions.insertSnippet(0, {
           location: { path: "same-path", line: 2 },
           text: "Line 2"
         });
@@ -195,7 +195,7 @@ describe("code reducer", () => {
           line: 1,
           text: "Line 1\nLine 2\nLine 3"
         });
-        const action = actions.createSnippet(0, {
+        const action = actions.insertSnippet(0, {
           location: { path: "same-path", line: 2 },
           text: "Line 2"
         });
@@ -244,7 +244,7 @@ describe("code reducer", () => {
         line: 1,
         text: "Line 1"
       });
-      const action = actions.createSnippet(0, {
+      const action = actions.insertSnippet(0, {
         location: { path: "same-path", line: 1 },
         text: "Line 1"
       });
@@ -297,7 +297,7 @@ describe("code reducer", () => {
           }
         }
       });
-      const action = actions.createSnippet(0, {
+      const action = actions.insertSnippet(0, {
         location: { path: "same-path", line: 1 },
         text: "Same line"
       });

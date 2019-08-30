@@ -7,7 +7,7 @@ import * as textUtils from "../../util/text-utils";
 import {
   ChunkId,
   ChunkVersionId,
-  CreateSnippetAction,
+  InsertSnippetAction,
   Location,
   SnippetId,
   visibility
@@ -21,7 +21,7 @@ import {
 } from "./common";
 import { CodeUpdates, emptyCodeUpdates, mergeCodeUpdates, updateVisibilityRules } from "./update";
 
-export function createSnippet(state: Undoable, action: CreateSnippetAction) {
+export function insertSnippet(state: Undoable, action: InsertSnippetAction) {
   let updates = emptyCodeUpdates();
   const {
     cleanedInitialChunks,
@@ -51,7 +51,7 @@ export function createSnippet(state: Undoable, action: CreateSnippetAction) {
   };
 }
 
-function removeDuplicatesFromInitialChunks(state: Undoable, action: CreateSnippetAction) {
+function removeDuplicatesFromInitialChunks(state: Undoable, action: InsertSnippetAction) {
   const { chunks: initialChunks, snippetId, index: newCellIndex } = action;
   const initialChunkLines = splitIntoLines(initialChunks);
   const updates = emptyCodeUpdates();
@@ -124,7 +124,7 @@ function removeDuplicatesFromInitialChunks(state: Undoable, action: CreateSnippe
  */
 function removeDuplicatesFromExistingChunks(
   state: Undoable,
-  action: CreateSnippetAction,
+  action: InsertSnippetAction,
   updates: CodeUpdates
 ): CodeUpdates {
   let chunkCleanupUpdates = emptyCodeUpdates();
