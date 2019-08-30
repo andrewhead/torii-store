@@ -1,4 +1,6 @@
 import { AnyAction } from "redux";
+import { cellActionNames, CellId, isCellAction } from "../cells/types";
+import { codeActionNames, isCodeAction } from "../code/types";
 import { initialUndoableState, Undoable } from "../types";
 import { isUiUndoableAction, uiUndoableActionNames } from "./types";
 
@@ -6,10 +8,28 @@ export function uiUndoableReducer(state = initialUndoableState, action: AnyActio
   if (isUiUndoableAction(action)) {
     switch (action.type) {
       case uiUndoableActionNames.SELECT_CELL:
-        return { ...state, selectedCell: action.id };
+        return selectCell(state, action.id);
+      default:
+        return state;
+    }
+  } else if (isCodeAction(action)) {
+    switch (action.type) {
+      case codeActionNames.CREATE_SNIPPET:
+        return selectCell(state, action.cellId);
+      default:
+        return state;
+    }
+  } else if (isCellAction(action)) {
+    switch (action.type) {
+      case cellActionNames.INSERT_OUTPUT:
+        return selectCell(state, action.cellId);
       default:
         return state;
     }
   }
   return state;
+}
+
+function selectCell(state: Undoable, id: CellId) {
+  return { ...state, selectedCell: id };
 }
