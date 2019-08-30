@@ -74,3 +74,15 @@ interface ChunkVersionSpec {
 export function createUndoable(partialState?: DeepPartial<Undoable>): Undoable {
   return _.merge({}, initialUndoableState, partialState);
 }
+
+/**
+ * Generally, you should not use this method, as populating state with this method results in
+ * very verbose data structures in test code. Try first to use 'createChunksWithState'.
+ */
+export function createStateWithUndoable(partialState?: DeepPartial<Undoable>): State {
+  return createState({
+    undoable: {
+      present: createUndoable(partialState)
+    }
+  });
+}

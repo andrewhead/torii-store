@@ -7,7 +7,7 @@ describe("uiUndoableReducer", () => {
     it("should select a cell", () => {
       const state = createUndoable();
       expect(uiUndoableReducer(state, uiUndoableActions.selectCell("cell-id"))).toMatchObject({
-        selection: "cell-id"
+        selectedCell: "cell-id"
       });
     });
   });

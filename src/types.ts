@@ -6,7 +6,7 @@ import { simpleStoreInitialState } from "./common/reducers";
  * The undoable partition of the store.
  */
 export interface Undoable {
-  selection: CellId | undefined;
+  selectedCell: CellId | undefined;
   cells: Cells;
   snippets: Snippets;
   chunks: Chunks;
@@ -16,7 +16,7 @@ export interface Undoable {
 }
 
 export const initialUndoableState: Undoable = {
-  selection: undefined,
+  selectedCell: undefined,
   cells: simpleStoreInitialState(),
   snippets: simpleStoreInitialState(),
   chunks: simpleStoreInitialState(),
