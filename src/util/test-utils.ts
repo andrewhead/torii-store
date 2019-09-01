@@ -34,12 +34,12 @@ export function createChunks(...chunkVersions: ChunkVersionSpec[]): Undoable {
     state.chunkVersions.all.push(chunkVersionId);
     state.chunkVersions.byId[chunkVersionId] = {
       chunk: chunkId,
-      text: chunkVersion.text
+      text: chunkVersion.text || "text"
     };
     if (state.chunks.all.indexOf(chunkId) === -1) {
       state.chunks.all.push(chunkId);
       state.chunks.byId[chunkId] = {
-        location: { line: chunkVersion.line, path: chunkVersion.path || TEST_FILE_PATH },
+        location: { line: chunkVersion.line || 0, path: chunkVersion.path || TEST_FILE_PATH },
         versions: []
       };
     }
@@ -63,8 +63,8 @@ interface ChunkVersionSpec {
   chunkId?: ChunkId;
   chunkVersionId?: ChunkVersionId;
   path?: Path;
-  line: number;
-  text: string;
+  line?: number;
+  text?: string;
 }
 
 /**

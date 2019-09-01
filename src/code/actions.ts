@@ -3,13 +3,18 @@ import { State } from "..";
 import { insertIndex } from "../common/actions";
 import { CellInsertLocation } from "../common/types";
 import {
+  ChunkId,
+  ChunkVersionId,
   codeActionNames as names,
   EditAction,
+  ForkAction,
   InitialChunk,
   InsertSnippetAction,
   Path,
+  PickChunkVersionAction,
   Selection,
   SetSelectionsAction,
+  SnippetId,
   SourcedRange,
   UploadFileContentsAction
 } from "./types";
@@ -51,6 +56,35 @@ export function insertSnippet(
     snippetId,
     index: insertIndex(location),
     type: names.INSERT_SNIPPET
+  };
+}
+
+/**
+ * Fork a chunk version into a new chunk version.
+ */
+export function fork(chunkVersionId: ChunkVersionId): ForkAction {
+  return {
+    chunkVersionId,
+    forkId: uuidv4(),
+    type: names.FORK
+  };
+}
+
+/**
+ * Pick which version of a chunk is showing in a snippet. Assumes that a chunk is already
+ * in a snippet's 'chunkVersionsAdded', and swaps out the current version of that chunk with the
+ * one identified by 'chunkVersionId'.
+ */
+export function pickChunkVersion(
+  snippetId: SnippetId,
+  chunkId: ChunkId,
+  chunkVersionId: ChunkVersionId
+): PickChunkVersionAction {
+  return {
+    snippetId,
+    chunkId,
+    chunkVersionId,
+    type: names.PICK_CHUNK_VERSION
   };
 }
 

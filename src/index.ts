@@ -41,6 +41,7 @@ import {
 import * as selectors from "./selectors";
 import { FileContents } from "./selectors/types";
 import * as textActions from "./texts/actions";
+import { textsReducer } from "./texts/reducers";
 import { textActionNames, TextActionTypes, TextId } from "./texts/types";
 import { Undoable } from "./types";
 import * as uiUndoableActions from "./ui-undoable/actions";
@@ -59,7 +60,7 @@ const UNDO_LIMIT = 10;
 
 export const rootReducer = combineReducers({
   outputs: outputsReducer,
-  undoable: undoable(reduceReducers(uiUndoableReducer, codeReducer, cellsReducer), {
+  undoable: undoable(reduceReducers(uiUndoableReducer, codeReducer, textsReducer, cellsReducer), {
     limit: UNDO_LIMIT
   })
 });

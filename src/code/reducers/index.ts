@@ -3,6 +3,8 @@ import { initialUndoableState, Undoable } from "../../types";
 import { codeActionNames as actionNames, isCodeAction } from "../types";
 import { insertSnippet } from "./create-snippet";
 import { edit } from "./edit";
+import { fork } from "./fork";
+import { pickChunkVersion } from "./pick-chunk-version";
 import { uploadFileContents } from "./upload-file-contents";
 
 /**
@@ -12,6 +14,8 @@ import { uploadFileContents } from "./upload-file-contents";
  * =============
  * - Chunks should get added on "add-chunk", removed and split on remove.
  *   - Merge adjacent cells
+ * - When chunk version is picked in a snippet, visibility rules for references to that chunk
+ *   version in future snippets should be updatd too
  *
  * Lower priority
  * ==============
@@ -35,13 +39,17 @@ export function codeReducer(state: Undoable = initialUndoableState, action: AnyA
         return uploadFileContents(state, action);
       case actionNames.INSERT_SNIPPET:
         return insertSnippet(state, action);
+      case actionNames.FORK:
+        return fork(state, action);
+      case actionNames.PICK_CHUNK_VERSION:
+        return pickChunkVersion(state, action);
+      case actionNames.EDIT:
+        return edit(state, action);
       case actionNames.SET_SELECTIONS:
         return {
           ...state,
           selections: action.selections
         };
-      case actionNames.EDIT:
-        return edit(state, action);
       default:
         return state;
     }

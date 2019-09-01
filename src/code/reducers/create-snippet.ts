@@ -77,10 +77,11 @@ function removeDuplicatesFromInitialChunks(state: Undoable, action: InsertSnippe
         for (let line = startLine; line <= endLine; line++) {
           if (initialChunkLines[path].hasOwnProperty(line)) {
             if (chunksEditedBeforeNewSnippet.indexOf(chunkId) === -1) {
+              const adjustedLine = line - startLine;
               _.merge(updates.visibilityRules.add, {
                 [snippetId]: {
                   [chunkVersionId]: {
-                    [line]: visibility.VISIBLE
+                    [adjustedLine]: visibility.VISIBLE
                   }
                 }
               });

@@ -21,6 +21,19 @@ export interface InsertSnippetAction {
   index: number;
 }
 
+export interface ForkAction {
+  type: typeof names.FORK;
+  chunkVersionId: ChunkVersionId;
+  forkId: ChunkVersionId;
+}
+
+export interface PickChunkVersionAction {
+  type: typeof names.PICK_CHUNK_VERSION;
+  snippetId: SnippetId;
+  chunkId: ChunkId;
+  chunkVersionId: ChunkVersionId;
+}
+
 export interface EditAction {
   type: typeof names.EDIT;
   edit: Edit;
@@ -34,6 +47,8 @@ export interface SetSelectionsAction {
 export type CodeActionTypes =
   | UploadFileContentsAction
   | InsertSnippetAction
+  | ForkAction
+  | PickChunkVersionAction
   | EditAction
   | SetSelectionsAction;
 
