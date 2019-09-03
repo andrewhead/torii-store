@@ -1,5 +1,11 @@
 import reduceReducers from "reduce-reducers";
-import { AnyAction, combineReducers, createStore as reduxCreateStore, Store } from "redux";
+import {
+  AnyAction,
+  combineReducers,
+  createStore as reduxCreateStore,
+  DeepPartial,
+  Store
+} from "redux";
 import { devToolsEnhancer } from "redux-devtools-extension";
 import undoable from "redux-undo";
 import * as cellActions from "./cells/actions";
@@ -65,8 +71,8 @@ export const rootReducer = combineReducers({
   })
 });
 
-export const createStore = (): Store<State, AnyAction> => {
-  return reduxCreateStore(rootReducer, undefined, devToolsEnhancer({}));
+export const createStore = (preloadedState?: DeepPartial<State>): Store<State, AnyAction> => {
+  return reduxCreateStore(rootReducer, preloadedState, devToolsEnhancer({}));
 };
 export const store = createStore();
 

@@ -1,5 +1,9 @@
 import { textUtils } from "../../src";
-import { getFileContents, getReferenceImplementationText } from "../../src/selectors/code";
+import {
+  getFileContents,
+  getReferenceImplementationText,
+  getSnapshotOrderedChunkVersions
+} from "../../src/selectors/code";
 import { createChunks, createStateWithChunks } from "../../src/util/test-utils";
 
 describe("getReferenceImplementationText", () => {
@@ -27,6 +31,42 @@ describe("getReferenceImplementationText", () => {
       }
     );
     expect(getReferenceImplementationText(code, path)).toEqual("Line 1\nLine 2\nLine 3\nLine 4");
+  });
+});
+
+describe("getSnapshotOrderedChunkVersions", () => {
+  it("gets ordered chunk versions", () => {
+    const path = "file-path";
+    const overwrittenChunkVersion = {
+      snippetId: "snippet-0",
+      chunkId: "chunk-0",
+      chunkVersionId: "chunk-0-version-0",
+      line: 1,
+      path
+    };
+    const overwritingChunkVersion = {
+      snippetId: "snippet-1",
+      chunkId: "chunk-0",
+      chunkVersionId: "chunk-0-version-1",
+      line: 1,
+      path
+    };
+    const notOverwrittenChunkVersion = {
+      snippetId: "snippet-0",
+      chunkId: "chunk-1",
+      chunkVersionId: "chunk-1-version-0",
+      line: 2,
+      path
+    };
+    const state = createStateWithChunks(
+      overwrittenChunkVersion,
+      overwritingChunkVersion,
+      notOverwrittenChunkVersion
+    );
+    const chunkVersionIds = getSnapshotOrderedChunkVersions(state, "snippet-1", path);
+    expect(chunkVersionIds).not.toContain("chunk-0-version-0");
+    expect(chunkVersionIds).toContain("chunk-0-version-1");
+    expect(chunkVersionIds).toContain("chunk-1-version-0");
   });
 });
 

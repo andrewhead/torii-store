@@ -341,12 +341,21 @@ describe("code reducer", () => {
               text
             }
           }
+        },
+        chunks: {
+          byId: {
+            [chunkId]: {
+              /**
+               * Order the versions were created in must be preserved. It must be possible to
+               * infer that the first chunk version is the reference implementation.
+               */
+              versions: [chunkVersionId, action.forkId]
+            }
+          }
         }
       });
       expect(updatedCode.chunkVersions.all).toContain(chunkVersionId);
       expect(updatedCode.chunkVersions.all).toContain(action.forkId);
-      expect(updatedCode.chunks.byId[chunkId].versions).toContain(chunkVersionId);
-      expect(updatedCode.chunks.byId[chunkId].versions).toContain(action.forkId);
     });
   });
 
