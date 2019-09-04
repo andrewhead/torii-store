@@ -102,6 +102,7 @@ export {
   SnippetId,
   SourcedRange,
   SourceType,
+  State,
   stateUtils,
   TextId,
   Undoable,
