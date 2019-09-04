@@ -2,7 +2,7 @@ import _ from "lodash";
 import { AnyAction } from "redux";
 import { cellActionNames, isCellAction } from "../cells/types";
 import { insert } from "../common/reducers";
-import { initialUndoableState } from "../types";
+import { initialUndoableState } from "../state/types";
 import { isTextAction, SetTextAction, textActionNames, Texts } from "./types";
 
 export function textsReducer(state = initialUndoableState, action: AnyAction) {

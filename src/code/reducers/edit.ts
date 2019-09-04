@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Undoable } from "../../types";
+import { Undoable } from "../../state/types";
 import * as textUtils from "../../util/text-utils";
 import { ChunkId, ChunkVersionId, EditAction, Range, SourcedRange, SourceType } from "../types";
 import { getChunkInfo } from "./common";

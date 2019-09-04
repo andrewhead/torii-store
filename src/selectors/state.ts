@@ -1,8 +1,8 @@
 import { diff } from "deep-diff";
 import _ from "lodash";
+import { ContentType } from "../cells/types";
 import { Path, SnippetId } from "../code/types";
-import { ContentType, State } from "../index";
-import { Undoable } from "../types";
+import { State, Undoable } from "../state/types";
 import * as stateUtils from "../util/state-utils";
 import { isAddDiff, isArrayDiff, isEditDiff, PathElementPattern } from "./types";
 

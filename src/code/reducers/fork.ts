@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { insert } from "../../common/reducers";
-import { Undoable } from "../../types";
+import { Undoable } from "../../state/types";
 import { ChunkId, Chunks, ChunkVersionId, ForkAction } from "../types";
 
 export function fork(state: Undoable, action: ForkAction) {

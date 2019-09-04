@@ -2,7 +2,7 @@ import _ from "lodash";
 import { ContentType } from "../../cells/types";
 import { insert } from "../../common/reducers";
 import { update } from "../../common/update";
-import { Undoable } from "../../types";
+import { Undoable } from "../../state/types";
 import * as textUtils from "../../util/text-utils";
 import {
   ChunkId,

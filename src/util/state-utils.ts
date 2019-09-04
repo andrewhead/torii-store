@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { DeepPartial } from "redux";
-import { createStore, State } from "..";
+import { createStore } from "..";
+import { State } from "../state/types";
 
 export function createState(partialState?: DeepPartial<State>): State {
   const emptyState = createStore().getState();

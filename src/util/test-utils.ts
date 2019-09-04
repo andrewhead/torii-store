@@ -1,10 +1,9 @@
 import _ from "lodash";
 import { DeepPartial } from "redux";
 import uuidv4 from "uuid/v4";
-import { State } from "..";
 import { ContentType } from "../cells/types";
 import { ChunkId, ChunkVersionId, Path, SnippetId } from "../code/types";
-import { initialUndoableState, Undoable } from "../types";
+import { initialUndoableState, State, Undoable } from "../state/types";
 import { createState } from "./state-utils";
 
 export const TEST_FILE_PATH = "file-path";

@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Undoable } from "../../types";
+import { Undoable } from "../../state/types";
 import { ChunkVersionId, PickChunkVersionAction, Snippet } from "../types";
 
 export function pickChunkVersion(state: Undoable, action: PickChunkVersionAction) {

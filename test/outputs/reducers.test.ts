@@ -1,9 +1,9 @@
 import _ from "lodash";
+import { SnippetId } from "../../src/code/types";
 import { simpleStoreInitialState } from "../../src/common/reducers";
 import * as actions from "../../src/outputs/actions";
 import { outputsReducer } from "../../src/outputs/reducers";
 import { CommandId, ConsoleLog } from "../../src/outputs/types";
-import { SnippetId } from "../../src/text/types";
 
 describe("outputsReducer", () => {
   describe("should handle START_EXECUTION", () => {

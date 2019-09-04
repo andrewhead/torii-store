@@ -1,7 +1,7 @@
 import { AnyAction } from "redux";
 import { cellActionNames, CellId, isCellAction } from "../cells/types";
 import { codeActionNames, isCodeAction } from "../code/types";
-import { initialUndoableState, Undoable } from "../types";
+import { initialUndoableState, Undoable } from "../state/types";
 import { isUiUndoableAction, uiUndoableActionNames } from "./types";
 
 export function uiUndoableReducer(state = initialUndoableState, action: AnyAction): Undoable {

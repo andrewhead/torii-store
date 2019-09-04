@@ -1,6 +1,6 @@
 import _ from "lodash";
 import uuidv4 from "uuid/v4";
-import { Undoable } from "../../types";
+import { Undoable } from "../../state/types";
 import * as textUtils from "../../util/text-utils";
 import { ChunkId, ChunkVersionId, InitialChunk } from "../types";
 import { CodeUpdates, emptyCodeUpdates, mergeCodeUpdates } from "./update";

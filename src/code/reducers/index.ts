@@ -1,5 +1,5 @@
 import { AnyAction } from "redux";
-import { initialUndoableState, Undoable } from "../../types";
+import { initialUndoableState, Undoable } from "../../state/types";
 import { codeActionNames as actionNames, isCodeAction } from "../types";
 import { insertSnippet } from "./create-snippet";
 import { edit } from "./edit";

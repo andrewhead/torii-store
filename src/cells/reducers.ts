@@ -1,7 +1,7 @@
 import { AnyAction } from "redux";
 import { codeActionNames, isCodeAction } from "../code/types";
 import { insert, move } from "../common/reducers";
-import { initialUndoableState } from "../types";
+import { initialUndoableState } from "../state/types";
 import { cellActionNames, Cells, ContentType, isCellAction } from "./types";
 
 export function cellsReducer(state = initialUndoableState, action: AnyAction) {

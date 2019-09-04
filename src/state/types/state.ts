@@ -1,7 +1,10 @@
-import { CellId, Cells } from "./cells/types";
-import { Chunks, ChunkVersions, Selection, Snippets, VisibilityRules } from "./code/types";
-import { simpleStoreInitialState } from "./common/reducers";
-import { Texts } from "./texts/types";
+import { CellId, Cells } from "../../cells/types";
+import { Chunks, ChunkVersions, Selection, Snippets, VisibilityRules } from "../../code/types";
+import { simpleStoreInitialState } from "../../common/reducers";
+import { Texts } from "../../texts/types";
+import { sliceReducer } from "../reducers";
+
+export type State = ReturnType<typeof sliceReducer>;
 
 /**
  * The undoable partition of the store.

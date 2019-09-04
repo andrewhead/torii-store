@@ -1,4 +1,4 @@
-import { State } from "..";
+import { State } from "../state/types";
 
 /**
  * A simple relational store.

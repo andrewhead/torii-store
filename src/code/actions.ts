@@ -1,7 +1,7 @@
 import uuidv4 from "uuid/v4";
-import { State } from "..";
 import { insertIndex } from "../common/actions";
 import { CellInsertLocation } from "../common/types";
+import { State } from "../state/types";
 import {
   ChunkId,
   ChunkVersionId,
