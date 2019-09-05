@@ -35,8 +35,9 @@ import {
 } from "./outputs/types";
 import * as selectors from "./selectors";
 import { FileContents } from "./selectors/types";
+import * as stateActions from "./state/actions";
 import { rootReducer } from "./state/reducers";
-import { State, Undoable } from "./state/types";
+import { State, stateActionNames, StateActionTypes, Undoable } from "./state/types";
 import * as textActions from "./texts/actions";
 import { textActionNames, TextActionTypes, TextId } from "./texts/types";
 import * as uiUndoableActions from "./ui-undoable/actions";
@@ -57,7 +58,8 @@ export namespace actions {
     export type Texts = TextActionTypes;
     export type Outputs = OutputActionTypes;
     export type Ui = UiUndoableActionTypes;
-    export type Any = CellActionTypes | CodeActionTypes | TextActionTypes | OutputActionTypes;
+    export type State = StateActionTypes;
+    export type Any = Cells | Code | Texts | Outputs | Ui | State;
   }
 
   export namespace Name {
@@ -66,6 +68,7 @@ export namespace actions {
     export const text = textActionNames;
     export const outputs = outputActionNames;
     export const ui = uiUndoableActionNames;
+    export const state = stateActionNames;
   }
 
   export const cells = cellActions;
@@ -73,6 +76,7 @@ export namespace actions {
   export const texts = textActions;
   export const outputs = outputActions;
   export const ui = uiUndoableActions;
+  export const state = stateActions;
 }
 
 export {
