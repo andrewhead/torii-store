@@ -1,5 +1,12 @@
 import { ById, SimpleStore } from "./types";
 
+export function simpleStoreInitialState() {
+  return {
+    all: [],
+    byId: {}
+  };
+}
+
 export function insert<K extends string, T>(
   state: SimpleStore<K, T>,
   id: K,
@@ -57,9 +64,28 @@ function moveInAll<K>(state: K[], id: K, to: number): K[] {
     .concat(spliced.slice(to, state.length));
 }
 
-export function simpleStoreInitialState() {
+export function deleteItem<K extends string, T>(
+  state: SimpleStore<K, T>,
+  id: K
+): SimpleStore<K, T> {
   return {
-    all: [],
-    byId: {}
+    ...state,
+    all: deleteFromAll(state.all, id),
+    byId: deleteFromById(state.byId, id)
   };
+}
+
+function deleteFromById<K extends string, T>(state: ById<T>, id: K): ById<T> {
+  state = { ...state };
+  delete state[id];
+  return state;
+}
+
+function deleteFromAll<K>(state: K[], id: K): K[] {
+  state = [...state];
+  const index = state.indexOf(id);
+  if (index !== -1) {
+    state.splice(index, 1);
+  }
+  return state;
 }

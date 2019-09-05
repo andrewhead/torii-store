@@ -1,4 +1,6 @@
 import { AnyAction } from "redux";
+import { cellActionNames, ContentType, isCellAction } from "../../cells/types";
+import { deleteItem } from "../../common/reducers";
 import { initialUndoableState, Undoable } from "../../state/types";
 import { codeActionNames as actionNames, isCodeAction } from "../types";
 import { insertSnippet } from "./create-snippet";
@@ -51,6 +53,17 @@ export function codeReducer(state: Undoable = initialUndoableState, action: AnyA
           selections: action.selections
         };
       default:
+        return state;
+    }
+  } else if (isCellAction(action)) {
+    switch (action.type) {
+      case cellActionNames.DELETE:
+        if (action.contentType === ContentType.SNIPPET) {
+          return {
+            ...state,
+            snippets: deleteItem(state.snippets, action.contentId)
+          };
+        }
         return state;
     }
   }

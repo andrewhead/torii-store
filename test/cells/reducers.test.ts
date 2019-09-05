@@ -3,7 +3,7 @@ import { cellsReducer } from "../../src/cells/reducers";
 import { CellId, ContentType } from "../../src/cells/types";
 import * as codeActions from "../../src/code/actions";
 import { OutputId } from "../../src/outputs/types";
-import { createUndoable } from "../../src/util/test-utils";
+import { createChunks, createUndoable } from "../../src/util/test-utils";
 
 describe("cellsReducers", () => {
   describe("should handle INSERT_SNIPPET", () => {
@@ -79,6 +79,21 @@ describe("cellsReducers", () => {
         }
       });
     });
+  });
+});
+
+describe("should handle DELETE", () => {
+  it("should delete a cell", () => {
+    const state = createChunks(
+      { cellId: "cell-0", snippetId: "snippet-0" },
+      { cellId: "cell-1", snippetId: "snippet-1" }
+    );
+    const updatedState = cellsReducer(
+      state,
+      cellActions.deleteCell("cell-0", ContentType.SNIPPET, "snippet-0")
+    );
+    expect(updatedState.cells.all).toEqual(["cell-1"]);
+    expect(Object.keys(updatedState.cells.byId)).toEqual(["cell-1"]);
   });
 });
 

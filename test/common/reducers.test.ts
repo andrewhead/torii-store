@@ -1,4 +1,4 @@
-import { move } from "../../src/common/reducers";
+import { deleteItem, move } from "../../src/common/reducers";
 
 describe("move", () => {
   const all = ["id0", "id1", "id2"];
@@ -14,5 +14,13 @@ describe("move", () => {
 
   it("does nothing if element doesn't exist", () => {
     expect(move(state, "missing-id", 3).all).toEqual(all);
+  });
+});
+
+describe("delete", () => {
+  const state = { all: ["id0", "id1"], byId: { id0: {}, id1: {} } };
+  expect(deleteItem(state, "id0")).toEqual({
+    all: ["id1"],
+    byId: { id1: {} }
   });
 });

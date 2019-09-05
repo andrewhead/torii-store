@@ -46,8 +46,21 @@ describe("actions", () => {
     const expectedAction = {
       id,
       to,
-      type: names.MOVE_CELL
+      type: names.MOVE
     };
     expect(actions.move(id, to)).toEqual(expectedAction);
+  });
+
+  it("should create an action for deleting a cell", () => {
+    const id = "cell-id";
+    const contentType = ContentType.SNIPPET;
+    const contentId = "snippet-id";
+    const expectedAction = {
+      id,
+      contentType,
+      contentId,
+      type: names.DELETE
+    };
+    expect(actions.deleteCell(id, contentType, contentId)).toEqual(expectedAction);
   });
 });

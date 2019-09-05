@@ -1,6 +1,6 @@
 import { AnyAction } from "redux";
 import { codeActionNames, isCodeAction } from "../code/types";
-import { insert, move } from "../common/reducers";
+import { deleteItem, insert, move } from "../common/reducers";
 import { initialUndoableState } from "../state/types";
 import { cellActionNames, Cells, ContentType, isCellAction } from "./types";
 
@@ -14,8 +14,6 @@ export function cellsReducer(state = initialUndoableState, action: AnyAction) {
 function cellsReducerForCellsSlice(state: Cells, action: AnyAction) {
   if (isCellAction(action)) {
     switch (action.type) {
-      case cellActionNames.MOVE_CELL:
-        return move(state, action.id, action.to);
       case cellActionNames.INSERT_TEXT:
         return insert(state, action.cellId, action.index, {
           type: ContentType.TEXT,
@@ -26,6 +24,10 @@ function cellsReducerForCellsSlice(state: Cells, action: AnyAction) {
           type: ContentType.OUTPUT,
           contentId: action.outputId
         });
+      case cellActionNames.MOVE:
+        return move(state, action.id, action.to);
+      case cellActionNames.DELETE:
+        return deleteItem(state, action.id);
       default:
         return state;
     }

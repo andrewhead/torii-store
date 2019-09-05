@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { AnyAction } from "redux";
-import { cellActionNames, isCellAction } from "../cells/types";
-import { insert } from "../common/reducers";
+import { cellActionNames, ContentType, isCellAction } from "../cells/types";
+import { deleteItem, insert } from "../common/reducers";
 import { initialUndoableState } from "../state/types";
 import { isTextAction, SetTextAction, textActionNames, Texts } from "./types";
 
@@ -17,6 +17,11 @@ export function textsReducerForTextsSlice(state: Texts, action: AnyAction) {
     switch (action.type) {
       case cellActionNames.INSERT_TEXT:
         return insert(state, action.textId, 0, { value: undefined });
+      case cellActionNames.DELETE:
+        if (action.contentType === ContentType.TEXT) {
+          return deleteItem(state, action.contentId);
+        }
+        return state;
       default:
         return state;
     }

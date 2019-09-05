@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { DeepPartial } from "redux";
 import uuidv4 from "uuid/v4";
-import { ContentType } from "../cells/types";
+import { CellId, ContentType } from "../cells/types";
 import { ChunkId, ChunkVersionId, Path, SnippetId } from "../code/types";
 import { initialUndoableState, State, Undoable } from "../state/types";
 import { createState } from "./state-utils";
@@ -29,6 +29,7 @@ export function createChunks(...chunkVersions: ChunkVersionSpec[]): Undoable {
     const chunkVersionId = chunkVersion.chunkVersionId || uuidv4();
     const chunkId = chunkVersion.chunkId || uuidv4();
     let snippetId = chunkVersion.snippetId === undefined ? TEST_SNIPPET_ID : chunkVersion.snippetId;
+    const cellId = chunkVersion.cellId || uuidv4();
 
     state.chunkVersions.all.push(chunkVersionId);
     state.chunkVersions.byId[chunkVersionId] = {
@@ -47,7 +48,6 @@ export function createChunks(...chunkVersions: ChunkVersionSpec[]): Undoable {
       if (state.snippets.all.indexOf(snippetId) === -1) {
         state.snippets.all.push(snippetId);
         state.snippets.byId[snippetId] = { chunkVersionsAdded: [] };
-        const cellId = uuidv4();
         state.cells.all.push(cellId);
         state.cells.byId[cellId] = { contentId: snippetId, type: ContentType.SNIPPET };
       }
@@ -58,6 +58,7 @@ export function createChunks(...chunkVersions: ChunkVersionSpec[]): Undoable {
 }
 
 interface ChunkVersionSpec {
+  cellId?: CellId;
   snippetId?: SnippetId;
   chunkId?: ChunkId;
   chunkVersionId?: ChunkVersionId;

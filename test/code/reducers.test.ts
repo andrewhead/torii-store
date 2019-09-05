@@ -1,4 +1,5 @@
 import { ContentType } from "../../src";
+import * as cellActions from "../../src/cells/actions";
 import * as actions from "../../src/code/actions";
 import { codeReducer } from "../../src/code/reducers";
 import {
@@ -548,6 +549,21 @@ describe("code reducer", () => {
           }
         }
       });
+    });
+  });
+
+  describe("should handle DELETE", () => {
+    it("should delete a snippet", () => {
+      const state = createChunks(
+        { cellId: "cell-0", snippetId: "snippet-0" },
+        { cellId: "cell-1", snippetId: "snippet-1" }
+      );
+      const updatedState = codeReducer(
+        state,
+        cellActions.deleteCell("cell-0", ContentType.SNIPPET, "snippet-0")
+      );
+      expect(updatedState.snippets.all).toEqual(["snippet-1"]);
+      expect(Object.keys(updatedState.snippets.byId)).toEqual(["snippet-1"]);
     });
   });
 });

@@ -6,9 +6,10 @@ import { State } from "../state/types";
 import {
   cellActionNames as names,
   CellId,
+  ContentType,
   InsertOutputAction,
   InsertTextAction,
-  MoveCellAction
+  MoveAction
 } from "./types";
 
 export function insertOutput(state: State, outputId: OutputId): InsertOutputAction;
@@ -33,10 +34,23 @@ export function insertText(location: CellInsertLocation): InsertTextAction {
   };
 }
 
-export function move(id: CellId, to: number): MoveCellAction {
+export function move(id: CellId, to: number): MoveAction {
   return {
     id,
     to,
-    type: names.MOVE_CELL
+    type: names.MOVE
+  };
+}
+
+/**
+ * Action creator must know the type and ID of the content contained in the cell, so it can remove
+ * that content if there are no remaining references to it.
+ */
+export function deleteCell(id: CellId, contentType: ContentType, contentId: any) {
+  return {
+    id,
+    contentType,
+    contentId,
+    type: names.DELETE
   };
 }
