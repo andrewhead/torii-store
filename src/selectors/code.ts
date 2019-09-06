@@ -15,6 +15,10 @@ export function getSnippetIdsInCellOrder(code: Undoable): SnippetId[] {
     .map(c => c.contentId as SnippetId);
 }
 
+/**
+ * Can be the ID of a version for a chunk that appears before a snippet, and can also be a chunk
+ * version from the reference implementation that hasn't been added to the tutorial.
+ */
 export function findIdOfPreviousChunkVersion(
   state: Undoable,
   snippetId: SnippetId,
@@ -31,6 +35,11 @@ export function findIdOfPreviousChunkVersion(
         return previousChunkVersionId;
       }
     }
+  }
+  const chunk = state.chunks.byId[chunkId];
+  const versionIndex = chunk.versions.indexOf(chunkVersionId);
+  if (versionIndex > 0) {
+    return chunk.versions[0];
   }
   return null;
 }
