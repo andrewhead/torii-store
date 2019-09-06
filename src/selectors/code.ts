@@ -15,6 +15,26 @@ export function getSnippetIdsInCellOrder(code: Undoable): SnippetId[] {
     .map(c => c.contentId as SnippetId);
 }
 
+export function findIdOfPreviousChunkVersion(
+  state: Undoable,
+  snippetId: SnippetId,
+  chunkVersionId: ChunkVersionId
+): ChunkVersionId | null {
+  const chunkId = state.chunkVersions.byId[chunkVersionId].chunk;
+  const snippetIds = getSnippetIdsInCellOrder(state);
+  const snippetIndex = snippetIds.indexOf(snippetId);
+  for (let i = snippetIndex - 1; i >= 0; i--) {
+    const previousSnippet = state.snippets.byId[snippetIds[i]];
+    for (const previousChunkVersionId of previousSnippet.chunkVersionsAdded) {
+      const previousChunkId = state.chunkVersions.byId[previousChunkVersionId].chunk;
+      if (previousChunkId === chunkId) {
+        return previousChunkVersionId;
+      }
+    }
+  }
+  return null;
+}
+
 export function getReferenceImplementationText(code: Undoable, path: Path): string {
   const chunkIds = code.chunks.all;
   const chunks = chunkIds

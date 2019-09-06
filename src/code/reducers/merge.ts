@@ -1,14 +1,7 @@
 import { Undoable } from "../..";
 import { deleteItem } from "../../common/reducers";
-import { getSnippetIdsInCellOrder } from "../../selectors/code";
-import {
-  ChunkVersionId,
-  ChunkVersions,
-  MergeAction,
-  MergeStrategy,
-  SnippetId,
-  Snippets
-} from "../types";
+import { findIdOfPreviousChunkVersion } from "../../selectors/code";
+import { ChunkVersionId, ChunkVersions, MergeAction, MergeStrategy, Snippets } from "../types";
 
 export function merge(state: Undoable, action: MergeAction) {
   const previousChunkVersionId = findIdOfPreviousChunkVersion(
@@ -34,6 +27,7 @@ function removeChunkVersion(state: Snippets, action: MergeAction) {
   return {
     ...state,
     byId: {
+      ...state.byId,
       [action.snippetId]: snippet
     }
   };
@@ -65,24 +59,4 @@ function mergeChunkVersions(
     };
   }
   return deleteItem(state, action.chunkVersionId);
-}
-
-function findIdOfPreviousChunkVersion(
-  state: Undoable,
-  snippetId: SnippetId,
-  chunkVersionId: ChunkVersionId
-): ChunkVersionId | null {
-  const chunkId = state.chunkVersions.byId[chunkVersionId].chunk;
-  const snippetIds = getSnippetIdsInCellOrder(state);
-  const snippetIndex = snippetIds.indexOf(snippetId);
-  for (let i = snippetIndex - 1; i >= 0; i--) {
-    const previousSnippet = state.snippets.byId[snippetIds[i]];
-    for (const previousChunkVersionId of previousSnippet.chunkVersionsAdded) {
-      const previousChunkId = state.chunkVersions.byId[previousChunkVersionId].chunk;
-      if (previousChunkId === chunkId) {
-        return previousChunkVersionId;
-      }
-    }
-  }
-  return null;
 }
