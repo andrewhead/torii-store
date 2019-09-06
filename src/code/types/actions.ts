@@ -3,7 +3,7 @@ import { CellId } from "../../cells/types/cell";
 import { SnippetId } from "../types";
 import * as names from "./action-names";
 import { ChunkId, ChunkVersionId, InitialChunk, Path } from "./chunk";
-import { Edit, Selection } from "./common";
+import { Edit, MergeStrategy, Selection } from "./common";
 
 export interface UploadFileContentsAction {
   type: typeof names.UPLOAD_FILE_CONTENTS;
@@ -34,6 +34,13 @@ export interface PickChunkVersionAction {
   chunkVersionId: ChunkVersionId;
 }
 
+export interface MergeAction {
+  type: typeof names.MERGE;
+  strategy: MergeStrategy;
+  snippetId: SnippetId;
+  chunkVersionId: ChunkVersionId;
+}
+
 export interface EditAction {
   type: typeof names.EDIT;
   edit: Edit;
@@ -49,6 +56,7 @@ export type CodeActionTypes =
   | InsertSnippetAction
   | ForkAction
   | PickChunkVersionAction
+  | MergeAction
   | EditAction
   | SetSelectionsAction;
 

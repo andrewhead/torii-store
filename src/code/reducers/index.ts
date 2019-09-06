@@ -6,6 +6,7 @@ import { codeActionNames as actionNames, isCodeAction } from "../types";
 import { insertSnippet } from "./create-snippet";
 import { edit } from "./edit";
 import { fork } from "./fork";
+import { merge } from "./merge";
 import { pickChunkVersion } from "./pick-chunk-version";
 import { uploadFileContents } from "./upload-file-contents";
 
@@ -45,6 +46,8 @@ export function codeReducer(state: Undoable = initialUndoableState, action: AnyA
         return fork(state, action);
       case actionNames.PICK_CHUNK_VERSION:
         return pickChunkVersion(state, action);
+      case actionNames.MERGE:
+        return merge(state, action);
       case actionNames.EDIT:
         return edit(state, action);
       case actionNames.SET_SELECTIONS:

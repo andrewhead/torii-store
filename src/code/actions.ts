@@ -10,6 +10,8 @@ import {
   ForkAction,
   InitialChunk,
   InsertSnippetAction,
+  MergeAction,
+  MergeStrategy,
   Path,
   PickChunkVersionAction,
   Selection,
@@ -85,6 +87,23 @@ export function pickChunkVersion(
     chunkId,
     chunkVersionId,
     type: names.PICK_CHUNK_VERSION
+  };
+}
+
+/**
+ * Merge a chunk version back into another chunk version. This is currently done by deleting
+ * the specified chunk version, updating the chunk's code to the previous version.
+ */
+export function merge(
+  snippetId: SnippetId,
+  chunkVersionId: ChunkVersionId,
+  strategy: MergeStrategy
+): MergeAction {
+  return {
+    snippetId,
+    chunkVersionId,
+    strategy,
+    type: names.MERGE
   };
 }
 

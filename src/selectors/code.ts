@@ -1,9 +1,19 @@
 import _ from "lodash";
-import { ContentType } from "..";
+import { ContentType } from "../cells/types";
 import { ChunkId, ChunkVersionId, Path, SnippetId } from "../code/types";
 import { State, Undoable } from "../state/types";
 import * as textUtils from "../util/text-utils";
 import { FileContents } from "./types";
+
+/**
+ * Get IDs of snippets in the order they appear in cells.
+ */
+export function getSnippetIdsInCellOrder(code: Undoable): SnippetId[] {
+  return code.cells.all
+    .map(id => code.cells.byId[id])
+    .filter(c => c.type === ContentType.SNIPPET)
+    .map(c => c.contentId as SnippetId);
+}
 
 export function getReferenceImplementationText(code: Undoable, path: Path): string {
   const chunkIds = code.chunks.all;

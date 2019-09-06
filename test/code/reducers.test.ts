@@ -3,6 +3,7 @@ import * as cellActions from "../../src/cells/actions";
 import * as actions from "../../src/code/actions";
 import { codeReducer } from "../../src/code/reducers";
 import {
+  MergeStrategy,
   ReferenceImplementationSource,
   SnippetId,
   SourceType,
@@ -381,6 +382,41 @@ describe("code reducer", () => {
           }
         }
       });
+    });
+  });
+
+  describe("should handle MERGE", () => {
+    const state = createChunks(
+      {
+        snippetId: "snippet-0",
+        chunkId: "chunk-0",
+        chunkVersionId: "chunk-version-0",
+        text: "Version 0 text"
+      },
+      {
+        snippetId: "snippet-1",
+        chunkId: "chunk-0",
+        chunkVersionId: "chunk-version-1",
+        text: "Version 1 text"
+      }
+    );
+
+    it("should delete the chunk versions changes", () => {
+      const updatedState = codeReducer(
+        state,
+        actions.merge("snippet-1", "chunk-version-1", MergeStrategy.REVERT_CHANGES)
+      );
+      expect(updatedState.snippets.byId["snippet-1"].chunkVersionsAdded.length).toBe(0);
+      expect(updatedState.chunkVersions.byId["chunk-version-1"]).toBeUndefined();
+      expect(updatedState.chunkVersions.byId["chunk-version-0"].text).toEqual("Version 0 text");
+    });
+
+    it("should merge chunk version's changes", () => {
+      const updatedState = codeReducer(
+        state,
+        actions.merge("snippet-1", "chunk-version-1", MergeStrategy.SAVE_CHANGES)
+      );
+      expect(updatedState.chunkVersions.byId["chunk-version-0"].text).toEqual("Version 1 text");
     });
   });
 

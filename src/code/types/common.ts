@@ -92,3 +92,11 @@ export interface Position {
    */
   character: number;
 }
+
+/**
+ * How to handle a merge of a chunk version with an earlier chunk version.
+ */
+export enum MergeStrategy {
+  SAVE_CHANGES,
+  REVERT_CHANGES
+}

@@ -2,6 +2,7 @@ import { ContentType } from "../../src/cells/types";
 import * as actions from "../../src/code/actions";
 import {
   codeActionNames as names,
+  MergeStrategy,
   ReferenceImplementationSource,
   Selection,
   SourceType
@@ -66,6 +67,18 @@ describe("actions", () => {
       chunkId,
       chunkVersionId,
       type: names.PICK_CHUNK_VERSION
+    });
+  });
+
+  it("should create an action for merging a chunk version", () => {
+    const snippetId = "snippet-id";
+    const chunkVersionId = "chunk-version-id";
+    const strategy = MergeStrategy.REVERT_CHANGES;
+    expect(actions.merge(snippetId, chunkVersionId, strategy)).toEqual({
+      snippetId,
+      chunkVersionId,
+      strategy,
+      type: names.MERGE
     });
   });
 
