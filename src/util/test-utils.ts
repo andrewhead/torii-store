@@ -49,7 +49,11 @@ export function createChunks(...chunkVersions: ChunkVersionSpec[]): Undoable {
         state.snippets.all.push(snippetId);
         state.snippets.byId[snippetId] = { chunkVersionsAdded: [] };
         state.cells.all.push(cellId);
-        state.cells.byId[cellId] = { contentId: snippetId, type: ContentType.SNIPPET };
+        state.cells.byId[cellId] = {
+          contentId: snippetId,
+          type: ContentType.SNIPPET,
+          hidden: false
+        };
       }
       state.snippets.byId[snippetId].chunkVersionsAdded.push(chunkVersionId);
     }
