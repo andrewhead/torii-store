@@ -63,4 +63,22 @@ describe("actions", () => {
     };
     expect(actions.deleteCell(id, contentType, contentId)).toEqual(expectedAction);
   });
+
+  it("should create an action for showing a cell", () => {
+    const id = "cell-id";
+    const expectedAction = {
+      id,
+      type: names.SHOW
+    };
+    expect(actions.show(id)).toEqual(expectedAction);
+  });
+
+  it("should create an action for hiding a cell", () => {
+    const id = "cell-id";
+    const expectedAction = {
+      id,
+      type: names.HIDE
+    };
+    expect(actions.hide(id)).toEqual(expectedAction);
+  });
 });

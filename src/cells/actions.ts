@@ -54,3 +54,17 @@ export function deleteCell(id: CellId, contentType: ContentType, contentId: any)
     type: names.DELETE
   };
 }
+
+export function show(id: CellId) {
+  return {
+    id,
+    type: names.SHOW
+  };
+}
+
+export function hide(id: CellId) {
+  return {
+    id,
+    type: names.HIDE
+  };
+}

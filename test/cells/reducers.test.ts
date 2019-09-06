@@ -80,20 +80,40 @@ describe("cellsReducers", () => {
       });
     });
   });
-});
 
-describe("should handle DELETE", () => {
-  it("should delete a cell", () => {
-    const state = createChunks(
-      { cellId: "cell-0", snippetId: "snippet-0" },
-      { cellId: "cell-1", snippetId: "snippet-1" }
-    );
-    const updatedState = cellsReducer(
-      state,
-      cellActions.deleteCell("cell-0", ContentType.SNIPPET, "snippet-0")
-    );
-    expect(updatedState.cells.all).toEqual(["cell-1"]);
-    expect(Object.keys(updatedState.cells.byId)).toEqual(["cell-1"]);
+  describe("should handle DELETE", () => {
+    it("should delete a cell", () => {
+      const state = createChunks(
+        { cellId: "cell-0", snippetId: "snippet-0" },
+        { cellId: "cell-1", snippetId: "snippet-1" }
+      );
+      const updatedState = cellsReducer(
+        state,
+        cellActions.deleteCell("cell-0", ContentType.SNIPPET, "snippet-0")
+      );
+      expect(updatedState.cells.all).toEqual(["cell-1"]);
+      expect(Object.keys(updatedState.cells.byId)).toEqual(["cell-1"]);
+    });
+  });
+
+  describe("should handle SHOW", () => {
+    it("should show a cell", () => {
+      const cellId = "id0";
+      const state = createUndoableWithCells(cellId);
+      state.cells.byId[cellId].hidden = true;
+      const updatedState = cellsReducer(state, cellActions.show(cellId));
+      expect(updatedState.cells.byId[cellId].hidden).toBe(false);
+    });
+  });
+
+  describe("should handle HIDE", () => {
+    it("should hide a cell", () => {
+      const cellId = "id0";
+      const state = createUndoableWithCells(cellId);
+      state.cells.byId[cellId].hidden = false;
+      const updatedState = cellsReducer(state, cellActions.hide(cellId));
+      expect(updatedState.cells.byId[cellId].hidden).toBe(true);
+    });
   });
 });
 
@@ -104,7 +124,8 @@ function createUndoableWithCells(...cellIds: CellId[]) {
     undoable.cells.all.push(cellId);
     undoable.cells.byId[cellId] = {
       type: ContentType.SNIPPET,
-      contentId: "mock-content-id-" + i
+      contentId: "mock-content-id-" + i,
+      hidden: false
     };
   }
   return undoable;

@@ -29,6 +29,10 @@ interface BaseCell {
    * in the dictionary is a descriptive name of the part of the ID and each value is the ID.
    */
   contentId: any;
+  /**
+   * Whether to show the cell in the tutorial.
+   */
+  hidden: boolean;
 }
 
 export enum ContentType {

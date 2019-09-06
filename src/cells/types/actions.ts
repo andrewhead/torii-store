@@ -31,7 +31,23 @@ export interface DeleteAction {
   contentId: any;
 }
 
-export type CellActionTypes = InsertTextAction | InsertOutputAction | MoveAction | DeleteAction;
+export interface ShowAction {
+  type: typeof names.SHOW;
+  id: CellId;
+}
+
+export interface HideAction {
+  type: typeof names.HIDE;
+  id: CellId;
+}
+
+export type CellActionTypes =
+  | InsertTextAction
+  | InsertOutputAction
+  | MoveAction
+  | DeleteAction
+  | ShowAction
+  | HideAction;
 
 export function isCellAction(action: AnyAction): action is CellActionTypes {
   return Object.keys(names).indexOf(action.type) !== -1;
