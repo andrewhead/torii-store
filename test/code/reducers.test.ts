@@ -361,6 +361,26 @@ describe("code reducer", () => {
       expect(updatedCode.chunkVersions.all).toContain(chunkVersionId);
       expect(updatedCode.chunkVersions.all).toContain(action.forkId);
     });
+
+    it("should move selections", () => {
+      const chunkVersionId = "chunk-version-id";
+      const state = createChunks({ chunkVersionId });
+      const selectionBefore = {
+        anchor: { line: 1, character: 0 },
+        active: { line: 1, character: 2 },
+        path: "file-path",
+        relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId }
+      };
+      state.selections = [selectionBefore];
+      const action = actions.fork(chunkVersionId);
+      const expectedSelection = {
+        ...selectionBefore,
+        relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId: action.forkId }
+      };
+      expect(codeReducer(state, action)).toMatchObject({
+        selections: [expectedSelection]
+      });
+    });
   });
 
   describe("should handle PICK_CHUNK_VERSION", () => {
