@@ -7,7 +7,7 @@ import {
   Selection,
   SourceType
 } from "../../src/code/types";
-import { createStateWithUndoable } from "../../src/util/test-utils";
+import { createStateWithChunks, createStateWithUndoable } from "../../src/util/test-utils";
 
 describe("actions", () => {
   it("should create an action for uploading file contents", () => {
@@ -70,15 +70,63 @@ describe("actions", () => {
     });
   });
 
-  it("should create an action for merging a chunk version", () => {
-    const snippetId = "snippet-id";
-    const chunkVersionId = "chunk-version-id";
-    const strategy = MergeStrategy.REVERT_CHANGES;
-    expect(actions.merge(snippetId, chunkVersionId, strategy)).toEqual({
-      snippetId,
-      chunkVersionId,
-      strategy,
-      type: names.MERGE
+  describe("should create an action for merging a chunk version", () => {
+    it("finds a merge target in the reference implementation", () => {
+      const snippetId = "snippet-id";
+      const into = "into-chunk-version-id";
+      const chunkVersionId = "to-merge-chunk-version-id";
+      const state = createStateWithChunks(
+        /*
+         * First chunk version isn't in a snippet or cell---it's the reference implementation.
+         * It should be pulled into the snippet during a merge.
+         */
+        {
+          snippetId: null,
+          chunkId: "same-chunk-id",
+          chunkVersionId: into
+        },
+        {
+          snippetId,
+          chunkId: "same-chunk-id",
+          chunkVersionId
+        }
+      );
+      const strategy = MergeStrategy.REVERT_CHANGES;
+      expect(actions.merge(state, snippetId, chunkVersionId, strategy)).toEqual({
+        snippetId,
+        chunkVersionId,
+        into,
+        strategy,
+        replaceMergedVersion: true,
+        type: names.MERGE
+      });
+    });
+
+    it("finds a merge target in past snippets", () => {
+      const snippetId = "snippet-id";
+      const into = "into-chunk-version-id";
+      const chunkVersionId = "to-merge-chunk-version-id";
+      const state = createStateWithChunks(
+        {
+          snippetId: "snippet-before",
+          chunkId: "chunk-0",
+          chunkVersionId: into
+        },
+        {
+          snippetId,
+          chunkId: "chunk-0",
+          chunkVersionId
+        }
+      );
+      const strategy = MergeStrategy.REVERT_CHANGES;
+      expect(actions.merge(state, snippetId, chunkVersionId, strategy)).toEqual({
+        snippetId,
+        chunkVersionId,
+        into,
+        strategy,
+        replaceMergedVersion: false,
+        type: names.MERGE
+      });
     });
   });
 

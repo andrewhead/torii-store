@@ -3,6 +3,8 @@ import * as cellActions from "../../src/cells/actions";
 import * as actions from "../../src/code/actions";
 import { codeReducer } from "../../src/code/reducers";
 import {
+  codeActionNames,
+  MergeAction,
   MergeStrategy,
   ReferenceImplementationSource,
   SnippetId,
@@ -386,68 +388,62 @@ describe("code reducer", () => {
   });
 
   describe("should handle MERGE", () => {
-    function simpleMergeTestState() {
+    const snippetId = "snippetId";
+    const into = "into-chunk-version-id";
+    const chunkVersionId = "chunk-version-id";
+    const version0Text = "Version 0 Text";
+    const version1Text = "Version 1 Text";
+
+    function mergeTestState() {
       return createChunks(
         {
           snippetId: "snippet-0",
-          chunkId: "chunk-0",
-          chunkVersionId: "chunk-version-0",
-          text: "Version 0 text"
+          chunkId: "same-chunk",
+          chunkVersionId: into,
+          text: version0Text
         },
         {
-          snippetId: "snippet-1",
-          chunkId: "chunk-0",
-          chunkVersionId: "chunk-version-1",
-          text: "Version 1 text"
+          snippetId,
+          chunkId: "same-chunk",
+          chunkVersionId,
+          text: version1Text
         }
       );
     }
 
-    it("should delete the chunk versions changes", () => {
-      const state = codeReducer(
-        simpleMergeTestState(),
-        actions.merge("snippet-1", "chunk-version-1", MergeStrategy.REVERT_CHANGES)
-      );
-      expect(state.snippets.byId["snippet-1"].chunkVersionsAdded.length).toBe(0);
-      expect(state.chunkVersions.byId["chunk-version-1"]).toBeUndefined();
-      expect(state.chunkVersions.byId["chunk-version-0"].text).toEqual("Version 0 text");
+    function mergeAction(strategy: MergeStrategy, replace: boolean): MergeAction {
+      return {
+        type: codeActionNames.MERGE,
+        chunkVersionId,
+        snippetId,
+        into,
+        strategy,
+        replaceMergedVersion: replace
+      };
+    }
+
+    it("should merge in text", () => {
+      const action = mergeAction(MergeStrategy.SAVE_CHANGES, false);
+      const state = codeReducer(mergeTestState(), action);
+      expect(state.chunkVersions.byId[into].text).toEqual(version1Text);
     });
 
-    it("should merge chunk version's changes", () => {
-      const state = codeReducer(
-        simpleMergeTestState(),
-        actions.merge("snippet-1", "chunk-version-1", MergeStrategy.SAVE_CHANGES)
-      );
-      expect(state.chunkVersions.byId["chunk-version-0"].text).toEqual("Version 1 text");
+    it("should discard text", () => {
+      const action = mergeAction(MergeStrategy.REVERT_CHANGES, false);
+      const state = codeReducer(mergeTestState(), action);
+      expect(state.chunkVersions.byId[into].text).toEqual(version0Text);
     });
 
-    it("handles a merge with the reference implementation", () => {
-      const state = createChunks(
-        /*
-         * First chunk version isn't in a snippet or cell---it's the reference implementation.
-         * It should be pulled into the snippet during a merge.
-         */
-        {
-          snippetId: null,
-          chunkId: "same-chunk-id",
-          chunkVersionId: "chunk-version-0",
-          text: "Version 0 text"
-        },
-        {
-          snippetId: "snippet-id",
-          chunkId: "same-chunk-id",
-          chunkVersionId: "chunk-version-1",
-          text: "Version 1 text"
-        }
-      );
-      const updatedState = codeReducer(
-        state,
-        actions.merge("snippet-id", "chunk-version-1", MergeStrategy.SAVE_CHANGES)
-      );
-      expect(updatedState.snippets.byId["snippet-id"].chunkVersionsAdded).toEqual([
-        "chunk-version-0"
-      ]);
-      expect(updatedState.chunkVersions.byId["chunk-version-0"].text).toEqual("Version 1 text");
+    it("should replace the chunk version", () => {
+      const action = mergeAction(MergeStrategy.REVERT_CHANGES, true);
+      const state = codeReducer(mergeTestState(), action);
+      expect(state.snippets.byId[snippetId].chunkVersionsAdded).toContain(into);
+    });
+
+    it("should not replace the chunk version", () => {
+      const action = mergeAction(MergeStrategy.REVERT_CHANGES, false);
+      const state = codeReducer(mergeTestState(), action);
+      expect(state.snippets.byId[snippetId].chunkVersionsAdded).not.toContain(into);
     });
   });
 

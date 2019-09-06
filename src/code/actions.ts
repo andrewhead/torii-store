@@ -1,6 +1,7 @@
 import uuidv4 from "uuid/v4";
 import { insertIndex } from "../common/actions";
 import { CellInsertLocation } from "../common/types";
+import { findIdOfPreviousChunkVersion, getSnippetIdsInCellOrder } from "../selectors/code";
 import { State } from "../state/types";
 import {
   ChunkId,
@@ -91,20 +92,44 @@ export function pickChunkVersion(
 }
 
 /**
- * Merge a chunk version back into another chunk version. This is currently done by deleting
- * the specified chunk version, updating the chunk's code to the previous version.
+ * Merge a chunk version back into another chunk version.
  */
 export function merge(
+  state: State,
   snippetId: SnippetId,
   chunkVersionId: ChunkVersionId,
   strategy: MergeStrategy
 ): MergeAction {
+  const previousChunkVersionId = findIdOfPreviousChunkVersion(
+    state.undoable.present,
+    snippetId,
+    chunkVersionId
+  );
   return {
     snippetId,
     chunkVersionId,
+    into: previousChunkVersionId,
+    replaceMergedVersion: !isChunkVersionInCells(state, snippetId, previousChunkVersionId),
     strategy,
     type: names.MERGE
   };
+}
+
+function isChunkVersionInCells(
+  state: State,
+  beforeSnippetId: SnippetId,
+  chunkVersionId: ChunkVersionId
+): boolean {
+  const snippets = state.undoable.present.snippets;
+  const orderedSnippetIds = getSnippetIdsInCellOrder(state.undoable.present);
+  const snippetIndex = orderedSnippetIds.indexOf(beforeSnippetId);
+  for (let i = snippetIndex - 1; i >= 0; i--) {
+    const snippet = snippets.byId[snippets.all[i]];
+    if (snippet.chunkVersionsAdded.indexOf(chunkVersionId) !== -1) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /**

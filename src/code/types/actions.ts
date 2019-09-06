@@ -39,6 +39,12 @@ export interface MergeAction {
   strategy: MergeStrategy;
   snippetId: SnippetId;
   chunkVersionId: ChunkVersionId;
+  into: ChunkVersionId;
+  /**
+   * Whether to replace the merged chunk version with the previous version, or to just delete
+   * it from the snippet.
+   */
+  replaceMergedVersion: boolean;
 }
 
 export interface EditAction {
