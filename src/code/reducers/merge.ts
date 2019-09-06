@@ -1,6 +1,6 @@
 import { Undoable } from "../..";
 import { deleteItem } from "../../common/reducers";
-import { ChunkVersions, MergeAction, MergeStrategy } from "../types";
+import { ChunkVersions, MergeAction, MergeStrategy, Selection, SourceType } from "../types";
 
 export function merge(state: Undoable, action: MergeAction) {
   return {
@@ -9,7 +9,8 @@ export function merge(state: Undoable, action: MergeAction) {
      * TODO(andrewhead): Also need to remove this chunk version from the chunk 'versions' list.
      */
     snippets: mergeSnippets(state, action),
-    chunkVersions: mergeChunkVersions(state.chunkVersions, action)
+    chunkVersions: mergeChunkVersions(state.chunkVersions, action),
+    selections: mergeSelections(state.selections, action)
   };
 }
 
@@ -57,4 +58,16 @@ function mergeChunkVersions(state: ChunkVersions, action: MergeAction) {
     }
   };
   return deleteItem(state, action.chunkVersionId);
+}
+
+function mergeSelections(state: Selection[], action: MergeAction) {
+  return state.map(s => {
+    if (
+      s.relativeTo.source === SourceType.CHUNK_VERSION &&
+      s.relativeTo.chunkVersionId === action.chunkVersionId
+    ) {
+      return { ...s, relativeTo: { ...s.relativeTo, chunkVersionId: action.into } };
+    }
+    return s;
+  });
 }

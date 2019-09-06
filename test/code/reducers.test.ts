@@ -445,6 +445,24 @@ describe("code reducer", () => {
       const state = codeReducer(mergeTestState(), action);
       expect(state.snippets.byId[snippetId].chunkVersionsAdded).not.toContain(into);
     });
+
+    it("should move selections from 'merge' to 'into'", () => {
+      const code = mergeTestState();
+      const selectionBefore = {
+        anchor: { line: 1, character: 0 },
+        active: { line: 1, character: 2 },
+        path: "file-path",
+        relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId }
+      };
+      code.selections = [selectionBefore];
+      const expectedSelection = {
+        ...selectionBefore,
+        relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId: into }
+      };
+      expect(codeReducer(code, mergeAction(MergeStrategy.REVERT_CHANGES, true))).toMatchObject({
+        selections: [expectedSelection]
+      });
+    });
   });
 
   describe("should handle SET_SELECTIONS", () => {
