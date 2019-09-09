@@ -13,7 +13,7 @@ export function uploadFileContents(state: Undoable, action: UploadFileContentsAc
     }
   });
   const chunkVersions = _.merge({}, state.chunkVersions, {
-    all: state.chunks.all.concat(action.chunkVersionId),
+    all: state.chunkVersions.all.concat(action.chunkVersionId),
     byId: {
       [action.chunkVersionId]: {
         text: action.contents,
