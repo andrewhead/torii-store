@@ -35,7 +35,7 @@ import {
   OutputTypes
 } from "./outputs/types";
 import * as selectors from "./selectors";
-import { FileContents } from "./selectors/types";
+import { FileContents } from "./selectors/code/types";
 import * as stateActions from "./state/actions";
 import { rootReducer } from "./state/reducers";
 import { State, stateActionNames, StateActionTypes, Undoable } from "./state/types";
