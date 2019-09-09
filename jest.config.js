@@ -7,6 +7,7 @@ module.exports = {
   moduleFileExtensions: [
     'js',
     'ts',
+    'json'
   ],
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',

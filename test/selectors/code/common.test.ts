@@ -1,10 +1,10 @@
-import { textUtils } from "../../src";
 import {
   getFileContents,
   getReferenceImplementationText,
   getSnapshotOrderedChunkVersions
-} from "../../src/selectors/code";
-import { createChunks, createStateWithChunks } from "../../src/util/test-utils";
+} from "../../../src/selectors/code";
+import { createChunks, createStateWithChunks } from "../../../src/util/test-utils";
+import * as textUtils from "../../../src/util/text-utils";
 
 describe("getReferenceImplementationText", () => {
   it("gets text from chunks", () => {

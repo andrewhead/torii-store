@@ -1,8 +1,8 @@
 import _ from "lodash";
-import { ContentType } from "../cells/types";
-import { ChunkId, ChunkVersionId, Path, SnippetId } from "../code/types";
-import { State, Undoable } from "../state/types";
-import * as textUtils from "../util/text-utils";
+import { ContentType } from "../../cells/types";
+import { ChunkId, ChunkVersionId, Path, SnippetId } from "../../code/types";
+import { State, Undoable } from "../../state/types";
+import * as textUtils from "../../util/text-utils";
 import { FileContents } from "./types";
 
 /**

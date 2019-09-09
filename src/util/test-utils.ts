@@ -2,8 +2,10 @@ import _ from "lodash";
 import { DeepPartial } from "redux";
 import uuidv4 from "uuid/v4";
 import { CellId, ContentType } from "../cells/types";
-import { ChunkId, ChunkVersionId, Path, SnippetId } from "../code/types";
+import { ChunkId, ChunkVersionId, Location, Path, SnippetId } from "../code/types";
+import { CommandId } from "../outputs/types";
 import { initialUndoableState, State, Undoable } from "../state/types";
+import { TextId } from "../texts/types";
 import { createState } from "./state-utils";
 
 export const TEST_FILE_PATH = "file-path";
@@ -89,4 +91,65 @@ export function createStateWithUndoable(partialState?: DeepPartial<Undoable>): S
       present: createUndoable(partialState)
     }
   });
+}
+
+export function addCell(
+  state: Undoable,
+  id: CellId,
+  type: ContentType,
+  contentId: any,
+  hidden: boolean
+) {
+  state.cells.all.push(id);
+  state.cells.byId[id] = { type, contentId, hidden };
+}
+
+export function addText(state: Undoable, id: TextId, value: string) {
+  state.texts.all.push(id);
+  state.texts.byId[id] = { value };
+}
+
+export function addSnippet(
+  state: Undoable,
+  id: SnippetId,
+  ...chunkVersionsAdded: ChunkVersionId[]
+) {
+  state.snippets.all.push(id);
+  state.snippets.byId[id] = { chunkVersionsAdded };
+}
+
+export function addChunk(
+  state: Undoable,
+  id: ChunkId,
+  location: Location,
+  ...versions: ChunkVersionId[]
+) {
+  state.chunks.all.push(id);
+  state.chunks.byId[id] = { location, versions };
+}
+
+export function addChunkVersion(state: Undoable, id: ChunkVersionId, chunk: ChunkId, text: string) {
+  state.chunkVersions.all.push(id);
+  state.chunkVersions.byId[id] = { chunk, text };
+}
+
+export function addConsoleOutput(
+  state: State,
+  snippetId: SnippetId,
+  commandId: CommandId,
+  output: string
+) {
+  state.outputs.all.push(snippetId);
+  state.outputs.byId[snippetId] = {
+    [commandId]: {
+      commandId,
+      type: "console",
+      state: "finished",
+      log: {
+        contents: output,
+        stdoutRanges: [{ start: 0, end: output.length }],
+        stderrRanges: []
+      }
+    }
+  };
 }
