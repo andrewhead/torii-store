@@ -18,7 +18,7 @@ import { isStateAction, State, stateActionNames } from "./types";
  * be increased if undo's were stored as deltas, and not snapshots. In addition, it might
  * be increased if some actions are filtered out from creating new snapshots (e.g., selections).
  */
-const UNDO_LIMIT = 20;
+const UNDO_LIMIT = 10;
 
 const undoableReducers = [uiUndoableReducer, codeReducer, textsReducer, cellsReducer];
 const undoableReducer = undoable(reduceReducers(...undoableReducers), {

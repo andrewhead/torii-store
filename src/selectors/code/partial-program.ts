@@ -79,8 +79,8 @@ export function getPartialProgram(
   }
   const visibilities = lineTexts.map(lt => lt.visibility);
   const text = textUtils.join(...lineTexts.map(lt => lt.text));
-  const selections = getSnippetSelections(stateSlice, sortedChunkVersions);
   const chunkVersionOffsets = getChunkVersionOffsets(lineTexts);
+  const selections = getSnippetSelections(stateSlice, chunkVersionOffsets);
   const selectedChunkVersionId = getSelectedChunkVersionId(stateSlice.selections, lineTexts);
   const code: PartialProgram = {
     path,
@@ -98,17 +98,15 @@ export function getPartialProgram(
  */
 function getSnippetSelections(
   state: Undoable,
-  orderedChunkVersions: ChunkVersionId[]
+  chunkVersionOffsets: ChunkVersionOffsets
 ): SnippetSelection[] {
-  let offset = 0;
   const snippetSelections = [];
-  for (const chunkVersionId of orderedChunkVersions) {
+  for (const { chunkVersionId, line } of chunkVersionOffsets) {
+    const offset = line - 1;
     snippetSelections.push(
       ...getSnippetSelectionsForChunkVersion(state, chunkVersionId, offset),
       ...getSnippetSelectionsFromReferenceImplementation(state, chunkVersionId, offset)
     );
-    const chunkVersionText = state.chunkVersions.byId[chunkVersionId].text;
-    offset += textUtils.split(chunkVersionText).length;
   }
   return snippetSelections;
 }

@@ -30,12 +30,17 @@ export function edit(state: Undoable, action: EditAction) {
 
 function updateChunkVersionsFromReferenceImplementationEdit(
   state: Undoable,
-  range: Range,
+  range: SourcedRange,
   newText: string
 ) {
   for (const chunkVersionId of state.chunkVersions.all) {
-    const { startLine, endLine, version } = getChunkInfo(state, chunkVersionId);
-    if (version === 0 && range.start.line >= startLine && range.end.line <= endLine) {
+    const { startLine, endLine, path, version } = getChunkInfo(state, chunkVersionId);
+    if (
+      version === 0 &&
+      range.start.line >= startLine &&
+      range.end.line <= endLine &&
+      range.path === path
+    ) {
       const rangeWithinChunkVersion = {
         start: { ...range.start, line: range.start.line - startLine + 1 },
         end: { ...range.end, line: range.end.line - startLine + 1 }
