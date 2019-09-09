@@ -35,7 +35,13 @@ import {
   OutputTypes
 } from "./outputs/types";
 import * as selectors from "./selectors";
-import { FileContents } from "./selectors/code/types";
+import {
+  ChunkVersionOffsets,
+  FileContents,
+  LineText,
+  PartialProgram,
+  SnippetSelection
+} from "./selectors/code/types";
 import * as stateActions from "./state/actions";
 import { rootReducer } from "./state/reducers";
 import { State, stateActionNames, StateActionTypes, Undoable } from "./state/types";
@@ -88,17 +94,20 @@ export {
   ChunkId,
   ChunkVersion,
   ChunkVersionId,
+  ChunkVersionOffsets,
   CommandId,
   CommandState,
   ConsoleLog,
   ContentType,
   FileContents,
   InitialChunk,
+  LineText,
   MergeStrategy,
   Output,
   OutputId,
   OutputType,
   OutputTypes,
+  PartialProgram,
   Path,
   Position,
   Range,
@@ -106,6 +115,7 @@ export {
   selectors,
   Snippet,
   SnippetId,
+  SnippetSelection,
   SourcedRange,
   SourceType,
   State,

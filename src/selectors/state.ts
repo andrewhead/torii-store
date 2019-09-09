@@ -155,7 +155,7 @@ function getCellMarkdown(state: State, cell: Cell) {
 }
 
 function wrapHidden(markdown: string) {
-  return `<div class="hidden-cell">\n${markdown}\n</div>`;
+  return `<details><summary>View hidden cell</summary>\n\n${markdown}\n\n</details>`;
 }
 
 function getTextCellMarkdown(state: State, cell: TextCell) {
@@ -187,7 +187,11 @@ function getSnapshotCellMarkdown(state: State, cell: SnippetCell) {
        * Snapshot will has a class for being, though with the appropriate styles and Javascript,
        * users could be shown snapshots on demand.
        */
-      "<div class='snapshot hidden'>\n```" + (language || "") + `\n${text}` + "\n```\n</div>"
+      "<details><summary><i>View all code to this point</i></summary>\n\n" +
+        "```" +
+        (language || "") +
+        `\n${text}` +
+        "\n```\n\n</details><br/>"
     );
   }
   return markdowns.join("\n\n");
@@ -216,9 +220,8 @@ function getLanguage(path: Path) {
 function getOutputCellMarkdown(state: State, cell: OutputCell) {
   const { snippetId, commandId } = cell.contentId;
   const output = state.outputs.byId[snippetId][commandId];
-  const classes = `output ${output.type} ${output.state}`;
   if (output.type === "console") {
-    return `<div class="${classes}">\n${output.log.contents}\n</div>`;
+    return "```\n" + output.log.contents + "```";
   }
   return "";
 }

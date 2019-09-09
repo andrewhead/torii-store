@@ -1,4 +1,4 @@
-import { ChunkId, ChunkVersionId, Path, SnippetId, visibility } from "../../code/types";
+import { ChunkId, ChunkVersionId, Path, Position, SnippetId, visibility } from "../../code/types";
 
 export interface PartialProgram {
   text: string;

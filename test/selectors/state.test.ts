@@ -133,9 +133,9 @@ describe("getMarkdown", () => {
     addCell(undoable, "text-cell-id", ContentType.TEXT, "text-id", true);
     addText(undoable, "text-id", "Text *bold* more text.");
     const state = createStateWithUndoable(undoable);
-    expect(getMarkdown(state)).toMatch(
-      /\<div class="hidden-cell"\>\s*Text \*bold\* more text.\s*<\/div>/
-    );
+    const markdown = getMarkdown(state);
+    expect(markdown).toMatch(/Text \*bold\* more text./);
+    expect(markdown).toMatch("<details><summary>");
   });
 
   it("includes snippet code with detected language", () => {
@@ -159,9 +159,9 @@ describe("getMarkdown", () => {
     addChunkVersion(undoable, "chunk-0-version-id", "chunk-0", "x = 1");
     addChunkVersion(undoable, "chunk-1-version-id", "chunk-1", "y = 2");
     const state = createStateWithUndoable(undoable);
-    expect(getMarkdown(state)).toMatch(
-      /<div class='snapshot hidden'>\n```.*\nx = 1\ny = 2\n```\n<\/div>/
-    );
+    const markdown = getMarkdown(state);
+    expect(markdown).toMatch("<details><summary>");
+    expect(markdown).toMatch("x = 1\ny = 2");
   });
 
   it("has console outputs", () => {
@@ -175,8 +175,7 @@ describe("getMarkdown", () => {
     );
     const state = createStateWithUndoable(undoable);
     addConsoleOutput(state, "snippet-id", "command-id", "Hello world");
-    expect(getMarkdown(state)).toMatch(
-      /<div class="output console finished">\nHello world\n<\/div>/
-    );
+    const markdown = getMarkdown(state);
+    expect(markdown).toMatch("```\nHello world```");
   });
 });
