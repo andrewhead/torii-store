@@ -213,7 +213,7 @@ function getLinesForChunksNotInSnippets(state: Undoable): ChunkLine[] {
   for (const snippetId of state.snippets.all) {
     const snippet = state.snippets.byId[snippetId];
     for (const chunkVersionId of snippet.chunkVersionsAdded) {
-      const index = allChunkVersionIds.indexOf(chunkVersionId);
+      const index = unaddedChunkVersionIds.indexOf(chunkVersionId);
       if (index !== -1) {
         unaddedChunkVersionIds = unaddedChunkVersionIds
           .slice(0, index)

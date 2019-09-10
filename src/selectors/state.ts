@@ -155,7 +155,8 @@ function getCellMarkdown(state: State, cell: Cell) {
 }
 
 function wrapHidden(markdown: string) {
-  return `<details><summary>View hidden cell</summary>\n\n${markdown}\n\n</details>`;
+  /* return `<details><summary>View hidden cell</summary>\n\n${markdown}\n\n</details>`; */
+  return "";
 }
 
 function getTextCellMarkdown(state: State, cell: TextCell) {
@@ -176,6 +177,7 @@ function getSnippetCellMarkdown(state: State, cell: SnippetCell) {
 }
 
 function getSnapshotCellMarkdown(state: State, cell: SnippetCell) {
+  return "";
   const snippetId = cell.contentId;
   const paths = getSnippetPaths(state, snippetId);
   const markdowns = [];

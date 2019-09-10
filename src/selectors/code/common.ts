@@ -82,7 +82,7 @@ export function getFileContents(state: State, until: SnippetId): FileContents {
  */
 export function getSnapshotOrderedChunkVersions(state: State, snippetId: SnippetId, path: Path) {
   const chunkVersionsByPath = getSortedChunkVersionsGroupedByPath(state, snippetId);
-  return chunkVersionsByPath[path];
+  return chunkVersionsByPath[path] || [];
 }
 
 function getSortedChunkVersionsGroupedByPath(state: State, until: SnippetId) {
