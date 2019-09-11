@@ -21,7 +21,16 @@ import {
 
 export function getSnapshotPartialProgram(state: State, snippetId: SnippetId, path: Path) {
   const orderedChunkVersions = getSnapshotOrderedChunkVersions(state, snippetId, path);
-  return getPartialProgram(state, snippetId, path, orderedChunkVersions);
+  function lineFilter(chunkVersionId: ChunkVersionId, offset: number) {
+    const visibilityRules = state.undoable.present.visibilityRules;
+    return (
+      orderedChunkVersions.indexOf(chunkVersionId) !== -1 ||
+      (orderedChunkVersions.visibilityRules[snippetId] !== undefined &&
+        visibilityRules[snippetId][chunkVersionId] !== undefined &&
+        visibilityRules[snippetId][chunkVersionId][offset] === visibility.VISIBLE)
+    );
+  }
+  return getPartialProgram(state, snippetId, path, orderedChunkVersions, lineFilter);
 }
 
 export function getSnippetPartialProgram(state: State, snippetId: SnippetId, path: Path) {

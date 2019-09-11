@@ -8,6 +8,7 @@ import {
   addConsoleOutput,
   addSnippet,
   addText,
+  createChunks,
   createStateWithChunks,
   createStateWithUndoable,
   createUndoable
@@ -28,6 +29,25 @@ describe("getChangedSnapshots", () => {
   it("doesn't get an unchanged snippet", () => {
     const state = createStateWithChunks({ snippetId: "snippet-id", line: 1, text: "Line 1" });
     expect(getChangedSnapshots(state, state)).toEqual([]);
+  });
+
+  it("gets a moved snippet", () => {
+    const chunksBefore = createChunks(
+      { snippetId: "snippet-0", line: 1, text: "Line 1" },
+      { snippetId: "snippet-1", line: 1, text: "Line 2" }
+    );
+    const cellsBefore = chunksBefore.cells.all;
+    const cellsAfter = [...cellsBefore].reverse();
+    const chunksAfter = {
+      ...chunksBefore,
+      cells: {
+        ...chunksBefore.cells,
+        all: cellsAfter
+      }
+    };
+    const before = createStateWithUndoable(chunksBefore);
+    const after = createStateWithUndoable(chunksAfter);
+    expect(getChangedSnapshots(before, after)).toEqual(["snippet-0", "snippet-1"]);
   });
 
   it("gets a snippet with an added chunk", () => {
