@@ -3,9 +3,9 @@ import {
   applyMiddleware,
   createStore as reduxCreateStore,
   DeepPartial,
+  Middleware,
   Store
 } from "redux";
-import { createLogger } from "redux-logger";
 import * as cellActions from "./cells/actions";
 import { Cell, cellActionNames, CellActionTypes, CellId, Cells, ContentType } from "./cells/types";
 import * as codeActions from "./code/actions";
@@ -59,12 +59,11 @@ import * as stateUtils from "./util/state-utils";
 import * as testUtils from "./util/test-utils";
 import * as textUtils from "./util/text-utils";
 
-const logger = createLogger({
-  actionTransformer: JSON.stringify
-});
-
-export const createStore = (preloadedState?: DeepPartial<State>): Store<State, AnyAction> => {
-  return reduxCreateStore(rootReducer, preloadedState, applyMiddleware(logger));
+export const createStore = (
+  preloadedState?: DeepPartial<State>,
+  ...middleware: Middleware[]
+): Store<State, AnyAction> => {
+  return reduxCreateStore(rootReducer, preloadedState, applyMiddleware(...middleware));
 };
 export const store = createStore();
 
