@@ -5,8 +5,22 @@ import { initialUndoableState } from "../state/types";
 import { cellActionNames, Cells, ContentType, HideAction, isCellAction, ShowAction } from "./types";
 
 export function cellsReducer(state = initialUndoableState, action: AnyAction) {
+  /*
+   * TODO(andrewhead): refactor to process move of delete cursor into ui-undoable.
+   */
+  const updated = { ...state };
+  if (isCellAction(action)) {
+    switch (action.type) {
+      case cellActionNames.DELETE:
+        const cellIndex = state.cells.all.indexOf(action.id);
+        if (cellIndex !== -1 && cellIndex > 0) {
+          updated.selectedCell = state.cells.all[cellIndex - 1];
+        }
+        break;
+    }
+  }
   return {
-    ...state,
+    ...updated,
     cells: cellsReducerForCellsSlice(state.cells, action)
   };
 }

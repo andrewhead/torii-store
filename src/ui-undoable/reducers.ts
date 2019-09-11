@@ -32,6 +32,6 @@ export function uiUndoableReducer(state = initialUndoableState, action: AnyActio
   return state;
 }
 
-function selectCell(state: Undoable, id: CellId) {
+function selectCell(state: Undoable, id: CellId | undefined) {
   return { ...state, selectedCell: id };
 }

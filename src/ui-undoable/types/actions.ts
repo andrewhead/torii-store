@@ -4,7 +4,7 @@ import * as names from "./action-names";
 
 export interface SelectCellAction {
   type: typeof names.SELECT_CELL;
-  id: CellId;
+  id: CellId | undefined;
 }
 
 export type UiUndoableActionTypes = SelectCellAction;
