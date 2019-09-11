@@ -13,7 +13,12 @@ import {
   StartExecutionAction,
   UpdateExecutionAction
 } from "./types";
-import { FINISH_EXECUTION, START_EXECUTION, UPDATE_EXECUTION } from "./types/action-names";
+import {
+  APPLY_UPDATES,
+  FINISH_EXECUTION,
+  START_EXECUTION,
+  UPDATE_EXECUTION
+} from "./types/action-names";
 
 const initialState = simpleStoreInitialState() as Outputs;
 
@@ -26,6 +31,10 @@ export function outputsReducer(state = initialState, action: AnyAction): Outputs
         return updateExecution(state, action);
       case FINISH_EXECUTION:
         return finishExecution(state, action);
+      case APPLY_UPDATES:
+        for (const update of action.actions) {
+          state = outputsReducer(state, update);
+        }
       default:
         return state;
     }

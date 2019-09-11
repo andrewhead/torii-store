@@ -24,10 +24,16 @@ export interface FinishExecutionAction {
   value: string;
 }
 
+export interface ApplyUpdatesAction {
+  type: typeof names.APPLY_UPDATES;
+  actions: OutputActionTypes[];
+}
+
 export type OutputActionTypes =
   | StartExecutionAction
   | UpdateExecutionAction
-  | FinishExecutionAction;
+  | FinishExecutionAction
+  | ApplyUpdatesAction;
 
 export function isOutputAction(action: AnyAction): action is OutputActionTypes {
   return Object.keys(names).indexOf(action.type) !== -1;

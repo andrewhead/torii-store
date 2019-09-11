@@ -82,7 +82,7 @@ export function getChangedSnapshots(
       const updatedCellId = d.rhs;
       const updatedCell = after.undoable.present.cells.byId[updatedCellId];
       if (updatedCell.type === ContentType.SNIPPET) {
-        changedSnippets.push(updatedCell.contentId);
+        changedSnippets = _.union(changedSnippets, [updatedCell.contentId]);
       }
     }
   }

@@ -1,13 +1,22 @@
 import { SnippetId } from "../code/types";
 import {
+  ApplyUpdatesAction,
   CommandId,
   ConsoleLog,
   FinishExecutionAction,
   outputActionNames as names,
+  OutputActionTypes,
   OutputType,
   StartExecutionAction,
   UpdateExecutionAction
 } from "./types";
+
+export function applyUpdates(...actions: OutputActionTypes[]): ApplyUpdatesAction {
+  return {
+    actions,
+    type: names.APPLY_UPDATES
+  };
+}
 
 export function startExecution(
   snippetId: SnippetId,
