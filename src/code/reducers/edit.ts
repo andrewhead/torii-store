@@ -61,7 +61,8 @@ function updateChunkVersionText(
   newText: string
 ) {
   const chunkVersion = state.chunkVersions.byId[chunkVersionId];
-  const newChunkVersionText = textUtils.replace(chunkVersion.text, range, newText);
+  const replaced = textUtils.replace(chunkVersion.text, range, newText);
+  const newChunkVersionText = replaced !== null ? replaced : chunkVersion.text;
   return _.merge({}, state, {
     chunkVersions: {
       byId: {

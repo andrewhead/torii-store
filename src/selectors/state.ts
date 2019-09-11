@@ -78,6 +78,13 @@ export function getChangedSnapshots(
         }
       }
     }
+    if (isEditDiff(d) && pathMatches(d.path, ["present", "cells", "all", "__index__"])) {
+      const updatedCellId = d.rhs;
+      const updatedCell = after.undoable.present.cells.byId[updatedCellId];
+      if (updatedCell.type === ContentType.SNIPPET) {
+        changedSnippets.push(updatedCell.contentId);
+      }
+    }
   }
   let afterFirstChangedSnippet = false;
   for (const cellId of after.undoable.present.cells.all) {
@@ -110,6 +117,9 @@ function pathMatches(path: DiffPath, suffixPattern: PathElementPattern[]) {
       continue;
     }
     if (typeof pattern === "string" || typeof pattern === "number") {
+      if (pattern === "__index__") {
+        return typeof pathElement === "number";
+      }
       if (pathElement !== pattern) {
         return false;
       }
@@ -155,8 +165,7 @@ function getCellMarkdown(state: State, cell: Cell) {
 }
 
 function wrapHidden(markdown: string) {
-  /* return `<details><summary>View hidden cell</summary>\n\n${markdown}\n\n</details>`; */
-  return "";
+  return `<details><summary>View hidden cell</summary>\n\n${markdown}\n\n</details>`;
 }
 
 function getTextCellMarkdown(state: State, cell: TextCell) {
@@ -177,7 +186,6 @@ function getSnippetCellMarkdown(state: State, cell: SnippetCell) {
 }
 
 function getSnapshotCellMarkdown(state: State, cell: SnippetCell) {
-  return "";
   const snippetId = cell.contentId;
   const paths = getSnippetPaths(state, snippetId);
   const markdowns = [];

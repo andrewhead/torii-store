@@ -119,6 +119,16 @@ function sortChunkIds(state: State, chunkIds: ChunkId[]) {
  * Get the latest chunk version for each chunk that appears up to the snippet ID 'until'.
  */
 function getLastChunkVersionsGroupedByPath(state: State, until: SnippetId) {
+  function addChunkVersion(pathChunkVersions, chunkVersionId) {
+    const chunkVersion = stateSlice.chunkVersions.byId[chunkVersionId];
+    const chunkId = chunkVersion.chunk;
+    const path = stateSlice.chunks.byId[chunkId].location.path;
+    if (pathChunkVersions[path] === undefined) {
+      pathChunkVersions[path] = {};
+    }
+    pathChunkVersions[path][chunkId] = chunkVersionId;
+  }
+
   const stateSlice = state.undoable.present;
   const cells = stateSlice.cells;
   const pathChunkVersions: PathChunkVersions = {};
@@ -128,17 +138,20 @@ function getLastChunkVersionsGroupedByPath(state: State, until: SnippetId) {
       const snippetId = cell.contentId;
       const snippet = stateSlice.snippets.byId[snippetId];
       for (const chunkVersionId of snippet.chunkVersionsAdded) {
-        const chunkVersion = stateSlice.chunkVersions.byId[chunkVersionId];
-        const chunkId = chunkVersion.chunk;
-        const path = stateSlice.chunks.byId[chunkId].location.path;
-        if (pathChunkVersions[path] === undefined) {
-          pathChunkVersions[path] = {};
-        }
-        pathChunkVersions[path][chunkId] = chunkVersionId;
+        addChunkVersion(pathChunkVersions, chunkVersionId);
       }
       if (_.isEqual(snippetId, until)) {
         break;
       }
+    }
+  }
+  /*
+   * TODO(andrewhead): refactor to share common code with 'getVisibleChunkVersions'.
+   */
+  const snippetVisibilityRules = stateSlice.visibilityRules[until];
+  if (snippetVisibilityRules !== undefined) {
+    for (const chunkVersionId of Object.keys(snippetVisibilityRules)) {
+      addChunkVersion(pathChunkVersions, chunkVersionId);
     }
   }
   return pathChunkVersions;
