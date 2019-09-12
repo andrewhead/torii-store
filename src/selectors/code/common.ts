@@ -151,7 +151,9 @@ function getLastChunkVersionsGroupedByPath(state: State, until: SnippetId) {
   const snippetVisibilityRules = stateSlice.visibilityRules[until];
   if (snippetVisibilityRules !== undefined) {
     for (const chunkVersionId of Object.keys(snippetVisibilityRules)) {
-      addChunkVersion(pathChunkVersions, chunkVersionId);
+      if (snippetVisibilityRules[chunkVersionId] !== undefined) {
+        addChunkVersion(pathChunkVersions, chunkVersionId);
+      }
     }
   }
   return pathChunkVersions;

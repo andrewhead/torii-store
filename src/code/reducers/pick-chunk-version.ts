@@ -16,17 +16,29 @@ export function pickChunkVersion(state: Undoable, action: PickChunkVersionAction
   if (removeChunkVersionId !== undefined) {
     updatedSnippet = removeChunkVersionFromSnippet(snippet, removeChunkVersionId);
   }
+  const updatedForSnippet = { ...state.visibilityRules[action.snippetId] };
+  for (const chunkVersionId of Object.keys(state.visibilityRules[action.snippetId])) {
+    const chunkId = state.chunkVersions.byId[chunkVersionId].chunk;
+    if (chunkId === action.chunkId) {
+      updatedForSnippet[chunkVersionId] = undefined;
+    }
+  }
   updatedSnippet = {
     ...updatedSnippet,
     chunkVersionsAdded: updatedSnippet.chunkVersionsAdded.concat(action.chunkVersionId)
   };
-  return _.merge({}, state, {
+  const updated = _.merge({}, state, {
     snippets: {
       byId: {
         [action.snippetId]: updatedSnippet
       }
     }
   });
+  updated.visibilityRules = {
+    ...updated.visibilityRules,
+    [action.snippetId]: updatedForSnippet
+  };
+  return updated;
 }
 
 function removeChunkVersionFromSnippet(snippet: Snippet, chunkVersionId: ChunkVersionId) {

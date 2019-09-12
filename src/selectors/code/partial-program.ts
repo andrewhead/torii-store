@@ -1,3 +1,4 @@
+import _ from "lodash";
 import {
   ChunkVersionId,
   Path,
@@ -23,6 +24,13 @@ export function getSnapshotPartialProgram(state: State, snippetId: SnippetId, pa
   const orderedChunkVersions = getSnapshotOrderedChunkVersions(state, snippetId, path);
   function lineFilter(chunkVersionId: ChunkVersionId, offset: number) {
     const visibilityRules = state.undoable.present.visibilityRules;
+    if (
+      visibilityRules[snippetId] !== undefined &&
+      visibilityRules[snippetId][chunkVersionId] !== undefined &&
+      _.isEqual(visibilityRules[snippetId][chunkVersionId], {})
+    ) {
+      return false;
+    }
     return (
       orderedChunkVersions.indexOf(chunkVersionId) !== -1 ||
       (orderedChunkVersions.visibilityRules[snippetId] !== undefined &&
