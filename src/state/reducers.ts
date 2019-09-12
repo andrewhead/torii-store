@@ -37,7 +37,8 @@ const undoableReducer = undoable(reduceReducers(...undoableReducers), {
     codeActionNames.SET_SELECTIONS,
     outputActionNames.START_EXECUTION,
     outputActionNames.UPDATE_EXECUTION,
-    outputActionNames.FINISH_EXECUTION
+    outputActionNames.FINISH_EXECUTION,
+    outputActionNames.APPLY_UPDATES
   ])
 });
 
