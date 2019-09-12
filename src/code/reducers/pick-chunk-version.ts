@@ -17,10 +17,12 @@ export function pickChunkVersion(state: Undoable, action: PickChunkVersionAction
     updatedSnippet = removeChunkVersionFromSnippet(snippet, removeChunkVersionId);
   }
   const updatedForSnippet = { ...state.visibilityRules[action.snippetId] };
-  for (const chunkVersionId of Object.keys(state.visibilityRules[action.snippetId])) {
-    const chunkId = state.chunkVersions.byId[chunkVersionId].chunk;
-    if (chunkId === action.chunkId) {
-      updatedForSnippet[chunkVersionId] = undefined;
+  if (state.visibilityRules[action.snippetId] !== undefined) {
+    for (const chunkVersionId of Object.keys(state.visibilityRules[action.snippetId])) {
+      const chunkId = state.chunkVersions.byId[chunkVersionId].chunk;
+      if (chunkId === action.chunkId) {
+        updatedForSnippet[chunkVersionId] = undefined;
+      }
     }
   }
   updatedSnippet = {
