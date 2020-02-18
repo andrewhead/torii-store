@@ -1,7 +1,7 @@
 {
-  "name": "santoku-store",
-  "version": "0.0.1",
-  "description": "Store and types for the Santoku tutorial editor",
+  "name": "torii-store",
+  "version": "0.0.2",
+  "description": "Store and types for the Torii tutorial editor",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/andrewhead/santoku-store.git"
+    "url": "git+ssh://git@github.com/andrewhead/torii-store.git"
   },
   "author": "Andrew Head <andrewhead@berkeley.edu>",
   "license": "UNLICENSED",
   "bugs": {
-    "url": "https://github.com/andrewhead/santoku-store/issues"
+    "url": "https://github.com/andrewhead/torii-store/issues"
   },
-  "homepage": "https://github.com/andrewhead/santoku-store#readme",
+  "homepage": "https://github.com/andrewhead/torii-store#readme",
   "devDependencies": {
     "@types/jest": "^24.0.16",
     "@types/lodash": "^4.14.136",

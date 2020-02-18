@@ -1,4 +1,11 @@
-import { ChunkId, ChunkVersionId, Path, Position, SnippetId, visibility } from "../../code/types";
+import {
+  ChunkId,
+  ChunkVersionId,
+  Path,
+  Position,
+  SnippetId,
+  visibility
+} from "../../code/types";
 
 export interface PartialProgram {
   text: string;
@@ -42,7 +49,7 @@ export interface ChunkVersionIdToSnippetIdMap {
 }
 
 /**
- * Compared to 'Selection' in santoku-store, these selections are used solely as pointers to
+ * Compared to 'Selection' in torii-store, these selections are used solely as pointers to
  * regions where selections should be made in a snippet editor. They are created for a specific
  * snippet, so they don't need any information about the paths or chunks they're from.
  */
