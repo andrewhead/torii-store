@@ -1,13 +1,15 @@
 {
   "name": "torii-store",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Store and types for the Torii tutorial editor",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "jest --forceExit --coverage --verbose"
+    "test": "jest --forceExit --coverage --verbose",
+    "prepare": "npm run build",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
