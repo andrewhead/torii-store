@@ -1,6 +1,6 @@
 {
   "name": "torii-store",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Store and types for the Torii tutorial editor",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
