@@ -17,17 +17,29 @@ import {
 describe("getChangedSnapshots", () => {
   it("gets a new snippet", () => {
     const before = createState();
-    const after = createStateWithChunks({ snippetId: "snippet-id", line: 1, text: "Line 1" });
+    const after = createStateWithChunks({
+      snippetId: "snippet-id",
+      line: 1,
+      text: "Line 1"
+    });
     expect(getChangedSnapshots(before, after)).toEqual(["snippet-id"]);
   });
 
   it("gets a new snippet when before is undefined", () => {
-    const after = createStateWithChunks({ snippetId: "snippet-id", line: 1, text: "Line 1" });
+    const after = createStateWithChunks({
+      snippetId: "snippet-id",
+      line: 1,
+      text: "Line 1"
+    });
     expect(getChangedSnapshots(undefined, after)).toEqual(["snippet-id"]);
   });
 
   it("doesn't get an unchanged snippet", () => {
-    const state = createStateWithChunks({ snippetId: "snippet-id", line: 1, text: "Line 1" });
+    const state = createStateWithChunks({
+      snippetId: "snippet-id",
+      line: 1,
+      text: "Line 1"
+    });
     expect(getChangedSnapshots(state, state)).toEqual([]);
   });
 
@@ -47,7 +59,10 @@ describe("getChangedSnapshots", () => {
     };
     const before = createStateWithUndoable(chunksBefore);
     const after = createStateWithUndoable(chunksAfter);
-    expect(getChangedSnapshots(before, after)).toEqual(["snippet-0", "snippet-1"]);
+    expect(getChangedSnapshots(before, after)).toEqual([
+      "snippet-0",
+      "snippet-1"
+    ]);
   });
 
   it("gets a snippet with an added chunk", () => {
@@ -98,7 +113,7 @@ describe("getChangedSnapshots", () => {
     expect(getChangedSnapshots(before, after)).toEqual(["snippet-id"]);
   });
 
-  it.only("gets a snippet that comes after a changed snippet", () => {
+  it("gets a snippet that comes after a changed snippet", () => {
     const before = createStateWithChunks(
       {
         snippetId: "snippet-0",
@@ -161,22 +176,62 @@ describe("getMarkdown", () => {
 
   it("includes snippet code with detected language", () => {
     const undoable = createUndoable();
-    addCell(undoable, "snippet-cell-id", ContentType.SNIPPET, "snippet-id", false);
+    addCell(
+      undoable,
+      "snippet-cell-id",
+      ContentType.SNIPPET,
+      "snippet-id",
+      false
+    );
     addSnippet(undoable, "snippet-id", "chunk-version-id");
-    addChunk(undoable, "chunk-id", { line: 1, path: "file.py" }, "chunk-version-id");
-    addChunkVersion(undoable, "chunk-version-id", "chunk-id", "print('Hello world')");
+    addChunk(
+      undoable,
+      "chunk-id",
+      { line: 1, path: "file.py" },
+      "chunk-version-id"
+    );
+    addChunkVersion(
+      undoable,
+      "chunk-version-id",
+      "chunk-id",
+      "print('Hello world')"
+    );
     const state = createStateWithUndoable(undoable);
-    expect(getMarkdown(state)).toMatch(/```[Pp]ython\s*\nprint\('Hello world'\)\s*```/);
+    expect(getMarkdown(state)).toMatch(
+      /```[Pp]ython\s*\nprint\('Hello world'\)\s*```/
+    );
   });
 
   it("hides snapshot code", () => {
     const undoable = createUndoable();
-    addCell(undoable, "snippet-cell-0", ContentType.SNIPPET, "snippet-0", false);
-    addCell(undoable, "snippet-cell-1", ContentType.SNIPPET, "snippet-1", false);
+    addCell(
+      undoable,
+      "snippet-cell-0",
+      ContentType.SNIPPET,
+      "snippet-0",
+      false
+    );
+    addCell(
+      undoable,
+      "snippet-cell-1",
+      ContentType.SNIPPET,
+      "snippet-1",
+      false
+    );
     addSnippet(undoable, "snippet-0", "chunk-0-version-id");
     addSnippet(undoable, "snippet-1", "chunk-1-version-id");
-    addChunk(undoable, "chunk-0", { line: 1, path: "file.py" }, "chunk-0-version-id");
-    addChunk(undoable, "chunk-1", { line: 2, path: "file.py" }, "chunk-1-version-id");
+    addChunk(
+      undoable,
+      "chunk-0",
+      { line: 1, path: "file.py" },
+      "chunk-0-version-id"
+    );
+    addChunk(
+      undoable,
+      "chunk-1",
+      { line: 2, path: "file.py" },
+      "chunk-1-version-id"
+    );
     addChunkVersion(undoable, "chunk-0-version-id", "chunk-0", "x = 1");
     addChunkVersion(undoable, "chunk-1-version-id", "chunk-1", "y = 2");
     const state = createStateWithUndoable(undoable);
