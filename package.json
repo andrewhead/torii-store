@@ -8,7 +8,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest --forceExit --coverage --verbose",
-    "prepare": "npm run build",
+    "prepare": "npm build",
+    "preversion": "npm test",
     "postversion": "git push && git push --tags"
   },
   "repository": {
