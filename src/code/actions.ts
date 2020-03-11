@@ -19,7 +19,8 @@ import {
   SetSelectionsAction,
   SnippetId,
   SourcedRange,
-  UploadFileContentsAction
+  UploadFileContentsAction,
+  SpliceSnippetAction
 } from "./types";
 
 /**
@@ -59,6 +60,18 @@ export function insertSnippet(
     snippetId,
     index: insertIndex(location),
     type: names.INSERT_SNIPPET
+  };
+}
+
+/**
+ * 
+ * @param  
+ */
+export function spliceSnippet(snippetId: SnippetId, chunks: InitialChunk[]): SpliceSnippetAction {
+  return {
+    snippetId: snippetId,
+    chunks: chunks,
+    type: names.SPLICE_SNIPPET
   };
 }
 
