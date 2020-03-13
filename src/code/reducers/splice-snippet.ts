@@ -31,15 +31,32 @@ import {
 export function spliceSnippet(state: Undoable, action: SpliceSnippetAction) {
     // implementation steps
     // 1. get snippet from state
-    // 2. check for duplicates/if chunks are already in snippet
-    // 3. splice chunk in a specific position in the snippet
-    // 4. update state with spliced chunks of code 
+    // 2. splice chunk in a specific position in the snippet
+    // 3. update state with spliced chunks of code 
+            // - need to write a `splice` function to call in return state's snippet field ?
 
-    // don't need to focus on chunk versioning right now
+    // things i can ignore for now
+    // 1. on chunk versioning right now
+    // 2. check for duplicates/if chunks are already in snippet
+
+
+    // naive implementation 
+    const { chunks: initialChunks, snippetId } = action;
+    //const initialChunkLines = splitIntoLines(initialChunks);
+    //const snippet = state.snippets.byId[snippetId];
+    let updates = emptyCodeUpdates();
+    updates = mergeCodeUpdates(updates, addChunks(initialChunks));
+
+    state = {
+        ...state,
+        chunks: update(state.chunks, updates.chunks),
+        chunkVersions: update(state.chunkVersions, updates.chunkVersions),
+        snippets: update(state.snippets, updates.snippets),
+    }
 
     return {
-        ...state, 
-
+        ...state,
+        snippet: null //TODO: replace null w/ splice(...) (?)
     }
 }
 

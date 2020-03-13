@@ -63,9 +63,9 @@ describe("code reducer", () => {
       const code = createChunks();
       const location = { path: "path", line: 1 };
       const action = actions.insertSnippet(0, { location, text: "Text" });
-      const updatedState = codeReducer(code, action);
+      const updatedState = codeReducer(code, action); //update code state to insert snippet
       expect(updatedState.chunks.all.length).toEqual(1);
-      expect(updatedState.chunkVersions.all.length).toEqual(1);
+      expect(updatedState.chunkVersions.all.length).toEqual(1); 
       const chunkId = updatedState.chunks.all[0];
       const chunkVersionId = updatedState.chunkVersions.all[0];
       expect(updatedState).toMatchObject({
@@ -87,12 +87,12 @@ describe("code reducer", () => {
         },
         chunkVersions: {
           byId: {
-            [chunkVersionId]: {
+            [chunkVersionId]: { // versioning per chunkversion, new chunkversion by opening up snapshot view
               text: "Text",
-              chunk: chunkId
+              chunk: chunkId // pointing back to chunkID
             }
           },
-          all: [chunkVersionId]
+          all: [chunkVersionId] 
         }
       });
     });
@@ -667,4 +667,116 @@ describe("code reducer", () => {
       expect(Object.keys(updatedState.snippets.byId)).toEqual(["snippet-1"]);
     });
   });
+});
+
+describe("should handle SPLICE_SNIPPET", () => {
+  it("splices new chunks into an empty snippet", () => {
+
+    const code = createChunks();
+    const location = { path: "file-path", line: 1 };
+    const action = actions.spliceSnippet("snippet-id", [{ location, text: "Text" }]);
+    const updatedState = codeReducer(code, action); 
+
+    // checks
+    expect(updatedState.chunks.all.length).toEqual(1);
+    expect(updatedState.chunkVersions.all.length).toEqual(1);
+
+    expect(Object.keys(updatedState.snippets.byId)).toEqual(["snippet-id"])
+
+    const chunkId = updatedState.chunks.all[0];
+    const chunkVersionId = updatedState.chunkVersions.all[0];
+
+    expect(updatedState).toMatchObject({
+      snippets: {
+        byId: {
+          [action.snippetId]: {
+            chunkVersionsAdded: [chunkVersionId]
+          }
+        }
+      },
+      chunks: {
+        byId: {
+          [chunkId]: {
+            location,
+            versions: [chunkVersionId]
+          }
+        },
+        all: [chunkId]
+      },
+      chunkVersions: {
+        byId: {
+          [chunkVersionId]: {
+            text: "Text",
+            chunk: chunkId
+          }
+        },
+        all: [chunkVersionId]
+      }
+    });
+  });
+
+  it("should handle splicing multiple chunks into an existing snippet", () => {
+    const code = createChunks(
+      { cellId: "cell-0", snippetId: "snippet-id" }
+    );
+    const firstLocation = { path: "file-path", line: 1 };
+    const firstAction = actions.spliceSnippet("snippet-id", [{ location: firstLocation, text: "Text1" }]);
+    const firstUpdate = codeReducer(code, firstAction); 
+
+    const secondLocation = { path: "file-path", line: 2 };
+    const secondAction = actions.spliceSnippet("snippet-id", [{ location: secondLocation, text: "Text2" }]);
+    const updatedState = codeReducer(firstUpdate, secondAction);
+    
+
+    expect(updatedState.chunks.all.length).toEqual(2);
+    expect(updatedState.chunkVersions.all.length).toEqual(2);
+
+    // chunks and chunkversion might be tangled
+    const chunkId1 = updatedState.chunks.all[0];
+    const chunkId2 = updatedState.chunks.all[1];
+
+    const chunkVersionId1 = updatedState.chunkVersions.all[chunkId1];
+    const chunkVersionId2 = updatedState.chunkVersions.all[chunkId2];
+
+    const allChunkIds = updatedState.chunks.all;
+    const allChunkVersionIds = updatedState.chunkVersions.all;
+
+    expect(updatedState).toMatchObject({ // does a partial match
+      snippets: {
+        byId: {
+          [secondAction.snippetId]: {
+            chunkVersionsAdded: [chunkVersionId1, chunkVersionId2]
+          }
+        }
+      },
+      chunks: {
+        byId: {
+          [chunkId1]: {
+            firstLocation,
+            versions: [chunkVersionId1]
+          },
+          [chunkId2]: {
+            secondLocation,
+            versions: [chunkVersionId2]
+          }
+        },
+        all: allChunkIds
+      },
+      chunkVersions: {
+        byId: {
+          [chunkVersionId1]: {
+            text: "Text1",
+            chunk: chunkId1
+          },
+          [chunkVersionId2]: {
+            text: "Text2",
+            chunk: chunkId2
+          }
+        },
+        all: allChunkVersionIds
+      }
+    });
+
+    const secondUpdatedState = codeReducer(code, firstAction); 
+  })
 });
