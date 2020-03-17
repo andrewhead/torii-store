@@ -727,9 +727,8 @@ describe("should handle SPLICE_SNIPPET", () => {
     const secondAction = actions.spliceSnippet("snippet-id", [{ location: secondLocation, text: "Text2" }]);
     const updatedState = codeReducer(firstUpdate, secondAction);
     
-
-    expect(updatedState.chunks.all.length).toEqual(2);
-    expect(updatedState.chunkVersions.all.length).toEqual(2);
+    expect(updatedState.chunks.all.length).toEqual(3);
+    expect(updatedState.chunkVersions.all.length).toEqual(3);
 
     // chunks and chunkversion might be tangled
     const chunkId1 = updatedState.chunks.all[0];

@@ -18,46 +18,89 @@ import {
   getChunkInfo,
   mergeIntoInitialChunks,
   removeLines,
-  splitIntoLines
+  splitIntoLines,
+  getSnippet
 } from "./common";
 import { 
     CodeUpdates, 
     emptyCodeUpdates, 
     mergeCodeUpdates, 
-    updateVisibilityRules 
+    ChunkVersionsUpdates
 } from "./update";
-
+import { InitialChunk,  } from '../types';
+import { ById, SimpleStore } from '../../common/types';
 
 export function spliceSnippet(state: Undoable, action: SpliceSnippetAction) {
-    // implementation steps
-    // 1. get snippet from state
-    // 2. splice chunk in a specific position in the snippet
-    // 3. update state with spliced chunks of code 
-            // - need to write a `splice` function to call in return state's snippet field ?
+    // implementation steps v2:
+    // 1. get snippet from state (done)
+    // 2. update chunks and chunkversions in state (done)
+    // 3. get chunkID, chunkVersionID from helper functions (see below)
+    // 4. use chunkId + chunkVersionId and snippetId to add chunk information 
+    //    to snippet in a copy of state
 
     // things i can ignore for now
     // 1. on chunk versioning right now
     // 2. check for duplicates/if chunks are already in snippet
 
-
-    // naive implementation 
     const { chunks: initialChunks, snippetId } = action;
-    //const initialChunkLines = splitIntoLines(initialChunks);
-    //const snippet = state.snippets.byId[snippetId];
-    let updates = emptyCodeUpdates();
-    updates = mergeCodeUpdates(updates, addChunks(initialChunks));
 
+    let updates = emptyCodeUpdates();
+    let add = addChunks(initialChunks);
+    updates = mergeCodeUpdates(updates, add);
+
+    //let addedChunkVersionIds: ChunkVersionId = getInitialChunkVersionId(updates.chunkVersions);
+
+    //console.log(addedChunkVersionIds);
+
+    let newChunkIds: ChunkVersionId[] = Object.keys(updates.chunkVersions.add);
+    console.log(newChunkIds);
+
+    updates = mergeCodeUpdates(updates, spliceChunks(state, snippetId, newChunkIds));
+    
     state = {
         ...state,
         chunks: update(state.chunks, updates.chunks),
         chunkVersions: update(state.chunkVersions, updates.chunkVersions),
-        snippets: update(state.snippets, updates.snippets),
-    }
+        snippets: update(state.snippets, updates.snippets)
+    };
 
     return {
-        ...state,
-        snippet: null //TODO: replace null w/ splice(...) (?)
+        ...state
     }
+}
+
+function spliceChunks(
+    state: Undoable,
+    snippetId: string,
+    toAdd: ChunkVersionId[]
+) {
+    const updates = emptyCodeUpdates();
+    let snippet = state.snippets.byId[snippetId];
+        
+    let updatedChunks: ChunkVersionId[];
+    if (snippet == null) {
+        // if snippet is empty, only add the spliced chunks -- is this an ideal interaction?
+        updatedChunks = toAdd;
+    } else {
+        updatedChunks = snippet.chunkVersionsAdded.concat(toAdd);
+    }
+    
+    updates.snippets.update[snippetId] = {
+        chunkVersionsAdded: updatedChunks
+    }
+    
+    return updates;
+}
+
+function getInitialChunkVersionId(update: ChunkVersionsUpdates) {
+    let { ChunkVersionId } = update.add;
+    return ChunkVersionId.chunk;
+}
+
+
+// ######### graveyard code area!! potential for revival, likelihood low #########
+function spliceInById<K extends string, T>(state: ById<T>, id: K, item: T) {
+    //let  = {...state.byId};
 }
 
 /**
