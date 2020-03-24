@@ -27,7 +27,7 @@ import {
     mergeCodeUpdates, 
     ChunkVersionsUpdates
 } from "./update";
-import { InitialChunk,  } from '../types';
+import { InitialChunk, Snippets } from '../types';
 import { ById, SimpleStore } from '../../common/types';
 
 export function spliceSnippet(state: Undoable, action: SpliceSnippetAction) {
@@ -48,14 +48,9 @@ export function spliceSnippet(state: Undoable, action: SpliceSnippetAction) {
     let add = addChunks(initialChunks);
     updates = mergeCodeUpdates(updates, add);
 
-    //let addedChunkVersionIds: ChunkVersionId = getInitialChunkVersionId(updates.chunkVersions);
-
-    //console.log(addedChunkVersionIds);
-
     let newChunkIds: ChunkVersionId[] = Object.keys(updates.chunkVersions.add);
-    console.log(newChunkIds);
 
-    updates = mergeCodeUpdates(updates, spliceChunks(state, snippetId, newChunkIds));
+    updates = mergeCodeUpdates(updates, spliceChunks(state.snippets, snippetId, newChunkIds));
     
     state = {
         ...state,
@@ -64,22 +59,19 @@ export function spliceSnippet(state: Undoable, action: SpliceSnippetAction) {
         snippets: update(state.snippets, updates.snippets)
     };
 
-    return {
-        ...state
-    }
+    return state;
 }
 
 function spliceChunks(
-    state: Undoable,
+    state: Snippets,
     snippetId: string,
     toAdd: ChunkVersionId[]
 ) {
     const updates = emptyCodeUpdates();
-    let snippet = state.snippets.byId[snippetId];
+    let snippet = state.byId[snippetId];
         
     let updatedChunks: ChunkVersionId[];
-    if (snippet == null) {
-        // if snippet is empty, only add the spliced chunks -- is this an ideal interaction?
+    if (snippet == null) { // don't need this case, leave it for first test case
         updatedChunks = toAdd;
     } else {
         updatedChunks = snippet.chunkVersionsAdded.concat(toAdd);
@@ -90,17 +82,6 @@ function spliceChunks(
     }
     
     return updates;
-}
-
-function getInitialChunkVersionId(update: ChunkVersionsUpdates) {
-    let { ChunkVersionId } = update.add;
-    return ChunkVersionId.chunk;
-}
-
-
-// ######### graveyard code area!! potential for revival, likelihood low #########
-function spliceInById<K extends string, T>(state: ById<T>, id: K, item: T) {
-    //let  = {...state.byId};
 }
 
 /**

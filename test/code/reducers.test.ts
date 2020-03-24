@@ -731,11 +731,11 @@ describe("should handle SPLICE_SNIPPET", () => {
     expect(updatedState.chunkVersions.all.length).toEqual(3);
 
     // chunks and chunkversion might be tangled
-    const chunkId1 = updatedState.chunks.all[0];
-    const chunkId2 = updatedState.chunks.all[1];
+    const chunkId1 = updatedState.chunks.all[1];
+    const chunkId2 = updatedState.chunks.all[2];
 
-    const chunkVersionId1 = updatedState.chunkVersions.all[chunkId1];
-    const chunkVersionId2 = updatedState.chunkVersions.all[chunkId2];
+    const chunkVersionId1 = updatedState.chunks.byId[chunkId1].versions[0];
+    const chunkVersionId2 = updatedState.chunks.byId[chunkId2].versions[0];
 
     const allChunkIds = updatedState.chunks.all;
     const allChunkVersionIds = updatedState.chunkVersions.all;
@@ -744,18 +744,18 @@ describe("should handle SPLICE_SNIPPET", () => {
       snippets: {
         byId: {
           [secondAction.snippetId]: {
-            chunkVersionsAdded: [chunkVersionId1, chunkVersionId2]
+            chunkVersionsAdded: allChunkVersionIds
           }
         }
       },
       chunks: {
         byId: {
           [chunkId1]: {
-            firstLocation,
+            location: firstLocation,
             versions: [chunkVersionId1]
           },
           [chunkId2]: {
-            secondLocation,
+            location:secondLocation,
             versions: [chunkVersionId2]
           }
         },
