@@ -9,7 +9,8 @@ import {
   ReferenceImplementationSource,
   SnippetId,
   SourceType,
-  visibility
+  visibility,
+  InitialChunk
 } from "../../src/code/types";
 import { Undoable } from "../../src/state/types";
 import { createChunks, createUndoable } from "../../src/util/test-utils";
@@ -671,10 +672,10 @@ describe("code reducer", () => {
 
 describe("should handle SPLICE_SNIPPET", () => {
   it("splices new chunks into an empty snippet", () => {
-
     const code = createChunks();
-    const location = { path: "file-path", line: 1 };
-    const action = actions.spliceSnippet("snippet-id", [{ location, text: "Text" }]);
+    const location1 = { path: "file-path", line: 1 };
+    const initChunk : InitialChunk[] = [{ location: location1, text: "Text" }];
+    const action = actions.spliceSnippet("snippet-id", ...initChunk);
     const updatedState = codeReducer(code, action); 
 
     // checks
@@ -697,7 +698,7 @@ describe("should handle SPLICE_SNIPPET", () => {
       chunks: {
         byId: {
           [chunkId]: {
-            location,
+            location: location1,
             versions: [chunkVersionId]
           }
         },
@@ -719,12 +720,12 @@ describe("should handle SPLICE_SNIPPET", () => {
     const code = createChunks(
       { cellId: "cell-0", snippetId: "snippet-id" }
     );
-    const firstLocation = { path: "file-path", line: 1 };
-    const firstAction = actions.spliceSnippet("snippet-id", [{ location: firstLocation, text: "Text1" }]);
+    const firstLocation = { path: "file-path", line: 2 };
+    const firstAction = actions.spliceSnippet("snippet-id", ...[{ location: firstLocation, text: "Text1" }]);
     const firstUpdate = codeReducer(code, firstAction); 
 
-    const secondLocation = { path: "file-path", line: 2 };
-    const secondAction = actions.spliceSnippet("snippet-id", [{ location: secondLocation, text: "Text2" }]);
+    const secondLocation = { path: "file-path", line: 1 };
+    const secondAction = actions.spliceSnippet("snippet-id", ...[{ location: secondLocation, text: "Text2" }]);
     const updatedState = codeReducer(firstUpdate, secondAction);
     
     expect(updatedState.chunks.all.length).toEqual(3);
@@ -739,8 +740,8 @@ describe("should handle SPLICE_SNIPPET", () => {
 
     const allChunkIds = updatedState.chunks.all;
     const allChunkVersionIds = updatedState.chunkVersions.all;
-
-    expect(updatedState).toMatchObject({ // does a partial match
+    
+    expect(updatedState).toMatchObject({
       snippets: {
         byId: {
           [secondAction.snippetId]: {
@@ -778,4 +779,31 @@ describe("should handle SPLICE_SNIPPET", () => {
 
     const secondUpdatedState = codeReducer(code, firstAction); 
   })
-});
+
+  it("does not add duplicate chunks", () => {
+    const code = createChunks({
+      snippetId: null,
+      chunkId: "chunk-0",
+      chunkVersionId: "chunk-version-0",
+      path: "same-path",
+      line: 1,
+      text: "Line 1\nLine 2\nLine 3"
+    });
+    const action = actions.insertSnippet(0, {
+      location: { path: "same-path", line: 2 },
+      text: "Line 2"
+    });
+    const updatedState = codeReducer(code, action);
+    expect(updatedState.chunks.all.length).toBe(3);   
+
+    const spliceAction = actions.spliceSnippet(
+      "snippet-id", 
+      ...[{location: {path: "same-path", line: 1}, text: "Line 1"}]
+    );
+    
+    const state = codeReducer(updatedState, spliceAction);
+
+    expect(state.chunks.all.length).toBe(3);
+  })
+
+}); 

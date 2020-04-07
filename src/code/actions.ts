@@ -67,10 +67,10 @@ export function insertSnippet(
  * 
  * @param  
  */
-export function spliceSnippet(snippetId: SnippetId, chunks: InitialChunk[]): SpliceSnippetAction {
+export function spliceSnippet(snippetId: SnippetId, ...chunks: InitialChunk[]): SpliceSnippetAction {
   return {
     snippetId: snippetId,
-    chunks: chunks,
+    chunks: chunks || [],
     type: names.SPLICE_SNIPPET
   };
 }
