@@ -5,9 +5,11 @@ import {
   MergeStrategy,
   ReferenceImplementationSource,
   Selection,
-  SourceType
+  SourceType,
+  InitialChunk
 } from "../../src/code/types";
 import { createStateWithChunks, createStateWithUndoable } from "../../src/util/test-utils";
+import { isTextAction } from "../../src/texts/types";
 
 describe("actions", () => {
   it("should create an action for uploading file contents", () => {
@@ -45,6 +47,24 @@ describe("actions", () => {
       });
       const action = actions.insertSnippet(state);
       expect(action).toMatchObject({ index: 1 });
+    });
+  });
+
+  describe("should create an action for splicing snippets", () => {
+    it("into an exisiting snippet", () => {
+      const snippetId = "snippet-id"; // following similar test formats below!
+      const initialChunks: InitialChunk[] = [{
+        location: { line: 0, path: "file-path" },
+        text: "new chunk"
+      }];
+      const expectedAction = {
+        snippetId,
+        chunks: initialChunks,
+        type: names.SPLICE_SNIPPET
+      };
+      expect(actions.spliceSnippet(
+         snippetId, initialChunks
+      )).toMatchObject(expectedAction);
     });
   });
 

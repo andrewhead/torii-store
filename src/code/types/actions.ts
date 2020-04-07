@@ -21,6 +21,12 @@ export interface InsertSnippetAction {
   index: number;
 }
 
+export interface SpliceSnippetAction {
+  type: typeof names.SPLICE_SNIPPET;
+  snippetId: SnippetId;
+  chunks: InitialChunk[];
+}
+
 export interface ForkAction {
   type: typeof names.FORK;
   chunkVersionId: ChunkVersionId;
@@ -64,7 +70,8 @@ export type CodeActionTypes =
   | PickChunkVersionAction
   | MergeAction
   | EditAction
-  | SetSelectionsAction;
+  | SetSelectionsAction
+  | SpliceSnippetAction;
 
 export function isCodeAction(action: AnyAction): action is CodeActionTypes {
   return Object.keys(names).indexOf(action.type) !== -1;

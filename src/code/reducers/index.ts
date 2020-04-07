@@ -9,6 +9,7 @@ import { fork } from "./fork";
 import { merge } from "./merge";
 import { pickChunkVersion } from "./pick-chunk-version";
 import { uploadFileContents } from "./upload-file-contents";
+import { spliceSnippet } from "./splice-snippet" ;
 
 /**
  * Semantics that are not yet supported (but that should be).
@@ -42,6 +43,8 @@ export function codeReducer(state: Undoable = initialUndoableState, action: AnyA
         return uploadFileContents(state, action);
       case actionNames.INSERT_SNIPPET:
         return insertSnippet(state, action);
+      case actionNames.SPLICE_SNIPPET:
+        return spliceSnippet(state, action);
       case actionNames.FORK:
         return fork(state, action);
       case actionNames.PICK_CHUNK_VERSION:
